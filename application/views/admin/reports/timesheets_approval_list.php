@@ -244,6 +244,7 @@ function approve_comment()
         url: action_url, 
         data:{id:rowId,type:type,comment:comment },
         success: function(response) {
+            // console.log(response);
             location.reload();
         }
     });

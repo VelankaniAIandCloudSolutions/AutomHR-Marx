@@ -26,7 +26,7 @@
 					<td><?php echo html_entity_decode($w['longitude']); ?></td>
 					<td>
 						<?php if(is_admin() || has_permission('hrm_setting','','edit')) {?>
-							<a href="#" onclick="edit_workplace(this,<?php echo html_entity_decode($w['id']); ?>); return false" data-name="<?php echo html_entity_decode($w['name']); ?>" data-workplace_address="<?php echo html_entity_decode($w['workplace_address']); ?>" data-latitude="<?php echo html_entity_decode($w['latitude']); ?>" data-longitude="<?php echo html_entity_decode($w['longitude']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+							<a href="#" onclick="edit_workplace(this,<?php echo html_entity_decode($w['id']); ?>); return false" data-name="<?php echo html_entity_decode($w['name']); ?>" data-workplace_address="<?php echo html_entity_decode($w['workplace_address']); ?>" data-latitude="<?php echo html_entity_decode($w['latitude']); ?>" data-longitude="<?php echo html_entity_decode($w['longitude']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
 						<?php } ?>
 
 						<?php if(is_admin() || has_permission('hrm_setting','','delete')) {?>

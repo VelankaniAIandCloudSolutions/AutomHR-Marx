@@ -22,7 +22,7 @@
        <td><?php echo html_entity_decode($company['company_address']); ?></td>
        <td><?php echo html_entity_decode($company['company_industry']); ?></td>
        <td>
-         <a href="#" onclick="edit_company(this,<?php echo html_entity_decode($company['id']); ?>); return false" data-name="<?php echo html_entity_decode($company['company_name']); ?>" data-address="<?php echo html_entity_decode($company['company_address']); ?>" data-industry="<?php echo html_entity_decode($company['company_industry']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+         <a href="#" onclick="edit_company(this,<?php echo html_entity_decode($company['id']); ?>); return false" data-name="<?php echo html_entity_decode($company['company_name']); ?>" data-address="<?php echo html_entity_decode($company['company_address']); ?>" data-industry="<?php echo html_entity_decode($company['company_industry']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
           <a href="<?php echo admin_url('recruitment/delete_company/' . $company['id']); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
        </td>
     </tr>

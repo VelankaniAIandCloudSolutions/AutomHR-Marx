@@ -26,7 +26,7 @@
 					<td>
 
 						<?php if(has_permission('hrm_setting', '', 'edit') || is_admin() ){ ?>
-							<a href="#" onclick="edit_salary_form(this,<?php echo html_entity_decode($c['form_id']); ?>); return false" data-taxable="<?php echo html_entity_decode($c['tax']); ?>" data-name="<?php echo html_entity_decode($c['form_name']); ?>" data-amount="<?php echo app_format_money($c['salary_val'],''); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+							<a href="#" onclick="edit_salary_form(this,<?php echo html_entity_decode($c['form_id']); ?>); return false" data-taxable="<?php echo html_entity_decode($c['tax']); ?>" data-name="<?php echo html_entity_decode($c['form_name']); ?>" data-amount="<?php echo app_format_money($c['salary_val'],''); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
 						<?php } ?>
 
 						<?php if(has_permission('hrm_setting', '', 'delete') || is_admin() ){ ?>

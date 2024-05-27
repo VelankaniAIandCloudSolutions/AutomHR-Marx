@@ -20,7 +20,7 @@
        <td><?php echo html_entity_decode($skill['id']); ?></td>
        <td><?php echo html_entity_decode($skill['skill_name']); ?></td>
        <td>
-         <a href="#" onclick="edit_skill(this,<?php echo html_entity_decode($skill['id']); ?>); return false" data-name="<?php echo html_entity_decode($skill['skill_name']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+         <a href="#" onclick="edit_skill(this,<?php echo html_entity_decode($skill['id']); ?>); return false" data-name="<?php echo html_entity_decode($skill['skill_name']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
           <a href="<?php echo admin_url('recruitment/delete_skill/' . $skill['id']); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
        </td>
     </tr>

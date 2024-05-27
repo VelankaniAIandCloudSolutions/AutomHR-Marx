@@ -22,7 +22,7 @@
         <td><?php echo $leave['symbol']; ?></td>
         <td>
           <a href="#" class="btn btn-primary btn-icon" onclick="edit_type_of_leave(this,<?php echo html_entity_decode($leave['id']); ?>); return false" data-id="<?php echo html_entity_decode($leave['id']); ?>" data-type_name="<?php echo html_entity_decode($leave['type_name']); ?>" data-symbol="<?php echo html_entity_decode($leave['symbol']); ?>">
-            <i class="fa fa-pencil-square-o"></i>
+            <i class="fa fa-pencil"></i>
           </a>
           <a href="<?php echo admin_url('timesheets/delete_type_of_leave/'.$leave['id']); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
         </td>

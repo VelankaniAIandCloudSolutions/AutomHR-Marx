@@ -90,7 +90,7 @@
                                                 <a href="<?php echo site_url('knowledge-base/article/'.$article['slug']); ?>" target="_blank">
                                                 <?php } ?><?php echo html_entity_decode($article['subject']); ?></a>
                                                 <?php if($has_permission_edit){ ?>
-                                                <a href="<?php echo admin_url('hr_profile/knowledge_base_q_a/article/'.$article['articleid']); ?>" target="_blank" class="pull-right"><span><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span></a>
+                                                <a href="<?php echo admin_url('hr_profile/knowledge_base_q_a/article/'.$article['articleid']); ?>" target="_blank" class="pull-right"><span><i class="fa fa-pencil" aria-hidden="true"></i></span></a>
                                                 <?php } ?>
                                                 <div class="clearfix"></div>
                                                 <hr class="hr-10" />

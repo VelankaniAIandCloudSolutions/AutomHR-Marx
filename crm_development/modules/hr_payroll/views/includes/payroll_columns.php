@@ -50,7 +50,7 @@
 					<td>
 						
 						<?php if(is_admin() || has_permission('hrp_setting','','edit')) {?>
-							<a href="#" onclick="edit_column_type(this,<?php echo html_entity_decode($value['id']); ?>); return false"  class="btn btn-default btn-icon" data-toggle="sidebar-right" data-target=".insurance_type_modal-edit-modal"><i class="fa fa-pencil-square-o"></i></a>
+							<a href="#" onclick="edit_column_type(this,<?php echo html_entity_decode($value['id']); ?>); return false"  class="btn btn-default btn-icon" data-toggle="sidebar-right" data-target=".insurance_type_modal-edit-modal"><i class="fa fa-pencil "></i></a>
 						<?php } ?>
 
 						<?php if(is_admin() || has_permission('hrp_setting','','delete')) {?>

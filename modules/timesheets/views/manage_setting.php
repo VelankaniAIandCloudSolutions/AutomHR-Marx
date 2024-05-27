@@ -40,7 +40,7 @@
                 echo '<i class="fa fa-check"></i> '._l('approval_process'); 
               }
               elseif($gr == 'timekeeping_settings'){
-                echo '<i class="fa fa-pencil-square-o"></i> '._l('timekeeping_settings'); 
+                echo '<i class="fa fa-pencil"></i> '._l('timekeeping_settings'); 
               }
               elseif($gr == 'default_settings'){
                 echo '<i class="fa fa-gear"></i> '._l('default_settings'); 

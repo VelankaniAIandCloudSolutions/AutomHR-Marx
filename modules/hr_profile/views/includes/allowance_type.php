@@ -24,7 +24,7 @@
 					<td><?php if($c['taxable'] == 0){echo _l('hr_hr_no');}else{echo _l('hr_yes');}?></td>
 					<td>
 						<?php if(has_permission('hrm_setting', '', 'edit') || is_admin()){ ?>
-							<a href="#" onclick="edit_allowance_type(this,<?php echo html_entity_decode($c['type_id']); ?>); return false" data-taxable="<?php echo html_entity_decode($c['taxable']); ?>" data-name="<?php echo html_entity_decode($c['type_name']); ?>" data-amount="<?php echo app_format_money($c['allowance_val'], ''); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+							<a href="#" onclick="edit_allowance_type(this,<?php echo html_entity_decode($c['type_id']); ?>); return false" data-taxable="<?php echo html_entity_decode($c['taxable']); ?>" data-name="<?php echo html_entity_decode($c['type_name']); ?>" data-amount="<?php echo app_format_money($c['allowance_val'], ''); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
 						<?php } ?>
 
 						<?php if(has_permission('hrm_setting', '', 'delete') || is_admin()){ ?>

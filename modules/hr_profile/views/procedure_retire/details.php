@@ -58,7 +58,7 @@
 
                     <div class="pull-right">&nbsp;&nbsp;</div>
                     <?php if(is_admin() || has_permission('hrm_setting','','edit')) {?>
-                      <a href="#" onclick="edit_procedure_retire(this); " data-id="<?php echo html_entity_decode($value['id']); ?>" class=" pull-right btn btn-warning btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+                      <a href="#" onclick="edit_procedure_retire(this); " data-id="<?php echo html_entity_decode($value['id']); ?>" class=" pull-right btn btn-warning btn-icon"><i class="fa fa-pencil"></i></a>
                     <?php } ?>
 
                   </div>

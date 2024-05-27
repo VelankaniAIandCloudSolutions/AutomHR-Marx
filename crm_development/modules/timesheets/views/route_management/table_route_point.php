@@ -81,7 +81,7 @@ foreach ($rResult as $aRow) {
     data-distance="'.$aRow['distance'].'" 
     data-related_to="'.$aRow['related_to'].'" 
     data-related_id="'.$aRow['related_id'].'" 
-    data-default="'.$aRow['default'].'" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>';
+    data-default="'.$aRow['default'].'" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>';
     $option .= '<a href="'.admin_url('timesheets/delete_route_point/'.$aRow['id']).'" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>';
 
     $row[] = $option;

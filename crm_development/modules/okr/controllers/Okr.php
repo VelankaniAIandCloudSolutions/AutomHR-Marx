@@ -980,7 +980,7 @@ class Okr extends AdminController
      $option = '';
 
      $option .= '<a href="#" onclick="update_approve(this)" class="btn btn-default btn-icon" data-id="'.$aRow['id'].'" >';
-     $option .= '<i class="fa fa-pencil-square-o"></i>';
+     $option .= '<i class="fa fa-pencil"></i>';
      $option .= '</a>';
      $option .= '<a href="' . admin_url('okr/delete_approval_settings/' . $aRow['id']) . '" class="btn btn-danger btn-icon _delete">';
      $option .= '<i class="fa fa-remove"></i>';

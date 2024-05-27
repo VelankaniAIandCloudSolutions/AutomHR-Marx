@@ -34,7 +34,7 @@
              <?php  
              if (has_permission('table_workplace_management', '', 'view') || is_admin()) { ?>
                 <td>
-                   <a href="#" onclick="edit_workplace(this,<?php echo html_entity_decode($w['id']); ?>); return false" data-name="<?php echo html_entity_decode($w['name']); ?>" data-id="<?php echo html_entity_decode($w['id']); ?>" data-workplace_address="<?php echo html_entity_decode($w['workplace_address']); ?>" data-latitude="<?php echo html_entity_decode($w['latitude']); ?>" data-longitude="<?php echo html_entity_decode($w['longitude']); ?>" data-distance="<?php echo html_entity_decode($w['distance']); ?>" data-default="<?php echo html_entity_decode($w['default']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+                   <a href="#" onclick="edit_workplace(this,<?php echo html_entity_decode($w['id']); ?>); return false" data-name="<?php echo html_entity_decode($w['name']); ?>" data-id="<?php echo html_entity_decode($w['id']); ?>" data-workplace_address="<?php echo html_entity_decode($w['workplace_address']); ?>" data-latitude="<?php echo html_entity_decode($w['latitude']); ?>" data-longitude="<?php echo html_entity_decode($w['longitude']); ?>" data-distance="<?php echo html_entity_decode($w['distance']); ?>" data-default="<?php echo html_entity_decode($w['default']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
                    <a href="<?php echo admin_url('timesheets/delete_workplace/'.$w['id']); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
                </td>
            <?php } ?>

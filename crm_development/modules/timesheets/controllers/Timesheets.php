@@ -3965,7 +3965,7 @@ class timesheets extends AdminController {
 					$option = '';
 					if (has_permission('table_shiftwork_management', '', 'view') || is_admin()) {
 						$option .= '<a href="' . admin_url('timesheets/add_allocation_shiftwork/' . $aRow['id']) . '" class="btn btn-default btn-icon">';
-						$option .= '<i class="fa fa-pencil-square-o"></i>';
+						$option .= '<i class="fa fa-pencil"></i>';
 						$option .= '</a>';
 
 						$option .= '<a href="' . admin_url('timesheets/delete_shift/' . $aRow['id']) . '" class="btn btn-danger btn-icon _delete">';
@@ -6805,7 +6805,7 @@ public function check_in_ts() {
 					if (is_admin()) {
 						$option = '<a href="#" onclick="edit_day_off(this,' . html_entity_decode($aRow['id']) . '); return false" data-off_reason="' . html_entity_decode($aRow['off_reason']) . '" data-off_type="' . html_entity_decode($aRow['off_type']) . '" data-break_date="' . html_entity_decode($aRow['break_date']) . '" data-timekeeping="' . html_entity_decode($aRow['timekeeping']) . '" data-department="' . html_entity_decode($aRow['department']) . '"
 						data-repeat_by_year="' . $aRow['repeat_by_year'] . '"
-						data-position="' . html_entity_decode($aRow['position']) . '" class="btn btn-default btn-icon" data-toggle="sidebar-right" data-target=".leave_modal_update-edit-modal"><i class="fa fa-pencil-square-o"></i></a>
+						data-position="' . html_entity_decode($aRow['position']) . '" class="btn btn-default btn-icon" data-toggle="sidebar-right" data-target=".leave_modal_update-edit-modal"><i class="fa fa-pencil"></i></a>
 						<a href="' . admin_url('timesheets/delete_day_off/' . $aRow['id']) . '" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>';
 					}
 					$row[] = $option;

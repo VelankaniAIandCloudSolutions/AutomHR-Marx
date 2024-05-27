@@ -32,7 +32,7 @@
 					<td><?php echo html_entity_decode($description_sub); ?></td>
 					<td>
 						<?php if(is_admin() || has_permission('hrm_setting','','edit')){ ?>
-							<a href="#" onclick="edit_contract_type(this,<?php echo html_entity_decode($c['id_contracttype']); ?>); return false"  class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+							<a href="#" onclick="edit_contract_type(this,<?php echo html_entity_decode($c['id_contracttype']); ?>); return false"  class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
 						<?php } ?>
 
 						<?php if(is_admin() || has_permission('hrm_setting','','delete')){ ?>

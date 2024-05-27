@@ -42,7 +42,7 @@ foreach ($rResult as $aRow) {
  $option = '';
  if (has_permission('table_workplace_management', '', 'view') || is_admin()) {
    $option .= '<a href="#" class="btn btn-primary" data-id="'. $aRow['id'] . '" data-staffid="'. $aRow[db_prefix().'timesheets_workplace_assign.staffid'] . '" data-workplace_id = "'.$aRow[db_prefix().'timesheets_workplace_assign.workplace_id'].'" onclick="edit_workplace_assign(this)">';
-   $option .= '<i class="fa fa-pencil-square-o"></i>';
+   $option .= '<i class="fa fa-pencil"></i>';
    $option .= '</a>';
    $option .= '<a href="' . admin_url('timesheets/delete_workplace_assign/'. $aRow['id']) . '" class="btn btn-danger mleft15 _delete">';
    $option .= '<i class="fa fa-remove"></i>';

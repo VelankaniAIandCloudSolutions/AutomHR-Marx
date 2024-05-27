@@ -18,7 +18,7 @@
     <tr>
        <td><?php echo html_entity_decode($industry['industry_name']); ?></td>
        <td>
-         <a href="#" onclick="edit_industry(this,<?php echo html_entity_decode($industry['id']); ?>); return false" data-name="<?php echo html_entity_decode($industry['industry_name']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+         <a href="#" onclick="edit_industry(this,<?php echo html_entity_decode($industry['id']); ?>); return false" data-name="<?php echo html_entity_decode($industry['industry_name']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
           <a href="<?php echo admin_url('recruitment/delete_industry/' . $industry['id']); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
        </td>
     </tr>

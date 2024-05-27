@@ -22,7 +22,7 @@
 					<td>
 
 						<?php if(has_permission('hrm_setting', '', 'edit') || is_admin() ){ ?>
-							<a href="#" onclick="edit_type_of_training(this,<?php echo html_entity_decode($type_of_training['id']); ?>); return false" data-name="<?php echo html_entity_decode($type_of_training['name']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+							<a href="#" onclick="edit_type_of_training(this,<?php echo html_entity_decode($type_of_training['id']); ?>); return false" data-name="<?php echo html_entity_decode($type_of_training['name']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
 						<?php } ?>
 
 						<?php if(has_permission('hrm_setting', '', 'delete') || is_admin() ){ ?>

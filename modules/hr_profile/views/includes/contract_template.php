@@ -65,7 +65,7 @@
 					<td><?php echo html_entity_decode($data_position_names); ?></td>
 					<td>
 						<?php if(is_admin() || has_permission('hrm_setting','','edit')){ ?>
-							<a href="<?php echo admin_url('hr_profile/contract_template/'.$c['id']); ?>"  class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+							<a href="<?php echo admin_url('hr_profile/contract_template/'.$c['id']); ?>"  class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
 						<?php } ?>
 
 						<?php if(is_admin() || has_permission('hrm_setting','','delete')){ ?>

@@ -22,7 +22,7 @@
        <td><?php echo html_entity_decode($job['position_name']); ?></td>
        <td><?php echo html_entity_decode(get_rec_industry_name($job['industry_id'])); ?></td>
        <td>
-         <a href="#" onclick="edit_job_position(this,<?php echo html_entity_decode($job['position_id']); ?>); return false" data-name="<?php echo html_entity_decode($job['position_name']); ?>" data-position_description="<?php echo html_entity_decode($job['position_description']); ?>" data-industry_id="<?php echo html_entity_decode($job['industry_id']); ?>"  data-job_skill="<?php echo html_entity_decode($job['job_skill']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+         <a href="#" onclick="edit_job_position(this,<?php echo html_entity_decode($job['position_id']); ?>); return false" data-name="<?php echo html_entity_decode($job['position_name']); ?>" data-position_description="<?php echo html_entity_decode($job['position_description']); ?>" data-industry_id="<?php echo html_entity_decode($job['industry_id']); ?>"  data-job_skill="<?php echo html_entity_decode($job['job_skill']); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
           <a href="<?php echo admin_url('recruitment/delete_job_position/' . $job['position_id']); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
        </td>
     </tr>

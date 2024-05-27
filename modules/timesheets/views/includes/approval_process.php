@@ -64,7 +64,7 @@
       </td>
       <td>
         <?php if(is_admin() || has_permission('staffmanage_approval','','edit') ){ ?>
-         <a href="<?php echo admin_url('timesheets/edit_approval_setting/'.$value['id']); ?>" data-name="<?php echo html_entity_decode($value['name']); ?>" data-related="<?php echo html_entity_decode($value['related']); ?>" data-setting='<?php echo html_entity_decode($value['setting']); ?>' class="btn btn-default btn-icon"><i class="fa fa-pencil-square-o"></i></a>
+         <a href="<?php echo admin_url('timesheets/edit_approval_setting/'.$value['id']); ?>" data-name="<?php echo html_entity_decode($value['name']); ?>" data-related="<?php echo html_entity_decode($value['related']); ?>" data-setting='<?php echo html_entity_decode($value['setting']); ?>' class="btn btn-default btn-icon"><i class="fa fa-pencil"></i></a>
        <?php } ?>
 
        <?php if(is_admin() || has_permission('staffmanage_approval','','delete') ){ ?>

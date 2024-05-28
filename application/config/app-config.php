@@ -18,7 +18,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 *
 */
 
-$root=(isset($_SERVER['HTTPS']) ? "https://" : "https://").$_SERVER['HTTP_HOST'];
+$root=(isset($_SERVER['HTTPS']) ? "http://" : "http://").$_SERVER['HTTP_HOST'];
 $root.= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 
 
@@ -51,7 +51,8 @@ define('APP_DB_USERNAME', 'root');
 /**
  * The password used to connect to the database
  */
-define('APP_DB_PASSWORD', 'Velankanidb@2123');
+// define('APP_DB_PASSWORD', 'Velankanidb@2123');
+define('APP_DB_PASSWORD', '');
 /**
  * The name of the database you want to connect to
  */

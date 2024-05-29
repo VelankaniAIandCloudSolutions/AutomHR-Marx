@@ -1444,6 +1444,11 @@ class Staff extends AdminController
             list($total_hours_h, $total_hours_m) = explode(':', $total_hours);
 
             $total_minutes = ($total_hours_h * 60) + $total_hours_m;
+            
+            $decimalMinutes = 0;
+
+            $decimalMinutes = $total_hours_h + ($total_hours_m / 60);
+            $output['total_hours'] = $decimalMinutes;
 
             $working_days = round($total_minutes / ($daily_work_hours * 60), 2);
             $output['total_working_days'] = $working_days;

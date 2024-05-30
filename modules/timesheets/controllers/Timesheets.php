@@ -2158,7 +2158,27 @@ class timesheets extends AdminController {
 				$rResult = $result['rResult'];
 
 				foreach ($rResult as $aRow) {
-					$requisition_number_of_day_off = $this->timesheets_model->get_requisition_number_of_day_off($aRow['staffid'], $year_leave);
+
+					$custom_field_value = array();
+					$this->db->select("cv.value as staff_join_date");
+					$this->db->from(db_prefix()."customfieldsvalues as cv");
+					$this->db->join(db_prefix()."customfields as cf","cf.id = cv.fieldid and cv.fieldto='staff'","inner");
+					$this->db->where("cv.relid", $aRow['staffid']);
+					$this->db->where("cf.slug","staff_date_of_joining");
+					$custom_field_query = $this->db->get();
+					$custom_field_value = $custom_field_query->row_array();
+
+					$staff_joining_date = '';
+
+					if(!empty($custom_field_value))
+					{
+						$staff_joining_date = $custom_field_value['staff_join_date'];
+					}
+ 					
+					$requisition_number_of_day_off = $this->timesheets_model->get_requisition_number_of_day_off($aRow['staffid'], $year_leave, '8');
+					
+					$timesheets_max_leave_in_year = 0;
+					
 					$timesheets_max_leave_in_year = $requisition_number_of_day_off['total_day_off_in_year'];
 					$timesheets_total_day_off = 0;
 
@@ -2184,6 +2204,7 @@ class timesheets extends AdminController {
 						} else {
 							$months_filter = $year_leave . '-' . $i;
 						}
+						
 						$count = $this->timesheets_model->get_date_leave_in_month($aRow['staffid'], $months_filter);
 						// $test[]  = $this->db->last_query();
 						$timesheets_total_day_off += $count;
@@ -2195,12 +2216,21 @@ class timesheets extends AdminController {
 						} 
 						
 						$available_leave = round(($monthly_eligible_leave - $count), 2);
-						
+						if($i < date("m", strtotime($staff_joining_date)))
+						{
+							$row[] = 0;
+							$row[] = 0;
+							$row[] = 0;
+							$previous_month_available_leave = 0;
+						}
+						else{
+							$row[] = round(($previous_month_available_leave + $monthly_eligible_leave), 2);
+							$row[] = round($count, 2);
+							$row[] = round(($previous_month_available_leave + $available_leave), 2);
+							$previous_month_available_leave = round(($previous_month_available_leave + $available_leave), 2);
+						}
 						// $row[] = $monthly_eligible_leave;
-						$row[] = round(($previous_month_available_leave + $monthly_eligible_leave), 2);
-						$row[] = round($count, 2);
-						$row[] = round(($previous_month_available_leave + $available_leave), 2);
-						$previous_month_available_leave = round(($previous_month_available_leave + $available_leave), 2);
+						
 						// $row[] = $tmp_table;
 					}
 					

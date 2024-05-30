@@ -3873,11 +3873,11 @@ class timesheets_model extends app_model {
 	 * @param  integer $staff_id
 	 * @return integer $year
 	 */
-	public function get_requisition_number_of_day_off($staff_id, $year = false) {
+	public function get_requisition_number_of_day_off($staff_id, $year = false, $type_of_leave = '') {
 		if ($year == false) {
 			$year = date('Y');
 		}
-		$result_total_day_off = $this->get_day_off_by_year($staff_id, $year);
+		$result_total_day_off = $this->get_day_off_by_year($staff_id, $year, $type_of_leave);
 		if ($result_total_day_off) {
 			$total_day_off_in_year = (float) $result_total_day_off->total;
 			$total_day_off_allowed_in_year = (float) $result_total_day_off->remain;
@@ -3931,9 +3931,13 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     <type>  the day off by year.
 	 */
-	public function get_day_off_by_year($staffid, $year) {
+	public function get_day_off_by_year($staffid, $year, $leave_type = '') {
 		$this->db->where('staffid', $staffid);
 		$this->db->where('year', $year);
+		if($leave_type != "")
+		{
+			$this->db->where('type_of_leave', $leave_type);
+		}
 		return $this->db->get(db_prefix() . 'timesheets_day_off')->row();
 	}
 

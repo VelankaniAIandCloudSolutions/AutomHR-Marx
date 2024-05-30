@@ -1949,4 +1949,80 @@ class Reports extends AdminController
             redirect(base_url("admin/reports/timesheet_approval_list"));
         }
     }
+
+    public function export_attendance_excel() 
+    {
+		if (!class_exists('XLSXReader_fin')) {
+            require_once FCPATH . '/assets/plugins/XLSXReader/XLSXReader.php';
+        }
+        
+        require_once FCPATH . '/assets/plugins/XLSXWriter/xlsxwriter.class.php';
+        
+        // Create a new XLSXWriter instance
+        $writer = new XLSXWriter();
+        
+        // Define column headers and widths
+        $set_col_tk = [date('D d', time()) => 'string'];
+        $widthst = [10, 40];
+        
+        // Write the sheet header with column options
+        $writer_header = $set_col_tk;
+        $writer->writeSheetHeader('Sheet1', $writer_header, [
+            'widths' => $widthst,
+            'fill' => '#C65911',
+            'font-style' => 'bold',
+            'color' => '#FFFFFF',
+            'border' => 'left,right,top,bottom',
+            'height' => 25,
+            'border-color' => '#FFFFFF',
+            'font-size' => 13,
+            'font' => 'Calibri'
+        ]);
+        
+        // Define row data and style
+        $style1 = [
+            'fill' => '#F8CBAD',
+            'height' => 25,
+            'border' => 'left,right,top,bottom',
+            'border-color' => '#FFFFFF',
+            'font-size' => 12,
+            'font' => 'Calibri',
+            'color' => '#000000'
+        ];
+        $list_add = ["Excel file export for download excel file."];
+        
+        // Write the row data with style
+        $writer->writeSheetRow('Sheet1', $list_add, $style1);
+        
+        // Ensure the directory exists
+        if (!is_dir(PROJECT_REPORT)) {
+            mkdir(PROJECT_REPORT, 0777, true);
+        }
+        
+        // Delete existing files in the PROJECT_REPORT directory
+        $files = glob(PROJECT_REPORT . '*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+        
+        // Create a new filename with a timestamp to ensure uniqueness
+        $month_filter = date("M_Y");
+        $timestamp = time();
+        $filename = 'report_' . $month_filter . '_' . $timestamp . '.xlsx';
+        
+        // Write the Excel file to the specified path
+        $filepath = PROJECT_REPORT . $filename;
+        $writer->writeToFile($filepath);
+        
+        // Output JSON response with download link
+        echo json_encode([
+            'site_url' => site_url(),
+            'filename' => $filepath,
+        ]);
+        die;
+        
+
+	}
 }

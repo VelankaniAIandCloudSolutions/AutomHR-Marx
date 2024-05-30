@@ -6296,8 +6296,19 @@ public function check_in_ts() {
 		$days_off = $day_off->days_off;
 
 		$valid_cur_date = $this->timesheets_model->get_next_shift_date($id, date('Y-m-d'));
+		$month = date("m", strtotime(date('Y-m-d')));
+		$year = date("Y", strtotime(date('Y-m-d')));
+		
+		
 		$html .= '<label class="control-label">' . _l('number_of_days_off') . ': ' . $days_off . '</label><br>';
 		$html .= '<label class="control-label' . ($number_day_off == 0 ? ' text-danger' : '') . '">' . _l('number_of_leave_days_allowed') . ': ' . $number_day_off . '</label>';
+		
+		if($type_of_leave == '8')
+		{
+			$accruval_leave = $this->timesheets_model->staff_leave_accruval($id, $month, $year, $type_of_leave);
+			$html .= '<br><label class="control-label" style="color:red"> Number of Eligible Leave: '. $accruval_leave;
+		}
+
 		$html .= '<input type="hidden" name="number_day_off" value="' . $number_day_off . '">';
 		echo json_encode([
 			'html' => $html,

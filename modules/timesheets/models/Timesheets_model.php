@@ -8275,4 +8275,81 @@ class timesheets_model extends app_model {
 
 	}
 
+
+	// Staff accruval leave data
+	public function staff_leave_accruval($staff_id ='', $month ='' , $year = '', $leave_type ='')
+	{
+		$custom_field_value = array();
+		$this->db->select("cv.value as staff_join_date");
+		$this->db->from(db_prefix()."customfieldsvalues as cv");
+		$this->db->join(db_prefix()."customfields as cf","cf.id = cv.fieldid and cv.fieldto='staff'","inner");
+		$this->db->where("cv.relid", $staff_id);
+		$this->db->where("cf.slug","staff_date_of_joining");
+		$custom_field_query = $this->db->get();
+		$custom_field_value = $custom_field_query->row_array();
+
+		$staff_joining_date = '';
+
+		if(!empty($custom_field_value))
+		{
+			$staff_joining_date = $custom_field_value['staff_join_date'];
+		}
+		if($leave_type != "")
+		{
+			$leave_type = $leave_type;
+		}
+		else{
+			$leave_type = 8;
+		}
+		
+		$requisition_number_of_day_off = $this->timesheets_model->get_requisition_number_of_day_off($staff_id, $year, $leave_type);
+
+		$timesheets_max_leave_in_year = 0;
+
+		$timesheets_max_leave_in_year = $requisition_number_of_day_off['total_day_off_in_year'];
+		$timesheets_total_day_off = 0;
+
+		$total_leave = $timesheets_max_leave_in_year;
+
+		$sum_count = 0;
+		$leave_count= 0;
+		$monthly_eligible_leave = 0;
+
+		$monthly_eligible_leave = round($total_leave / 12, 2);
+		$available_leave =0;
+		$previous_month_available_leave = 0;
+
+		 $balance = 0;
+
+		for ($i = 1; $i <= 12; $i++) {
+
+			if ($i < 10) {
+				$months_filter = $year . '-0' . $i;
+
+			} else {
+				$months_filter = $year . '-' . $i;
+			}
+			
+			$count = $this->timesheets_model->get_date_leave_in_month($staff_id, $months_filter);
+			// $test[]  = $this->db->last_query();
+			$timesheets_total_day_off += $count;
+
+			if(date("m") < $i)
+			{
+				$monthly_eligible_leave = 0;
+			} 
+			
+			$available_leave = round(($monthly_eligible_leave - $count), 2);
+
+			if($i < date("m", strtotime($staff_joining_date)))
+			{
+				$balance = 0;
+			}
+			else{
+				$balance = round(($previous_month_available_leave + $available_leave), 2);
+				$previous_month_available_leave = round(($previous_month_available_leave + $available_leave), 2);
+			}
+		}
+		return $balance;
+	}
 }

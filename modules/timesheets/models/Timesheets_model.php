@@ -8279,21 +8279,8 @@ class timesheets_model extends app_model {
 	// Staff accruval leave data
 	public function staff_leave_accruval($staff_id ='', $month ='' , $year = '', $leave_type ='')
 	{
-		$custom_field_value = array();
-		$this->db->select("cv.value as staff_join_date");
-		$this->db->from(db_prefix()."customfieldsvalues as cv");
-		$this->db->join(db_prefix()."customfields as cf","cf.id = cv.fieldid and cv.fieldto='staff'","inner");
-		$this->db->where("cv.relid", $staff_id);
-		$this->db->where("cf.slug","staff_date_of_joining");
-		$custom_field_query = $this->db->get();
-		$custom_field_value = $custom_field_query->row_array();
+		$staff_joining_date = $this->staff_joining_date($staff_id);
 
-		$staff_joining_date = '';
-
-		if(!empty($custom_field_value))
-		{
-			$staff_joining_date = $custom_field_value['staff_join_date'];
-		}
 		if($leave_type != "")
 		{
 			$leave_type = $leave_type;
@@ -8351,5 +8338,113 @@ class timesheets_model extends app_model {
 			}
 		}
 		return $balance;
+	}
+
+	public function casual_leave_credit($data= array())
+	{
+		$staff_joining_date = $this->staff_joining_date($data['staff_id']);
+		// Fetch the total days count
+		$this->db->select("COUNT(DISTINCT `date`) AS total_days_count");
+		$this->db->from(db_prefix() . "check_in_out");
+		$this->db->where("staff_id", $data['staff_id']);
+		$this->db->where("type_check", '1');
+		$this->db->where("type", 'W');
+		if ($staff_joining_date != "") {
+			$this->db->where("DATE(date) >=", date("Y-m-d", strtotime($staff_joining_date)));
+		}
+
+		$total_days_count = $this->db->get()->row()->total_days_count;
+		
+		// Calculate credit_leave based on the total days count
+		$credit_leave = floor($total_days_count / 80);
+		// Get the timesheets_day_off for the staff
+		$this->db->select("*");
+		$this->db->from(db_prefix() . "timesheets_day_off");
+		$this->db->where("staffid", $data['staff_id']);
+		$this->db->where("type_of_leave", "casual-leave");
+		$timesheets_day_off = $this->db->get()->row_array();
+
+		$current_year = date("Y");
+		$joining_year = date("Y", strtotime($staff_joining_date));
+
+		if ($timesheets_day_off) {
+			$year = $timesheets_day_off['year'];
+			if ($year == $current_year) {
+				// Update the existing record for the current year
+				$year_update_data = array(
+					"staffid" => $data['staff_id'],
+					"total" => $credit_leave,
+					"remain" => ($credit_leave - $timesheets_day_off['days_off'])
+				);
+
+				$this->db->where("type_of_leave", "casual-leave");
+				$this->db->where("staffid", $data['staff_id']);
+				$this->db->where("id", $timesheets_day_off['id']);
+				$this->db->update(db_prefix() . "timesheets_day_off", $year_update_data);
+			} else {
+				// Insert a new record for the new year
+				$year_insert_data = array(
+					"staffid" => $data['staff_id'],
+					"total" => $credit_leave,
+					"remain" => $credit_leave,
+					"year" => $current_year,
+					"type_of_leave" => "casual-leave",
+					"days_off" => 0
+				);
+				$this->db->insert(db_prefix() . "timesheets_day_off", $year_insert_data);
+			}
+		} else {
+			// Insert a new record if no previous record exists
+			$year_insert_data = array(
+				"staffid" => $data['staff_id'],
+				"total" => $credit_leave,
+				"remain" => $credit_leave,
+				"year" => $current_year,
+				"type_of_leave" => "casual-leave",
+				"days_off" => 0
+			);
+			$this->db->insert(db_prefix() . "timesheets_day_off", $year_insert_data);
+		}
+
+		// Reset credit_leave on the work anniversary
+		$current_date = date("Y-m-d");
+		$work_anniversary = date("Y-m-d", strtotime($joining_year . "-" . date("m-d", strtotime($staff_joining_date))));
+		
+		if ($current_date == $work_anniversary) {
+			$year_insert_data = array(
+				"staffid" => $data['staff_id'],
+				"total" => 0,
+				"remain" => 0,
+				"year" => date("Y"),
+				"type_of_leave" => "casual-leave",
+				"days_off" => 0
+			);
+			$this->db->insert(db_prefix() . "timesheets_day_off", $year_insert_data);
+		}
+
+		return $credit_leave;
+	}
+
+	
+	//  get staff joining date by using staff id
+
+	public function staff_joining_date($staff_id )
+	{
+		$custom_field_value = array();
+		$this->db->select("cv.value as staff_join_date");
+		$this->db->from(db_prefix()."customfieldsvalues as cv");
+		$this->db->join(db_prefix()."customfields as cf","cf.id = cv.fieldid and cv.fieldto='staff'","inner");
+		$this->db->where("cv.relid", $staff_id);
+		$this->db->where("cf.slug","staff_date_of_joining");
+		$custom_field_query = $this->db->get();
+		$custom_field_value = $custom_field_query->row_array();
+		
+		$staff_joining_date = '';
+
+		if(!empty($custom_field_value))
+		{
+			$staff_joining_date = $custom_field_value['staff_join_date'];
+		}
+		return $staff_joining_date;
 	}
 }

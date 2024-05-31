@@ -6309,6 +6309,12 @@ public function check_in_ts() {
 			$html .= '<br><label class="control-label" style="color:red"> Number of Eligible Leave: '. $accruval_leave;
 		}
 
+		if($type_of_leave == 'casual-leave')
+		{
+			$credit_leave = $this->casual_leave_credit($id);
+			$html .= '<br><label class="control-label" style="color:red"> Number of Eligible Casual Leave: '. $credit_leave;
+		}
+
 		$html .= '<input type="hidden" name="number_day_off" value="' . $number_day_off . '">';
 		echo json_encode([
 			'html' => $html,
@@ -7190,5 +7196,14 @@ public function check_in_ts() {
 				die();
 			}
 		}
+	}
+
+	// casual leave counting based on 80 working days of employees from joininng date and casual leave update.
+	public function casual_leave_credit($staff_id = '')
+	{
+		$data = array();
+		$data['staff_id'] = $staff_id;
+		$leave_credited = $this->timesheets_model->casual_leave_credit($data);
+		return $leave_credited;
 	}
 }

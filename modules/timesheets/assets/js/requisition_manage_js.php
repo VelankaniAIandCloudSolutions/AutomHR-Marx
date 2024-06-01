@@ -851,4 +851,36 @@
     }  
     return result;
   }
+
+ // attachment required when leave more than 2 and sick leave 
+  $("#number_of_leaving_day, select[name='type_of_leave'], #start_time, #end_time, #file").on("change", function(){
+    let days_count = $("#number_of_leaving_day").val();
+    let rel_type =  $("select[name='type_of_leave']").val(); // leave type
+    
+    $(".file_required_lable").hide();
+    console.log(days_count);
+    console.log(rel_type);
+
+    if(days_count > 2 && rel_type == 1)
+    {
+      $(".file_required_lable").show();
+      
+      let inputField = $("#file").val();
+      
+      const message = $('#message').text();
+
+      if (inputField === "") 
+      {
+        $('#message').show();
+        $('#file').addClass('error');
+        $('.btn-submit').prop('disabled', true);
+      } 
+      else 
+      {
+        $('#message').hide();
+        $('#file').removeClass('error');
+        $('.btn-submit').prop('disabled', false);
+      }
+    }
+  });
 </script>

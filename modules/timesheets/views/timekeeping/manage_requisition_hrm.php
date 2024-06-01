@@ -1,4 +1,12 @@
+<style>
+  .hidden {
+    display: none;
+}
 
+.error {
+    border: 2px solid red;
+}
+  </style>
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php init_head();
 $valid_cur_date = $this->timesheets_model->get_next_shift_date(get_staff_user_id(), date('Y-m-d'));
@@ -376,8 +384,9 @@ render_datatable($table_data,'table_registration_leave',
         </div>
       </div>
       <div class="mtop10">
-        <label for="file" class="control-label"><?php echo _l('requisition_files'); ?></label>
+        <label for="file" class="control-label"><small class="req text-danger file_required_lable" style="display:none;">* </small><?php echo _l('requisition_files'); ?></label>
         <input type="file" id="file" name="file" class="form-control" value="" >
+        <lable id="message" style="display:none;" class="text-danger">This field is required.</lable>
       </div>
     </div>
   </div>

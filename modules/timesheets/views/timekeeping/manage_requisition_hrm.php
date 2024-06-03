@@ -260,6 +260,7 @@ render_datatable($table_data,'table_registration_leave',
                       <option value="<?php echo html_entity_decode($value['slug']); ?>"><?php echo html_entity_decode($value['type_name']); ?></option>    
                     <?php } ?>              
                   </select>
+                  
                   <?php 
                   if(is_admin()){ ?>
                     <span class="input-group-addon btn add_new_type_of_leave">
@@ -267,6 +268,7 @@ render_datatable($table_data,'table_registration_leave',
                    </span> 
                  <?php } ?>
                </div>
+               <lable id="leave_type_message" class="text-danger"></lable>
              </div>
            </div>
            <div class="col-md-12 hide" id="div_according_to_the_plan">

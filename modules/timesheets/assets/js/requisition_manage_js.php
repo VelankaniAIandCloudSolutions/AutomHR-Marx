@@ -87,6 +87,8 @@
 
     $('select[name="type_of_leave"]').on('change', function() {
       get_remain_day_off();
+      let staff_id = $(this).val();
+      staff_female(staff_id);
     });
 
     $('#rel_type').on('change', function() {
@@ -362,6 +364,8 @@
 
     $('select[name="staff_id"]').change(function(){
       get_remain_day_off();
+      let staff_id = $(this).val();
+      staff_female(staff_id);
     });
 
     $('.add_new_type_of_leave').click(function(){
@@ -883,4 +887,22 @@
       }
     }
   });
+
+  function staff_female(id)
+  {
+    var leave_type = $('select[name="type_of_leave"]').val();
+    $.post(admin_url + 'timesheets/staff_gender/', { id: id })
+      .done(function(response) {
+        if(response != 1 && leave_type == 2)
+        {
+          $('#leave_type_message').text('Sorry, you are not eligible for this type of leave.');
+          $('.btn-submit').prop('disabled', true);
+        }
+        else{
+          $('#leave_type_message').text('');
+          $('.btn-submit').prop('disabled', false);
+        }
+      });
+  }
+  
 </script>

@@ -7206,4 +7206,40 @@ public function check_in_ts() {
 		$leave_credited = $this->timesheets_model->casual_leave_credit($data);
 		return $leave_credited;
 	}
+
+	// get staff gender 
+	// id is using as staffid 
+	public function staff_gender() 
+	{
+		if(isset($_POST['id']) && $_POST['id'] != "")
+		{
+			$id = $this->input->post("id");
+		}
+		else{
+			$id = get_staff_user_id();
+		}
+
+		if($id)
+		{
+			$this->load->model('staff_model');
+			$response = $this->staff_model->get($id,'active = 1');
+			if(!empty($response))
+			{
+				$gender = $response->sex;
+				if($gender === 'female')
+				{
+					echo 1; die;
+				}
+				else{
+					echo 0; die;
+				}
+			}
+			else{
+				echo 0; die;
+			}
+		}
+		else{
+			echo 0; die;
+		}
+	}
 }

@@ -5646,8 +5646,17 @@ class Hr_profile extends AdminController {
 					access_denied('staff');
 				}
 				$id = $this->hr_profile_model->add_staff($data);
-
+				
 				if ($id) {
+					// Start	: leave assign for new staff
+					$tmp_data = array();
+					$tmp_data = array(
+						"staff_id" => $id,
+						"department_id" =>$data['departments']
+					); 
+					$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+        			$this->timesheets_model->staff_leave_assign($tmp_data);
+					// End	: leave assign for new staff
 					hr_profile_handle_staff_profile_image_upload($id);
 					set_alert('success', _l('added_successfully', _l('staff_member')));
 
@@ -5670,6 +5679,17 @@ class Hr_profile extends AdminController {
 				}
 				hr_profile_handle_staff_profile_image_upload($id);
 				$response = $this->hr_profile_model->update_staff($data, $id);
+
+				// Start	: leave assign for new staff
+				$tmp_data = array();
+				$tmp_data = array(
+					"staff_id" => $id,
+					"department_id" =>$data['departments']
+				); 
+				$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+				$this->timesheets_model->staff_leave_assign($tmp_data);
+				// End	: leave assign for new staff
+				
 				if (is_array($response)) {
 					if (isset($response['cant_remove_main_admin'])) {
 						set_alert('warning', _l('staff_cant_remove_main_admin'));

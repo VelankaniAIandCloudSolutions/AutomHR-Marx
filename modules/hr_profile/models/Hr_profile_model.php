@@ -3430,6 +3430,16 @@ public function get_job_position_arrayid()
 				}
 			}
 
+			// Start	: leave assign for new staff
+				$tmp_data = array();
+				$tmp_data = array(
+					"staff_id" => $staffid,
+					"department_id" =>$departments
+				); 
+				$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+				$this->timesheets_model->staff_leave_assign($tmp_data);
+			// End	: leave assign for new staff`
+
 			// Delete all staff permission if is admin we dont need permissions stored in database (in case admin check some permissions)
             $this->update_permissions($data['admin'] == 1 ? [] : $permissions, $staffid);
 

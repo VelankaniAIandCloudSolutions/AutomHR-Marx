@@ -8447,4 +8447,10 @@ class timesheets_model extends app_model {
 		}
 		return $staff_joining_date;
 	}
+
+	public function leave_setting_department_wise()
+	{
+		$year = date("Y");
+		return $this->db->get_where(db_prefix()."leave_setting_yearly", array("year" => $year))->result_array();
+	}
 }

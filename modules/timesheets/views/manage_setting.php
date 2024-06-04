@@ -60,6 +60,9 @@
               elseif($gr == 'api_integration'){
                 echo '<i class="fa fa-book"></i> '._l('ts_api_integration'); 
               }
+              elseif($gr == 'leave_setting'){
+                echo '<i class="fa fa-map-pin"></i> Leave Setting'; 
+              }
               else{
                 echo _l($gr); 
               }

@@ -45,6 +45,7 @@ class timesheets extends AdminController {
 		$data['tab'][] = 'valid_ip';
 		$data['tab'][] = 'reset_data';
 		$data['tab'][] = 'api_integration';
+		$data['tab'][] = 'leave_setting';
 		if ($data['group'] == '') {
 			$data['group'] = 'contract_type';
 		} elseif ($data['group'] == 'manage_dayoff') {
@@ -53,6 +54,9 @@ class timesheets extends AdminController {
 			$data['overtime_setting'] = $this->timesheets_model->get_overtime_setting();
 		} elseif ($data['group'] == 'shift') {
 			$data['shift'] = $this->timesheets_model->get_shift_sc();
+		}
+		elseif ($data['group'] == 'leave_setting') {
+			$data['leave_setting_data'] = $this->timesheets_model->leave_setting_department_wise();
 		}
 		$data['tabs']['view'] = 'includes/' . $data['group'];
 		$data['month'] = $this->timesheets_model->get_month();
@@ -114,6 +118,13 @@ class timesheets extends AdminController {
 			$data_leave = $this->get_setting_valid_ip();
 			$data['max_row'] = $data_leave['max_row'];
 			$data['list_ip_data'] = $data_leave['list_ip_data'];
+		}
+		
+		if ($data['group'] == 'leave_setting') {
+			$data_leave = $this->get_setting_valid_ip();
+			$data['max_row'] = $data_leave['max_row'];
+			$data['list_ip_data'] = $data_leave['list_ip_data'];
+			$data['type_of_leave'] = $this->timesheets_model->get_type_of_leave();
 		}
 
 		$this->load->view('manage_setting', $data);
@@ -7241,5 +7252,54 @@ public function check_in_ts() {
 		else{
 			echo 0; die;
 		}
+	}
+
+	public function leave_setting_department_wise()
+	{
+		$input_data = $this->input->post();
+		
+		$year = $input_data['year'];
+		
+		if(!empty($input_data) && is_array($input_data))
+		{
+			$tmp_leaves = $input_data['leaves'];
+			foreach($tmp_leaves  as $department => $tmp_leaves_val)
+			{
+				$tmp_data = array();
+				$department_id = $department;
+				$leave_data = json_encode($tmp_leaves_val);
+				$created_at = date("Y-m-d H:i:s");
+				$updated_at = date("Y-m-d H:i:s");
+				$created_by = get_staff_user_id();
+				$updated_by = get_staff_user_id();
+
+				$tmp_data = array(
+					"department_id"	=> $department_id,
+					"leave_data"	=> $leave_data,
+					"created_at"	=> $created_at,
+					"created_by"	=> $created_by,
+					"updated_at"	=> $updated_at,
+					"updated_by"	=> $updated_by,
+					"year"			=> $year,
+				);
+
+				$check_data_exist = $this->db->where("year", $year)->where("department_id", $department_id)->get(db_prefix().'leave_setting_yearly')->row();
+				
+				if($check_data_exist > 0)
+				{
+					$this->db->where("department_id", $department_id);
+					$this->db->where("year", $year);
+					unset($tmp_data['created_at']);
+					unset($tmp_data['created_by']);
+					$this->db->update(db_prefix()."leave_setting_yearly", $tmp_data);
+				}
+				else
+				{
+					$this->db->insert(db_prefix()."leave_setting_yearly", $tmp_data);
+				}
+			}
+			set_alert('success', 'Leave Update Successfully');
+		}
+		redirect(admin_url('timesheets/setting?group=leave_setting'));
 	}
 }

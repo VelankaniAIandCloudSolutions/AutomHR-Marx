@@ -886,6 +886,10 @@
         $('.btn-submit').prop('disabled', false);
       }
     }
+    else{
+      $(".file_required_lable").hide();
+      $('#message').hide();
+    }
   });
 
   function staff_female(id)

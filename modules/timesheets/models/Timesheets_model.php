@@ -8746,4 +8746,34 @@ class timesheets_model extends app_model
 			echo json_encode($output);
 		}
 	}
+
+	//  Staff leave reset by using cron job
+	public function reset_staff_leave()
+	{
+		$result = array();
+
+		$this->db->select("dayoff.*");
+		$this->db->from(db_prefix()."timesheets_day_off as dayoff");
+		$this->db->join(db_prefix()."staff as staff", "staff.staffid = dayoff.staffid","inner");
+		$this->db->where("staff.status_work","working");
+		$result = $this->db->get()->result_array();
+		if(!empty($result))
+		{
+			foreach($result as $result_val)
+			{
+				$insert_data = array();
+				$insert_data = array(
+					"staffid"		=>	$result_val['staffid'],
+					"year"			=>	date("Y"),
+					"total"			=>	$result_val['total'],
+					"remain"		=>	$result_val['total'],
+					"accumulated"	=>	$result_val['accumulated'],
+					"days_off"		=>	0,
+					"type_of_leave"	=>	$result_val['type_of_leave'],
+				);
+
+				$this->db->insert(db_prefix()."timesheets_day_off", $insert_data);
+			}
+		}
+	}
 }

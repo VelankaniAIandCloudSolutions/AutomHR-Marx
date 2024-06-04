@@ -125,4 +125,15 @@ class Cron extends App_Controller
             echo "no data found";
         }
     }
+
+    // rest staff leave every year
+
+    public function reset_staff_leave()
+    {
+        ini_set("memory_limit", "-1");
+        set_time_limit(0);
+        $this->load->model("timesheets/timesheets_model","timesheets_model");
+        $this->timesheets_model->reset_staff_leave();
+        echo "Staff Reset Executed Successfully";
+    }
 }

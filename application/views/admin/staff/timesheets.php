@@ -149,6 +149,11 @@
                             <input type="checkbox" name="day_display" id="day_display" title="Does the day column need to be displayed?">
                         </div>
 
+                        <div class="col-md-3">
+                        <label>Does the hour column need to be displayed?</label>
+                            <input type="checkbox" checked name="hour_display" id="hour_display" title="Does the hour column need to be displayed?">
+                        </div>
+
                          <hr>
                         <div class="clearfix"></div>
 
@@ -501,6 +506,7 @@ $("#submit_for_approval").on("click", function(){
     var consultant_name = $("#consultant_name").val();
     var line_manager = $("#line_manager").val();
     var day_display = $('#day_display').is(':checked') ? 1 : 0;
+    var hour_display = $('#hour_display').is(':checked') ? 1 : 0;
     
     $('#loader').show();
 
@@ -508,7 +514,7 @@ $("#submit_for_approval").on("click", function(){
         type: "POST",
         url: "<?php echo base_url('admin/staff/time_sheet_approval');?>",
         data: {timesheet_staff_id:timesheet_staff_id, range:range, period_from:period_from, period_to:period_to, project_id:project_id, clientid:clientid, reporting_manager_id:reporting_manager_id,
-            contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name, line_manager:line_manager, day_display:day_display},
+            contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name, line_manager:line_manager, day_display:day_display, hour_display:hour_display},
         success: function(response) {
             $('#loader').hide();
             location.reload();
@@ -648,6 +654,7 @@ $("#export_timesheet").on("click", function(){
 
     var line_manager = $("#line_manager").val();
     var day_display = $('#day_display').is(':checked') ? 1 : 0;
+    var hour_display = $('#hour_display').is(':checked') ? 1 : 0;
     
     $('#loader').show();
 
@@ -655,7 +662,7 @@ $("#export_timesheet").on("click", function(){
     $.ajax({
         type: "POST",
         url: "<?php echo base_url('admin/staff/timesheet_export');?>",
-        data: {timesheet_staff_id:timesheet_staff_id, range:range, period_from:period_from, period_to:period_to, project_id:project_id, clientid:clientid, reporting_manager_id:reporting_manager_id , contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name,line_manager:line_manager, day_display:day_display,export:'export' },
+        data: {timesheet_staff_id:timesheet_staff_id, range:range, period_from:period_from, period_to:period_to, project_id:project_id, clientid:clientid, reporting_manager_id:reporting_manager_id , contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name,line_manager:line_manager, day_display:day_display,hour_display:hour_display,export:'export' },
         success: function(response) {
             console.log(response);
             

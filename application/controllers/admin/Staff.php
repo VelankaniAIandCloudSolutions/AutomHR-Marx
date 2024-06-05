@@ -619,6 +619,7 @@ class Staff extends AdminController
                     "consultant_name"       => $this->input->post("consultant_name"),
                     "line_manager"          => $this->input->post("line_manager"),
                     "day_display"           => $this->input->post("day_display"),
+                    "hour_display"           => $this->input->post("hour_display"),
                     "created_at"            => date("Y-m-d H:i:s"),
                     "modified_at"            => date("Y-m-d H:i:s"),
                 );
@@ -963,6 +964,7 @@ class Staff extends AdminController
            $post_data['consultant_name'] = $data['consultant_name'];
            $post_data['line_manager'] = $data['line_manager'];
            $post_data['day_display'] = $data['day_display'];
+           $post_data['hour_display'] = $data['hour_display'];
         }
         else
         {
@@ -990,7 +992,7 @@ class Staff extends AdminController
         $this->db->select("taskstimer.*, tasks.name as task_name, tasks.description as task_description,
             staff.firstname as staff_first_name, staff.lastname as staff_last_name,
              reporting_manager.firstname as manager_first_name, reporting_manager.lastname as manager_last_name,
-             tsa.day_display, tsa.line_manager, tsa.consultant_name , tsa.supplier_name, tsa.contractor_id,
+             tsa.day_display,tsa.hour_display, tsa.line_manager, tsa.consultant_name , tsa.supplier_name, tsa.contractor_id,
              projects.name as project_name,
              projects.clientid as clientid,
              staff.job_position as position,
@@ -1187,13 +1189,17 @@ class Staff extends AdminController
 
             $csvContent = array();
 
-            $is_display_day_column = 0;
+            $is_display_day_column = $is_display_hour_column = 0;
             if(isset($post_data['day_display']) && $post_data['day_display'] == '1')
             {
                 $is_display_day_column = 1;
             }
+            if(isset($post_data['hour_display']) && $post_data['hour_display'] == '1')
+            {
+                $is_display_hour_column = 1;
+            }
             
-            $csvContent = $this->timesheet_export_json($tmp_timesheet_task_records, $imagePath, $project_name, $contractor_id, $supplier_name, $consultant_name, $period_from, $address, $line_manager_name, $line_manager_type, $is_display_day_column, $department, $position, $timesheet_staff_id);
+            $csvContent = $this->timesheet_export_json($tmp_timesheet_task_records, $imagePath, $project_name, $contractor_id, $supplier_name, $consultant_name, $period_from, $address, $line_manager_name, $line_manager_type, $is_display_day_column, $department, $position, $timesheet_staff_id, $is_display_hour_column);
 
             $curl = curl_init();
             
@@ -1282,7 +1288,7 @@ class Staff extends AdminController
         return array($totalHours, $remainingMinutes);
     }
 
-    function timesheet_export_json($dynamicData = array(), $imgePath='', $project_name = '', $contractor_id = '', $supplier_name = '', $consultant_name = '', $period_from = '', $address = '', $line_manager_name = '', $line_manager_type = '', $is_display_day_column = '', $department = '', $position = '', $staff_id = '')
+    function timesheet_export_json($dynamicData = array(), $imgePath='', $project_name = '', $contractor_id = '', $supplier_name = '', $consultant_name = '', $period_from = '', $address = '', $line_manager_name = '', $line_manager_type = '', $is_display_day_column = '', $department = '', $position = '', $staff_id = '', $is_display_hour_column = '')
     {
 
         $output= array();
@@ -1357,12 +1363,16 @@ class Staff extends AdminController
             $output['total_hours'] = $total_hours[0].":". $total_hours[1];
 
             $output['total_days_worked'] = 0;
+            $output['hours_display'] = 0;
             
             if($is_display_day_column == '1')
             {
                 $output['total_days_worked'] = $total_worked_days; 
             }
-            
+            if($is_display_hour_column == '1')
+            {
+                $output['hours_display'] = $is_display_hour_column; 
+            }
 
             $year = date("Y", strtotime($period_from));
             $month = date("m", strtotime($period_from));

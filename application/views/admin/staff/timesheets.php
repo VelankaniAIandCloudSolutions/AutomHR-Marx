@@ -59,7 +59,7 @@
                     <div class="panel-body">
                         <div class="col-md-3">
                         <label><?php echo _l('reporting_to');?></label>
-                            <select name="reporting_manager_id" data-live-search="true" data-width="100%" id="reporting_manager_id" class="selectpicker" data-width="100%" disabled>
+                            <select name="reporting_manager_id" data-live-search="true" data-width="100%" id="reporting_manager_id" class="selectpicker" data-width="100%">
                                 <option value=''> <?php echo _l('reporting_to');?></option>
                                 <?php foreach ($reproting_to as $reproting_to_manager) {
                                 ?>
@@ -117,11 +117,12 @@
                         <hr>
                         <div class="clearfix"></div>
 
-                        <div class="col-md-3">
+                        <!-- <div class="col-md-3">
                         <label>Consultant Name</label>
-                            <input class='form-control' type="text" name="consultant_name" id="consultant_name" placeholder="Enter Consultant Name">
-                        </div>
-
+                            <input class='form-control' type="hidden" name="consultant_name" id="consultant_name" value="<?php echo get_staff_full_name(get_staff_user_id()); ?>" placeholder="Enter Consultant Name" disabled>
+                        </div> -->
+                        <input class='form-control' type="hidden" name="consultant_name" id="consultant_name" value="<?php echo get_staff_full_name(get_staff_user_id()); ?>" placeholder="Enter Consultant Name" disabled>
+                        
                         <?php if (isset($view_all)) { ?>
                         <div class="col-md-3">
                         <label><?php echo 'Select Staff Member';?></label>
@@ -732,6 +733,8 @@ function response_file_download(fileUrl, file_type = '')
             }
         });
     });
+
+
 </script>
 
 </body>

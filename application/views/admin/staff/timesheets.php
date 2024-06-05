@@ -106,7 +106,7 @@
 
                          <div class="col-md-3">
                         <label>Contractor ID</label>
-                            <input class='form-control' type="text" name="contractor_id" id="contractor_id" placeholder="Enter Contractor ID">
+                            <input class='form-control' type="text" name="contractor_id" id="contractor_id" placeholder="Enter Contractor ID" disabled>
                         </div>
 
                         <div class="col-md-3">
@@ -138,10 +138,11 @@
                         </div>
                         <?php } ?>
 
-                         <div class="col-md-3">
+                         <!-- <div class="col-md-3">
                         <label>Line Manager/ Lead Architect/ Approver Name</label>
                             <input class='form-control' type="text" name="line_manager" id="line_manager" placeholder="Enter Line Manager/ Lead Architect/ Approver Name">
-                        </div>
+                        </div> -->
+                        <input class='form-control' type="hidden" name="line_manager" id="line_manager" placeholder="Enter Line Manager/ Lead Architect/ Approver Name">
 
                         <div class="col-md-3">
                         <label>Does the day column need to be displayed?</label>
@@ -734,7 +735,51 @@ function response_file_download(fileUrl, file_type = '')
         });
     });
 
+    //  Line Manager/ Lead Architect/ Approver Name on reporting_manager_id change 
+    $(document).ready(function(){
+        function updateManagerInfo() {
+            let reporting_manager_id = $("#reporting_manager_id").val();
+            let manager_name = '';
 
+            if(reporting_manager_id) {
+                manager_name = '<?php echo get_staff_full_name("68"); ?>';
+                if(manager_name != "")
+                {
+                    $("#line_manager").val(manager_name);
+                }
+            }
+        }
+
+        // Call the function on page load
+        updateManagerInfo();
+
+        // Call the function on change event
+        $("#reporting_manager_id").on("change", function(){
+            updateManagerInfo();
+        });
+    });
+
+
+
+// Project contract id fetch by using project id
+
+$("#timesheet_project_id").on("change", function(){
+        let project_id = $(this).val();
+            $.ajax({
+            type: "POST",
+            url: "<?php echo base_url('admin/staff/contract_id_by_project_id');?>",
+            data: {project_id:project_id},
+            success: function(response) {
+                if(response !== 'No Project Selected')
+                {
+                    $("#contractor_id").val(response);
+                }
+                else{
+                    $("#contractor_id").val('');
+                }
+            }
+        });
+    });
 </script>
 
 </body>

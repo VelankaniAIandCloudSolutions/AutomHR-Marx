@@ -1486,5 +1486,35 @@ class Staff extends AdminController
             echo"No custome selected"; exit;
         }
     }
+
+    //  Project contract id fetch by using project id
+    public function contract_id_by_project_id()
+    {
+        $project_id = $this->input->post("project_id");
+        if(!empty($project_id))
+        {
+            $custom_fields = array();
+            $this->db->select("custom_value.value as customer_supplier_number");
+            $this->db->from(db_prefix() . "customfieldsvalues as custom_value");
+            $this->db->join(db_prefix() . "customfields as customfields","customfields.id = custom_value.fieldid","inner");
+            $this->db->where("customfields.slug","projects_contract_id");
+            $this->db->where("custom_value.fieldto","projects");
+            $this->db->where_in("custom_value.relid",$project_id);
+            $query = $this->db->get();
+            $custom_fields = $query->result_array();
+            $project_contract_number = '';
+            if(!empty($custom_fields))
+            {
+                foreach($custom_fields as $custom_fields_val)
+                {
+                    $project_contract_number .= $custom_fields_val['customer_supplier_number'];
+                }
+            }
+            echo $project_contract_number; exit;
+        }
+        else{
+            echo"No Project selected"; exit;
+        }
+    }
     
 }

@@ -111,7 +111,7 @@
 
                         <div class="col-md-3">
                         <label>Supplier Number</label>
-                            <input class='form-control' type="text" name="supplier_name" id="supplier_name" placeholder="Enter Supplier Number">
+                            <input class='form-control' type="text" name="supplier_name" id="supplier_name" placeholder="Enter Supplier Number" disabled>
                         </div>
 
                         <hr>
@@ -713,7 +713,27 @@ function response_file_download(fileUrl, file_type = '')
     document.body.removeChild(link);
  }
 
+//  customer supplier number fetch based on customer id 
+
+    $("#clientid").on("change", function(){
+        let customer_id = $(this).val();
+            $.ajax({
+            type: "POST",
+            url: "<?php echo base_url('admin/staff/customer_supplier_number');?>",
+            data: {customer_id:customer_id},
+            success: function(response) {
+                if(response !== 'No custome selected')
+                {
+                    $("#supplier_name").val(response);
+                }
+                else{
+                    $("#supplier_name").val('');
+                }
+            }
+        });
+    });
 </script>
+
 </body>
 
 </html>

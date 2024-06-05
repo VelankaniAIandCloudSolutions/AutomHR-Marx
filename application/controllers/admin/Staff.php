@@ -1457,5 +1457,34 @@ class Staff extends AdminController
 
         return json_encode($output);
     }
+
+    public function customer_supplier_number()
+    {
+        $customer_id = $this->input->post("customer_id");
+        if(!empty($customer_id))
+        {
+            $custom_fields = array();
+            $this->db->select("custom_value.value as customer_supplier_number");
+            $this->db->from(db_prefix() . "customfieldsvalues as custom_value");
+            $this->db->join(db_prefix() . "customfields as customfields","customfields.id = custom_value.fieldid","inner");
+            $this->db->where("customfields.slug","customers_supplier_number");
+            $this->db->where("custom_value.fieldto","customers");
+            $this->db->where_in("custom_value.relid",$customer_id);
+            $query = $this->db->get();
+            $custom_fields = $query->result_array();
+            $customer_supplier_number = '';
+            if(!empty($custom_fields))
+            {
+                foreach($custom_fields as $custom_fields_val)
+                {
+                    $customer_supplier_number .= $custom_fields_val['customer_supplier_number'];
+                }
+            }
+            echo $customer_supplier_number; exit;
+        }
+        else{
+            echo"No custome selected"; exit;
+        }
+    }
     
 }

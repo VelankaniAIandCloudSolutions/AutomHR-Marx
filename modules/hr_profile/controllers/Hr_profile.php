@@ -5686,8 +5686,9 @@ class Hr_profile extends AdminController {
 					"staff_id" => $id,
 					"department_id" =>$data['departments']
 				); 
-				$this->load->model('timesheets/timesheets_model', 'timesheets_model');
-				$this->timesheets_model->staff_leave_assign($tmp_data);
+
+				// $this->load->model('timesheets/timesheets_model', 'timesheets_model');
+				// $this->timesheets_model->staff_leave_assign($tmp_data);
 				// End	: leave assign for new staff
 				
 				if (is_array($response)) {
@@ -5702,13 +5703,13 @@ class Hr_profile extends AdminController {
 
 				//  Razorpay API integration for Update Employee in Razorpay
 
-		        $this->load->model("Razorpay_payroll","razorpay_payroll");
+		        // $this->load->model("Razorpay_payroll","razorpay_payroll");
 
 		        // check employee exist on razorpay
 		        
-		        $exist_check = 0;
+		        // $exist_check = 0;
 
-		        $exist_check = $this->razorpay_payroll->check_employee_exits($id); 
+		        // $exist_check = $this->razorpay_payroll->check_employee_exits($id); 
 
 		        // if check exist value return 1 it means employee profile already available in razorpay else create a new profile.
 		        

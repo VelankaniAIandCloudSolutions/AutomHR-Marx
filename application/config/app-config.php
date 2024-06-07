@@ -42,22 +42,24 @@ define('APP_ENC_KEY', '7e8bdb5dc422154675ce075ac715a614');
  * Database Credentials
  * The hostname of your database server
  */
-define('APP_DB_HOSTNAME', 'localhost');
+// define('APP_DB_HOSTNAME', 'localhost');
+define('APP_DB_HOSTNAME','192.168.10.200');
+// define('APP_DB_HOSTNAME','65.2.141.37');
 
 /**
  * The username used to connect to the database
  */
-define('APP_DB_USERNAME', 'root');
+define('APP_DB_USERNAME', 'ubuntu');
 /**
  * The password used to connect to the database
  */
-// define('APP_DB_PASSWORD', 'Velankanidb@2123');
-define('APP_DB_PASSWORD', '');
+define('APP_DB_PASSWORD', 'Velankanidb@2123');
+// define('APP_DB_PASSWORD', '');
 /**
  * The name of the database you want to connect to
  */
-// define('APP_DB_NAME', 'velankanidb_crm');
-define('APP_DB_NAME', 'marx_db');
+define('APP_DB_NAME', 'marx_db_development');
+// define('APP_DB_NAME', 'velankanidb_crm_development');
 
 /**
  * @since  2.3.0

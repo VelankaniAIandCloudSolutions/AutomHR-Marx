@@ -1108,35 +1108,31 @@ class Staff extends AdminController
             $department = $position = '';
             
             $project_name = $timesheet_task_records[0]['project_name'];
+
+            $line_manager_name = '';
+
             if($export === 'export')
             {
                 $contractor_id = $post_data['contractor_id'];
                 $supplier_name = $post_data['supplier_name'];
                 $consultant_name = $post_data['consultant_name'];
+                $line_manager_name = get_staff_full_name($post_data['reporting_manager_id']);
             }
             else{
                 $contractor_id = $timesheet_task_records[0]['contractor_id'];
                 $supplier_name = $timesheet_task_records[0]['supplier_name'];
                 $consultant_name = $timesheet_task_records[0]['consultant_name'];
+                $line_manager_name = $timesheet_task_records[0]['line_manager'];
             }
             
             $department = $timesheet_task_records[0]['departmentid'];
             $position = $timesheet_task_records[0]['position'];
-
-            $line_manager_name = '';
-            
-            if(isset($timesheet_task_records[0]['line_manager']) && $timesheet_task_records[0]['line_manager'] != "")
-            {
-                 $line_manager_name = $timesheet_task_records[0]['line_manager'];
-            }
-           
             
             $address ='';
             $line_manager_type ='';
             
             foreach($timesheet_task_records as $timesheet_task_records_val)
             {
-
                 $this->db->select("customfields.id as customfield_id,
                  customfields.slug as customfields_slug,
                  customfields.options as customfields_options,

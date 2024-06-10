@@ -950,6 +950,10 @@ class Staff extends AdminController
 
     public function timesheet_export($file_type = '', $data = array())
     {   
+        $query = "SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))";
+        $this->db->query($query);
+
+
         if(!empty($data))
         {
            $post_data['timesheet_staff_id'] = $data['staff_id'];

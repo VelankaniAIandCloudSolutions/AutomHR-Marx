@@ -9,6 +9,8 @@ class timesheets_model extends app_model
 	public function __construct()
 	{
 		parent::__construct();
+		$this->load->helper('timesheets');
+
 	}
 
 	/**

@@ -67,6 +67,12 @@
                                 <?php echo get_staff_full_name($reproting_to_manager['reporting_to_id']); ?>
                                 </option>
                                 <?php } ?>
+
+                                <?php foreach ($staff_members_with_timesheets as $staff) { ?>
+                                <option value="<?php echo $staff['staff_id']; ?>">
+                                    <?php echo get_staff_full_name($staff['staff_id']); ?></option>
+                                <?php } ?>
+                                
                             </select>
                         </div>
                         <div class="col-md-3">

@@ -953,7 +953,7 @@ class Staff extends AdminController
         $query = "SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))";
         $this->db->query($query);
 
-
+       
         if(!empty($data))
         {
            $post_data['timesheet_staff_id'] = $data['staff_id'];
@@ -973,6 +973,7 @@ class Staff extends AdminController
         else
         {
             $post_data = $this->input->post();
+            $export = '';
             $export = $post_data['export'];
         }
 
@@ -992,15 +993,20 @@ class Staff extends AdminController
              $project_id             = $post_data['timesheet_project_id'] ? $post_data['timesheet_project_id'] : '';
         }
        
+        $select = '';
+
+        if($export != 'export')
+        {
+            $select = ' ,tsa.day_display,tsa.hour_display, tsa.line_manager, tsa.consultant_name , tsa.supplier_name, tsa.contractor_id';
+        }
 
         $this->db->select("taskstimer.*, tasks.name as task_name, tasks.description as task_description,
             staff.firstname as staff_first_name, staff.lastname as staff_last_name,
              reporting_manager.firstname as manager_first_name, reporting_manager.lastname as manager_last_name,
-             tsa.day_display,tsa.hour_display, tsa.line_manager, tsa.consultant_name , tsa.supplier_name, tsa.contractor_id,
              projects.name as project_name,
              projects.clientid as clientid,
              staff.job_position as position,
-             sd.departmentid as departmentid
+             sd.departmentid as departmentid $select
             ");
 
         $this->db->from(db_prefix()."taskstimers as taskstimer");
@@ -1009,8 +1015,12 @@ class Staff extends AdminController
         $this->db->join(db_prefix()."staff as staff","staff.staffid = taskstimer.staff_id","left");
         $this->db->join(db_prefix()."staff as reporting_manager","reporting_manager.staffid = staff.team_manage","left");
 
-        $this->db->join(db_prefix()."time_sheet_approval as tsa","tsa.staff_id = taskstimer.staff_id","left");
-         $this->db->join(db_prefix()."staff_departments as sd","sd.staffid = staff.staffid","left");
+        if($export == 'export')
+        {
+            $this->db->join(db_prefix()."time_sheet_approval as tsa","tsa.staff_id = taskstimer.staff_id","left");
+        }
+
+        $this->db->join(db_prefix()."staff_departments as sd","sd.staffid = staff.staffid","left");
 
         if($timesheet_staff_id != "")
         {
@@ -1081,8 +1091,15 @@ class Staff extends AdminController
 
         if(!empty($timesheet_task_records))
         {
-
+           if($_SERVER['HTTP_HOST'] === 'localhost')
+           {
+            $imagePath = MARX_LOGO_PATH;
+           }
+           else{
             $imagePath = base_url('assets/images/marx-logo.png');
+           }
+
+            
             $columnHeaders = ["Days","Date", "Tasks", "Hours"];
             $day = 0;
 
@@ -1091,9 +1108,17 @@ class Staff extends AdminController
             $department = $position = '';
             
             $project_name = $timesheet_task_records[0]['project_name'];
-            $contractor_id = $timesheet_task_records[0]['contractor_id'];
-            $supplier_name = $timesheet_task_records[0]['supplier_name'];
-            $consultant_name = $timesheet_task_records[0]['consultant_name'];
+            if($export === 'export')
+            {
+                $contractor_id = $post_data['contractor_id'];
+                $supplier_name = $post_data['supplier_name'];
+                $consultant_name = $post_data['consultant_name'];
+            }
+            else{
+                $contractor_id = $timesheet_task_records[0]['contractor_id'];
+                $supplier_name = $timesheet_task_records[0]['supplier_name'];
+                $consultant_name = $timesheet_task_records[0]['consultant_name'];
+            }
             
             $department = $timesheet_task_records[0]['departmentid'];
             $position = $timesheet_task_records[0]['position'];
@@ -1190,10 +1215,10 @@ class Staff extends AdminController
 
             }
 
-
             $csvContent = array();
-
+           
             $is_display_day_column = $is_display_hour_column = 0;
+            
             if(isset($post_data['day_display']) && $post_data['day_display'] == '1')
             {
                 $is_display_day_column = 1;
@@ -1215,7 +1240,9 @@ class Staff extends AdminController
             {
                 $this->api = TIMESHEET_EXCEL_EXPORT;
             }
+
             // echo __LINE__; print_r($csvContent); die;
+            
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $this->api,
                 CURLOPT_RETURNTRANSFER => true,
@@ -1367,15 +1394,17 @@ class Staff extends AdminController
             $output['total_hours'] = $total_hours[0].":". $total_hours[1];
 
             $output['total_days_worked'] = 0;
-            $output['hours_display'] = 0;
+            $output['hour_display'] = 0;
+            $output['day_display'] = 0;
             
             if($is_display_day_column == '1')
             {
                 $output['total_days_worked'] = $total_worked_days; 
+                $output['day_display'] = $is_display_day_column; 
             }
             if($is_display_hour_column == '1')
             {
-                $output['hours_display'] = $is_display_hour_column; 
+                $output['hour_display'] = $is_display_hour_column; 
             }
 
             $year = date("Y", strtotime($period_from));
@@ -1466,9 +1495,10 @@ class Staff extends AdminController
 
             $working_days = round($total_minutes / ($daily_work_hours * 60), 2);
             $output['total_hours'] = round($decimalMinutes, 2);
-        }
-        // print_r($output); die;
 
+            $output['total_working_days'] = $working_days;
+        }
+        
         return json_encode($output);
     }
 

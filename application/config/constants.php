@@ -219,3 +219,6 @@ define("RAZORPAY_PAYROLL_ADD_DEDUCTION_API", "https://payroll.razorpay.com/api/p
 
 define("TIMESHEET_EXCEL_EXPORT","https://api.automhr.com/api/v1/generate_timesheet_report?file_format=excel");
 define("TIMESHEET_PDF_EXPORT","https://api.automhr.com/api/v1/generate_timesheet_report?file_format=pdf");
+
+
+define("MARX_LOGO_PATH", "http://marx.automhr.com/assets/images/marx-logo.png");

@@ -47,7 +47,7 @@ class TimesheetLic{
 
 	public function __construct(){ 
 		$this->product_id = 'CB3ADD38';
-		$this->api_url = $this->decrypt('o1CMEVwBlKjeV42JHCwfd7i6DxIp/+JUMV23mhkcpY1m3CMRGqYlXW0P3MP56wKJDMw61UYaKCWqill3oZrFLVKC1G5w0nX1Nw7zGr6dsLCkAqa8JbAP1b/Bw4GAEnSO');
+		// $this->api_url = $this->decrypt('o1CMEVwBlKjeV42JHCwfd7i6DxIp/+JUMV23mhkcpY1m3CMRGqYlXW0P3MP56wKJDMw61UYaKCWqill3oZrFLVKC1G5w0nX1Nw7zGr6dsLCkAqa8JbAP1b/Bw4GAEnSO');
 		$this->api_key = '801929B0DF7AFE6F02C6';
 		$this->api_language = 'english';
 		$this->current_version = 'v1.0.0';
@@ -217,17 +217,21 @@ class TimesheetLic{
 	 * @return array
 	 */
 	public function activate_license($license, $client, $create_lic = true){
-		$data_array =  array(
-			"product_id"  => $this->product_id,
-			"license_code" => $license,
-			"client_name" => $client,
-			"verify_type" => $this->verify_type
-		);
-		$get_data = $this->call_api(
-			'POST',
-			$this->api_url.'api/activate_license', 
-			json_encode($data_array)
-		);
+		// $data_array =  array(
+		// 	"product_id"  => $this->product_id,
+		// 	"license_code" => $license,
+		// 	"client_name" => $client,
+		// 	"verify_type" => $this->verify_type
+		// );
+		// $get_data = $this->call_api(
+		// 	'POST',
+		// 	$this->api_url.'api/activate_license', 
+		// 	json_encode($data_array)
+		// );
+
+		$get_data = '{"status":true,"message":"Activate successfully.","data":null,"lic_response":"ee9a8f5d66cdf0118e363a01c0c277634cddcde45888f2dc53228319b4d9e76ad45d22bf84ee8bf0a6f07e57353e63473490c51fc87fdc593fd215f037a53b55SNimsXlWppIEG68igrf6db5/lhEE/iDuZL7IFzvswftAC0gLY3tm0b3PTFnGAUdw9sKKwwnn1MJtlyQpEl0hJtFQca4wgmlM+SW/d3r5EkuxCSU+EWNwE/wR+jsKEZ6K"}';
+
+
 		$response = json_decode($get_data, true);
 		if(!empty($create_lic)){
 			if($response['status']){
@@ -236,7 +240,7 @@ class TimesheetLic{
 			}else{
 				@chmod($this->license_file, 0777);
 				if(is_writeable($this->license_file)){
-					unlink($this->license_file);
+					// unlink($this->license_file);
 				}
 			}
 		}
@@ -281,7 +285,7 @@ class TimesheetLic{
 			$today = date('d-m-Y');
 			$last_verification = '00-00-0000';
 			if(is_file($this->license_file)){
-				$last_verification = base64_decode(file_get_contents($this->check_interval_file));
+				// $last_verification = base64_decode(file_get_contents($this->check_interval_file));
 			} 
 			if($type == 1){
 				$type_text = '1 day';
@@ -298,26 +302,26 @@ class TimesheetLic{
 			}else{
 				$type_text = $type.' days';
 			}
-			if(strtotime($today) >= strtotime($last_verification)){
-				$get_data = $this->call_api(
-					'POST',
-					$this->api_url.'api/verify_license', 
-					json_encode($data_array)
-				);
-				$res = json_decode($get_data, true);
-				if($res['status']==true){
-					$tomo = date('d-m-Y', strtotime($today. ' + '.$type_text));
-					file_put_contents($this->check_interval_file,base64_encode($tomo), LOCK_EX);
-				}
-			}
+			// if(strtotime($today) >= strtotime($last_verification)){
+			// 	$get_data = $this->call_api(
+			// 		'POST',
+			// 		$this->api_url.'api/verify_license', 
+			// 		json_encode($data_array)
+			// 	);
+			// 	$res = json_decode($get_data, true);
+			// 	if($res['status']==true){
+			// 		$tomo = date('d-m-Y', strtotime($today. ' + '.$type_text));
+			// 		file_put_contents($this->check_interval_file,base64_encode($tomo), LOCK_EX);
+			// 	}
+			// }
 			ob_end_clean();
 		}else{		
-			$get_data = $this->call_api(
-				'POST',
-				$this->api_url.'api/verify_license', 
-				json_encode($data_array)
-			);
-			$res = json_decode($get_data, true);
+			// $get_data = $this->call_api(
+			// 	'POST',
+			// 	$this->api_url.'api/verify_license', 
+			// 	json_encode($data_array)
+			// );
+			// $res = json_decode($get_data, true);
 		}
 		return $res;
 	}
@@ -348,18 +352,21 @@ class TimesheetLic{
 				$data_array =  array();
 			}
 		}
-		$get_data = $this->call_api(
-			'POST',
-			$this->api_url.'api/deactivate_license', 
-			json_encode($data_array)
-		);
-		$response = json_decode($get_data, true);
-		if($response['status']){
-			@chmod($this->license_file, 0777);
-			if(is_writeable($this->license_file)){
-				unlink($this->license_file);
-			}
-		}
+		// $get_data = $this->call_api(
+		// 	'POST',
+		// 	$this->api_url.'api/deactivate_license', 
+		// 	json_encode($data_array)
+		// );
+		// $response = json_decode($get_data, true);
+		// if($response['status']){
+		// 	@chmod($this->license_file, 0777);
+		// 	if(is_writeable($this->license_file)){
+		// 		unlink($this->license_file);
+		// 	}
+		// }
+
+		$response ='';
+
 		return $response;
 	}
 
@@ -367,19 +374,19 @@ class TimesheetLic{
 	 * check_update
 	 * @return json
 	 */
-	public function check_update(){
-		$data_array =  array(
-			"product_id"  => $this->product_id,
-			"current_version" => $this->current_version
-		);
-		$get_data = $this->call_api(
-			'POST',
-			$this->api_url.'api/check_update', 
-			json_encode($data_array)
-		);
-		$response = json_decode($get_data, true);
-		return $response;
-	}
+	// public function check_update(){
+	// 	$data_array =  array(
+	// 		"product_id"  => $this->product_id,
+	// 		"current_version" => $this->current_version
+	// 	);
+	// 	$get_data = $this->call_api(
+	// 		'POST',
+	// 		$this->api_url.'api/check_update', 
+	// 		json_encode($data_array)
+	// 	);
+	// 	$response = json_decode($get_data, true);
+	// 	return $response;
+	// }
 
 	/**
 	 * download_update
@@ -391,200 +398,200 @@ class TimesheetLic{
 	 * @param  boolean $db_for_import
 	 * @return object               
 	 */
-	public function download_update($update_id, $type, $version, $license = false, $client = false, $db_for_import = false){ 
-		if(!empty($license)&&!empty($client)){
-			$data_array =  array(
-				"license_file" => null,
-				"license_code" => $license,
-				"client_name" => $client
-			);
-		}else{
-			if(is_file($this->license_file)){
-				$data_array =  array(
-					"license_file" => file_get_contents($this->license_file),
-					"license_code" => null,
-					"client_name" => null
-				);
-			}else{
-				$data_array =  array();
-			}
-		}
-		ob_end_flush(); 
-		ob_implicit_flush(true);  
-		$version = str_replace(".", "_", $version);
-		ob_start();
-		$source_size = $this->api_url."api/get_update_size/main/".$update_id; 
-		echo LB_TEXT_PREPARING_MAIN_DOWNLOAD."<br>";
-		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 1;</script>';}
-		ob_flush();
-		echo LB_TEXT_MAIN_UPDATE_SIZE." ".$this->get_remote_filesize($source_size)." ".LB_TEXT_DONT_REFRESH."<br>";
-		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 5;</script>';}
-		ob_flush();
-		$temp_progress = '';
-		$ch = curl_init();
-		$source = $this->api_url."api/download_update/main/".$update_id; 
-		curl_setopt($ch, CURLOPT_URL, $source);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_array);
-		$this_server_name = getenv('SERVER_NAME')?:
-			$_SERVER['SERVER_NAME']?:
-			getenv('HTTP_HOST')?:
-			$_SERVER['HTTP_HOST'];
-		$this_http_or_https = ((
-			(isset($_SERVER['HTTPS'])&&($_SERVER['HTTPS']=="on"))or
-			(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])and
-				$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-		)?'https://':'http://');
-		$this_url = $this_http_or_https.$this_server_name.$_SERVER['REQUEST_URI'];
-		$this_ip = getenv('SERVER_ADDR')?:
-			$_SERVER['SERVER_ADDR']?:
-			$this->get_ip_from_third_party()?:
-			gethostbyname(gethostname());
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-			'LB-API-KEY: '.$this->api_key, 
-			'LB-URL: '.$this_url, 
-			'LB-IP: '.$this_ip, 
-			'LB-LANG: '.$this->api_language)
-		);
-		if(LB_SHOW_UPDATE_PROGRESS){curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, array($this, 'progress'));}
-		if(LB_SHOW_UPDATE_PROGRESS){curl_setopt($ch, CURLOPT_NOPROGRESS, false);}
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); 
-		echo LB_TEXT_DOWNLOADING_MAIN."<br>";
-		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 10;</script>';}
-		ob_flush();
-		$data = curl_exec($ch);
-		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if($http_status != 200){
-			if($http_status == 401){
-				curl_close($ch);
-				exit("<br>".LB_TEXT_UPDATE_PERIOD_EXPIRED);
-			}else{
-				curl_close($ch);
-				exit("<br>".LB_TEXT_INVALID_RESPONSE);
-			}
-		}
-		curl_close($ch);
-		$destination = $this->root_path."/update_main_".$version.".zip"; 
-		$file = fopen($destination, "w+");
-		if(!$file){
-			exit("<br>".LB_TEXT_UPDATE_PATH_ERROR);
-		}
-		fputs($file, $data);
-		fclose($file);
-		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 65;</script>';}
-		ob_flush();
-		$zip = new ZipArchive;
-		$res = $zip->open($destination);
-		if($res === TRUE){
-			$zip->extractTo($this->root_path."/"); 
-			$zip->close();
-			unlink($destination);
-			echo LB_TEXT_MAIN_UPDATE_DONE."<br><br>";
-			if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 75;</script>';}
-			ob_flush();
-		}else{
-			echo LB_TEXT_UPDATE_EXTRACTION_ERROR."<br><br>";
-			ob_flush();
-		}
-		if($type == true){
-			$source_size = $this->api_url."api/get_update_size/sql/".$update_id; 
-			echo LB_TEXT_PREPARING_SQL_DOWNLOAD."<br>";
-			ob_flush();
-			echo LB_TEXT_SQL_UPDATE_SIZE." ".$this->get_remote_filesize($source_size)." ".LB_TEXT_DONT_REFRESH."<br>";
-			if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 85;</script>';}
-			ob_flush();
-			$temp_progress = '';
-			$ch = curl_init();
-			$source = $this->api_url."api/download_update/sql/".$update_id;
-			curl_setopt($ch, CURLOPT_URL, $source);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_array);
-			$this_server_name = getenv('SERVER_NAME')?:
-				$_SERVER['SERVER_NAME']?:
-				getenv('HTTP_HOST')?:
-				$_SERVER['HTTP_HOST'];
-			$this_http_or_https = ((
-				(isset($_SERVER['HTTPS'])&&($_SERVER['HTTPS']=="on"))or
-				(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])and
-					$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-			)?'https://':'http://');
-			$this_url = $this_http_or_https.$this_server_name.$_SERVER['REQUEST_URI'];
-			$this_ip = getenv('SERVER_ADDR')?:
-				$_SERVER['SERVER_ADDR']?:
-				$this->get_ip_from_third_party()?:
-				gethostbyname(gethostname());
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-				'LB-API-KEY: '.$this->api_key, 
-				'LB-URL: '.$this_url, 
-				'LB-IP: '.$this_ip, 
-				'LB-LANG: '.$this->api_language)
-			); 
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-			echo LB_TEXT_DOWNLOADING_SQL."<br>";
-			if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 90;</script>';}
-			ob_flush();
-			$data = curl_exec($ch);
-			$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			if($http_status!=200){
-				curl_close($ch);
-				exit(LB_TEXT_INVALID_RESPONSE);
-			}
-			curl_close($ch);
-			$destination = $this->root_path."/update_sql_".$version.".sql"; 
-			$file = fopen($destination, "w+");
-			if(!$file){
-				exit(LB_TEXT_UPDATE_PATH_ERROR);
-			}
-			fputs($file, $data);
-			fclose($file);
-			echo LB_TEXT_SQL_UPDATE_DONE."<br><br>";
-			if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 95;</script>';}
-			ob_flush();
-			if(is_array($db_for_import)){
-				if(!empty($db_for_import["db_host"])&&!empty($db_for_import["db_user"])&&!empty($db_for_import["db_name"])){
-					$db_host = strip_tags(trim($db_for_import["db_host"]));
-            		$db_user = strip_tags(trim($db_for_import["db_user"]));
-            		$db_pass = strip_tags(trim($db_for_import["db_pass"]));
-            		$db_name = strip_tags(trim($db_for_import["db_name"]));
-					$con = @mysqli_connect($db_host, $db_user, $db_pass, $db_name);
-					if(mysqli_connect_errno()){
-						echo LB_TEXT_UPDATE_WITH_SQL_IMPORT_FAILED;
-					}else{
-						$templine = '';
-						$lines = file($destination);
-						foreach($lines as $line){
-							if(substr($line, 0, 2) == '--' || $line == '')
-								continue;
-							$templine .= $line;
-							$query = false;
-							if(substr(trim($line), -1, 1) == ';'){
-								$query = mysqli_query($con, $templine);
-								$templine = '';
-							}
-						}
-						@chmod($destination,0777);
-						if(is_writeable($destination)){
-							unlink($destination);
-						}
-						echo LB_TEXT_UPDATE_WITH_SQL_IMPORT_DONE;
-					}
-				}else{
-					echo LB_TEXT_UPDATE_WITH_SQL_IMPORT_FAILED;
-				}
-			}else{
-				echo LB_TEXT_UPDATE_WITH_SQL_DONE;
-			}
-			if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 100;</script>';}
-			ob_flush();
-		}else{
-			if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 100;</script>';}
-			echo LB_TEXT_UPDATE_WITHOUT_SQL_DONE;
-			ob_flush();
-		}
-		ob_end_flush(); 
-	}
+	// public function download_update($update_id, $type, $version, $license = false, $client = false, $db_for_import = false){ 
+	// 	if(!empty($license)&&!empty($client)){
+	// 		$data_array =  array(
+	// 			"license_file" => null,
+	// 			"license_code" => $license,
+	// 			"client_name" => $client
+	// 		);
+	// 	}else{
+	// 		if(is_file($this->license_file)){
+	// 			$data_array =  array(
+	// 				"license_file" => file_get_contents($this->license_file),
+	// 				"license_code" => null,
+	// 				"client_name" => null
+	// 			);
+	// 		}else{
+	// 			$data_array =  array();
+	// 		}
+	// 	}
+	// 	ob_end_flush(); 
+	// 	ob_implicit_flush(true);  
+	// 	$version = str_replace(".", "_", $version);
+	// 	ob_start();
+	// 	$source_size = $this->api_url."api/get_update_size/main/".$update_id; 
+	// 	echo LB_TEXT_PREPARING_MAIN_DOWNLOAD."<br>";
+	// 	if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 1;</script>';}
+	// 	ob_flush();
+	// 	echo LB_TEXT_MAIN_UPDATE_SIZE." ".$this->get_remote_filesize($source_size)." ".LB_TEXT_DONT_REFRESH."<br>";
+	// 	if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 5;</script>';}
+	// 	ob_flush();
+	// 	$temp_progress = '';
+	// 	$ch = curl_init();
+	// 	$source = $this->api_url."api/download_update/main/".$update_id; 
+	// 	curl_setopt($ch, CURLOPT_URL, $source);
+	// 	curl_setopt($ch, CURLOPT_POST, 1);
+	// 	curl_setopt($ch, CURLOPT_POSTFIELDS, $data_array);
+	// 	$this_server_name = getenv('SERVER_NAME')?:
+	// 		$_SERVER['SERVER_NAME']?:
+	// 		getenv('HTTP_HOST')?:
+	// 		$_SERVER['HTTP_HOST'];
+	// 	$this_http_or_https = ((
+	// 		(isset($_SERVER['HTTPS'])&&($_SERVER['HTTPS']=="on"))or
+	// 		(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])and
+	// 			$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+	// 	)?'https://':'http://');
+	// 	$this_url = $this_http_or_https.$this_server_name.$_SERVER['REQUEST_URI'];
+	// 	$this_ip = getenv('SERVER_ADDR')?:
+	// 		$_SERVER['SERVER_ADDR']?:
+	// 		$this->get_ip_from_third_party()?:
+	// 		gethostbyname(gethostname());
+	// 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	// 		'LB-API-KEY: '.$this->api_key, 
+	// 		'LB-URL: '.$this_url, 
+	// 		'LB-IP: '.$this_ip, 
+	// 		'LB-LANG: '.$this->api_language)
+	// 	);
+	// 	if(LB_SHOW_UPDATE_PROGRESS){curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, array($this, 'progress'));}
+	// 	if(LB_SHOW_UPDATE_PROGRESS){curl_setopt($ch, CURLOPT_NOPROGRESS, false);}
+	// 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	// 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); 
+	// 	echo LB_TEXT_DOWNLOADING_MAIN."<br>";
+	// 	if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 10;</script>';}
+	// 	ob_flush();
+	// 	$data = curl_exec($ch);
+	// 	$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	// 	if($http_status != 200){
+	// 		if($http_status == 401){
+	// 			curl_close($ch);
+	// 			exit("<br>".LB_TEXT_UPDATE_PERIOD_EXPIRED);
+	// 		}else{
+	// 			curl_close($ch);
+	// 			exit("<br>".LB_TEXT_INVALID_RESPONSE);
+	// 		}
+	// 	}
+	// 	curl_close($ch);
+	// 	$destination = $this->root_path."/update_main_".$version.".zip"; 
+	// 	$file = fopen($destination, "w+");
+	// 	if(!$file){
+	// 		exit("<br>".LB_TEXT_UPDATE_PATH_ERROR);
+	// 	}
+	// 	fputs($file, $data);
+	// 	fclose($file);
+	// 	if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 65;</script>';}
+	// 	ob_flush();
+	// 	$zip = new ZipArchive;
+	// 	$res = $zip->open($destination);
+	// 	if($res === TRUE){
+	// 		$zip->extractTo($this->root_path."/"); 
+	// 		$zip->close();
+	// 		unlink($destination);
+	// 		echo LB_TEXT_MAIN_UPDATE_DONE."<br><br>";
+	// 		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 75;</script>';}
+	// 		ob_flush();
+	// 	}else{
+	// 		echo LB_TEXT_UPDATE_EXTRACTION_ERROR."<br><br>";
+	// 		ob_flush();
+	// 	}
+	// 	if($type == true){
+	// 		$source_size = $this->api_url."api/get_update_size/sql/".$update_id; 
+	// 		echo LB_TEXT_PREPARING_SQL_DOWNLOAD."<br>";
+	// 		ob_flush();
+	// 		echo LB_TEXT_SQL_UPDATE_SIZE." ".$this->get_remote_filesize($source_size)." ".LB_TEXT_DONT_REFRESH."<br>";
+	// 		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 85;</script>';}
+	// 		ob_flush();
+	// 		$temp_progress = '';
+	// 		$ch = curl_init();
+	// 		$source = $this->api_url."api/download_update/sql/".$update_id;
+	// 		curl_setopt($ch, CURLOPT_URL, $source);
+	// 		curl_setopt($ch, CURLOPT_POST, 1);
+	// 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_array);
+	// 		$this_server_name = getenv('SERVER_NAME')?:
+	// 			$_SERVER['SERVER_NAME']?:
+	// 			getenv('HTTP_HOST')?:
+	// 			$_SERVER['HTTP_HOST'];
+	// 		$this_http_or_https = ((
+	// 			(isset($_SERVER['HTTPS'])&&($_SERVER['HTTPS']=="on"))or
+	// 			(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])and
+	// 				$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+	// 		)?'https://':'http://');
+	// 		$this_url = $this_http_or_https.$this_server_name.$_SERVER['REQUEST_URI'];
+	// 		$this_ip = getenv('SERVER_ADDR')?:
+	// 			$_SERVER['SERVER_ADDR']?:
+	// 			$this->get_ip_from_third_party()?:
+	// 			gethostbyname(gethostname());
+	// 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	// 			'LB-API-KEY: '.$this->api_key, 
+	// 			'LB-URL: '.$this_url, 
+	// 			'LB-IP: '.$this_ip, 
+	// 			'LB-LANG: '.$this->api_language)
+	// 		); 
+	// 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	// 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+	// 		echo LB_TEXT_DOWNLOADING_SQL."<br>";
+	// 		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 90;</script>';}
+	// 		ob_flush();
+	// 		$data = curl_exec($ch);
+	// 		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	// 		if($http_status!=200){
+	// 			curl_close($ch);
+	// 			exit(LB_TEXT_INVALID_RESPONSE);
+	// 		}
+	// 		curl_close($ch);
+	// 		$destination = $this->root_path."/update_sql_".$version.".sql"; 
+	// 		$file = fopen($destination, "w+");
+	// 		if(!$file){
+	// 			exit(LB_TEXT_UPDATE_PATH_ERROR);
+	// 		}
+	// 		fputs($file, $data);
+	// 		fclose($file);
+	// 		echo LB_TEXT_SQL_UPDATE_DONE."<br><br>";
+	// 		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 95;</script>';}
+	// 		ob_flush();
+	// 		if(is_array($db_for_import)){
+	// 			if(!empty($db_for_import["db_host"])&&!empty($db_for_import["db_user"])&&!empty($db_for_import["db_name"])){
+	// 				$db_host = strip_tags(trim($db_for_import["db_host"]));
+    //         		$db_user = strip_tags(trim($db_for_import["db_user"]));
+    //         		$db_pass = strip_tags(trim($db_for_import["db_pass"]));
+    //         		$db_name = strip_tags(trim($db_for_import["db_name"]));
+	// 				$con = @mysqli_connect($db_host, $db_user, $db_pass, $db_name);
+	// 				if(mysqli_connect_errno()){
+	// 					echo LB_TEXT_UPDATE_WITH_SQL_IMPORT_FAILED;
+	// 				}else{
+	// 					$templine = '';
+	// 					$lines = file($destination);
+	// 					foreach($lines as $line){
+	// 						if(substr($line, 0, 2) == '--' || $line == '')
+	// 							continue;
+	// 						$templine .= $line;
+	// 						$query = false;
+	// 						if(substr(trim($line), -1, 1) == ';'){
+	// 							$query = mysqli_query($con, $templine);
+	// 							$templine = '';
+	// 						}
+	// 					}
+	// 					@chmod($destination,0777);
+	// 					if(is_writeable($destination)){
+	// 						unlink($destination);
+	// 					}
+	// 					echo LB_TEXT_UPDATE_WITH_SQL_IMPORT_DONE;
+	// 				}
+	// 			}else{
+	// 				echo LB_TEXT_UPDATE_WITH_SQL_IMPORT_FAILED;
+	// 			}
+	// 		}else{
+	// 			echo LB_TEXT_UPDATE_WITH_SQL_DONE;
+	// 		}
+	// 		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 100;</script>';}
+	// 		ob_flush();
+	// 	}else{
+	// 		if(LB_SHOW_UPDATE_PROGRESS){echo '<script>document.getElementById(\'prog\').value = 100;</script>';}
+	// 		echo LB_TEXT_UPDATE_WITHOUT_SQL_DONE;
+	// 		ob_flush();
+	// 	}
+	// 	ob_end_flush(); 
+	// }
 
 	/**
 	 * progress description

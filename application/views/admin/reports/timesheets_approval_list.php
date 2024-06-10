@@ -158,7 +158,7 @@
             <input type="hidden" id="typeField" name="typeField">
             <input type="hidden" id="approval_level" name="approval_level">
 
-            <label>Commet/ Feedback</label>
+            <label>Comment/ Feedback</label>
             <textarea name="approve_comments" id="approve_comments" class="form-control"></textarea>
           </div>
           <div class="modal-footer">
@@ -191,7 +191,7 @@
             <input type="hidden" id="typeFieldReject" name="typeField">
             <input type="hidden" id="approval_level_reject" name="approval_level_reject">
 
-            <label>Commet/ Feedback <font color="red">*</font></label>
+            <label>Comment/ Feedback <font color="red">*</font></label>
             <textarea name="reject_comments" id="reject_comments" class="form-control"></textarea>
           </div>
           <div class="modal-footer">

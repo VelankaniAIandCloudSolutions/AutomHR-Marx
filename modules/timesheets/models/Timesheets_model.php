@@ -8745,7 +8745,7 @@ class timesheets_model extends app_model
 					"message" => "Please select a correct user and department",
 				);
 			}
-			echo json_encode($output);
+			return json_encode($output);
 		}
 	}
 

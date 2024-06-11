@@ -5646,7 +5646,6 @@ class Hr_profile extends AdminController {
 					access_denied('staff');
 				}
 				$id = $this->hr_profile_model->add_staff($data);
-				
 				if ($id) {
 					// Start	: leave assign for new staff
 					$tmp_data = array();
@@ -5655,7 +5654,9 @@ class Hr_profile extends AdminController {
 						"department_id" =>$data['departments']
 					); 
 					$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+					
         			$this->timesheets_model->staff_leave_assign($tmp_data);
+					
 					// End	: leave assign for new staff
 					hr_profile_handle_staff_profile_image_upload($id);
 					set_alert('success', _l('added_successfully', _l('staff_member')));
@@ -5687,8 +5688,9 @@ class Hr_profile extends AdminController {
 					"department_id" =>$data['departments']
 				); 
 
-				// $this->load->model('timesheets/timesheets_model', 'timesheets_model');
-				// $this->timesheets_model->staff_leave_assign($tmp_data);
+				$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+				$this->timesheets_model->staff_leave_assign($tmp_data);
+				
 				// End	: leave assign for new staff
 				
 				if (is_array($response)) {

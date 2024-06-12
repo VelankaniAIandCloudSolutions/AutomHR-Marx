@@ -1,5 +1,5 @@
-assets/
-uploads/
-modules/hr_profiles/uploads/
-modules/timesheets/assets/
-modules/timesheets/uploads/
+#assets/
+#uploads/
+#modules/hr_profiles/uploads/
+#modules/timesheets/assets/
+#modules/timesheets/uploads/

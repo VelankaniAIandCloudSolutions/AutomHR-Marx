@@ -1,12 +1,5 @@
-assets/
-backups/
-documentation/
-media/
-phpmyadmin/
-resources/
-system/
-temp/
-uploads/
-modules/hr_profiles/uploads/
-modules/timesheets/assets/
-modules/timesheets/assets/
+#assets/
+#uploads/
+#modules/hr_profiles/uploads/
+#modules/timesheets/assets/
+#modules/timesheets/uploads/

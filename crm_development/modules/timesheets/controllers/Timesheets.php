@@ -45,6 +45,7 @@ class timesheets extends AdminController {
 		$data['tab'][] = 'valid_ip';
 		$data['tab'][] = 'reset_data';
 		$data['tab'][] = 'api_integration';
+		$data['tab'][] = 'leave_setting';
 		if ($data['group'] == '') {
 			$data['group'] = 'contract_type';
 		} elseif ($data['group'] == 'manage_dayoff') {
@@ -53,6 +54,9 @@ class timesheets extends AdminController {
 			$data['overtime_setting'] = $this->timesheets_model->get_overtime_setting();
 		} elseif ($data['group'] == 'shift') {
 			$data['shift'] = $this->timesheets_model->get_shift_sc();
+		}
+		elseif ($data['group'] == 'leave_setting') {
+			$data['leave_setting_data'] = $this->timesheets_model->leave_setting_department_wise();
 		}
 		$data['tabs']['view'] = 'includes/' . $data['group'];
 		$data['month'] = $this->timesheets_model->get_month();
@@ -114,6 +118,13 @@ class timesheets extends AdminController {
 			$data_leave = $this->get_setting_valid_ip();
 			$data['max_row'] = $data_leave['max_row'];
 			$data['list_ip_data'] = $data_leave['list_ip_data'];
+		}
+		
+		if ($data['group'] == 'leave_setting') {
+			$data_leave = $this->get_setting_valid_ip();
+			$data['max_row'] = $data_leave['max_row'];
+			$data['list_ip_data'] = $data_leave['list_ip_data'];
+			$data['type_of_leave'] = $this->timesheets_model->get_type_of_leave();
 		}
 
 		$this->load->view('manage_setting', $data);
@@ -2158,7 +2169,27 @@ class timesheets extends AdminController {
 				$rResult = $result['rResult'];
 
 				foreach ($rResult as $aRow) {
-					$requisition_number_of_day_off = $this->timesheets_model->get_requisition_number_of_day_off($aRow['staffid'], $year_leave);
+
+					$custom_field_value = array();
+					$this->db->select("cv.value as staff_join_date");
+					$this->db->from(db_prefix()."customfieldsvalues as cv");
+					$this->db->join(db_prefix()."customfields as cf","cf.id = cv.fieldid and cv.fieldto='staff'","inner");
+					$this->db->where("cv.relid", $aRow['staffid']);
+					$this->db->where("cf.slug","staff_date_of_joining");
+					$custom_field_query = $this->db->get();
+					$custom_field_value = $custom_field_query->row_array();
+
+					$staff_joining_date = '';
+
+					if(!empty($custom_field_value))
+					{
+						$staff_joining_date = $custom_field_value['staff_join_date'];
+					}
+ 					
+					$requisition_number_of_day_off = $this->timesheets_model->get_requisition_number_of_day_off($aRow['staffid'], $year_leave, '8');
+					
+					$timesheets_max_leave_in_year = 0;
+					
 					$timesheets_max_leave_in_year = $requisition_number_of_day_off['total_day_off_in_year'];
 					$timesheets_total_day_off = 0;
 
@@ -2184,6 +2215,7 @@ class timesheets extends AdminController {
 						} else {
 							$months_filter = $year_leave . '-' . $i;
 						}
+						
 						$count = $this->timesheets_model->get_date_leave_in_month($aRow['staffid'], $months_filter);
 						// $test[]  = $this->db->last_query();
 						$timesheets_total_day_off += $count;
@@ -2195,12 +2227,21 @@ class timesheets extends AdminController {
 						} 
 						
 						$available_leave = round(($monthly_eligible_leave - $count), 2);
-						
+						if($i < date("m", strtotime($staff_joining_date)))
+						{
+							$row[] = 0;
+							$row[] = 0;
+							$row[] = 0;
+							$previous_month_available_leave = 0;
+						}
+						else{
+							$row[] = round(($previous_month_available_leave + $monthly_eligible_leave), 2);
+							$row[] = round($count, 2);
+							$row[] = round(($previous_month_available_leave + $available_leave), 2);
+							$previous_month_available_leave = round(($previous_month_available_leave + $available_leave), 2);
+						}
 						// $row[] = $monthly_eligible_leave;
-						$row[] = round(($previous_month_available_leave + $monthly_eligible_leave), 2);
-						$row[] = round($count, 2);
-						$row[] = round(($previous_month_available_leave + $available_leave), 2);
-						$previous_month_available_leave = round(($previous_month_available_leave + $available_leave), 2);
+						
 						// $row[] = $tmp_table;
 					}
 					
@@ -6266,8 +6307,25 @@ public function check_in_ts() {
 		$days_off = $day_off->days_off;
 
 		$valid_cur_date = $this->timesheets_model->get_next_shift_date($id, date('Y-m-d'));
+		$month = date("m", strtotime(date('Y-m-d')));
+		$year = date("Y", strtotime(date('Y-m-d')));
+		
+		
 		$html .= '<label class="control-label">' . _l('number_of_days_off') . ': ' . $days_off . '</label><br>';
 		$html .= '<label class="control-label' . ($number_day_off == 0 ? ' text-danger' : '') . '">' . _l('number_of_leave_days_allowed') . ': ' . $number_day_off . '</label>';
+		
+		if($type_of_leave == '8')
+		{
+			$accruval_leave = $this->timesheets_model->staff_leave_accruval($id, $month, $year, $type_of_leave);
+			$html .= '<br><label class="control-label" style="color:red"> Number of Eligible Leave: '. $accruval_leave;
+		}
+
+		if($type_of_leave == 'casual-leave')
+		{
+			$credit_leave = $this->casual_leave_credit($id);
+			$html .= '<br><label class="control-label" style="color:red"> Number of Eligible Casual Leave: '. $credit_leave;
+		}
+
 		$html .= '<input type="hidden" name="number_day_off" value="' . $number_day_off . '">';
 		echo json_encode([
 			'html' => $html,
@@ -7149,5 +7207,99 @@ public function check_in_ts() {
 				die();
 			}
 		}
+	}
+
+	// casual leave counting based on 80 working days of employees from joininng date and casual leave update.
+	public function casual_leave_credit($staff_id = '')
+	{
+		$data = array();
+		$data['staff_id'] = $staff_id;
+		$leave_credited = $this->timesheets_model->casual_leave_credit($data);
+		return $leave_credited;
+	}
+
+	// get staff gender 
+	// id is using as staffid 
+	public function staff_gender() 
+	{
+		if(isset($_POST['id']) && $_POST['id'] != "")
+		{
+			$id = $this->input->post("id");
+		}
+		else{
+			$id = get_staff_user_id();
+		}
+
+		if($id)
+		{
+			$this->load->model('staff_model');
+			$response = $this->staff_model->get($id,'active = 1');
+			if(!empty($response))
+			{
+				$gender = $response->sex;
+				if($gender === 'female')
+				{
+					echo 1; die;
+				}
+				else{
+					echo 0; die;
+				}
+			}
+			else{
+				echo 0; die;
+			}
+		}
+		else{
+			echo 0; die;
+		}
+	}
+
+	public function leave_setting_department_wise()
+	{
+		$input_data = $this->input->post();
+		
+		$year = $input_data['year'];
+		
+		if(!empty($input_data) && is_array($input_data))
+		{
+			$tmp_leaves = $input_data['leaves'];
+			foreach($tmp_leaves  as $department => $tmp_leaves_val)
+			{
+				$tmp_data = array();
+				$department_id = $department;
+				$leave_data = json_encode($tmp_leaves_val);
+				$created_at = date("Y-m-d H:i:s");
+				$updated_at = date("Y-m-d H:i:s");
+				$created_by = get_staff_user_id();
+				$updated_by = get_staff_user_id();
+
+				$tmp_data = array(
+					"department_id"	=> $department_id,
+					"leave_data"	=> $leave_data,
+					"created_at"	=> $created_at,
+					"created_by"	=> $created_by,
+					"updated_at"	=> $updated_at,
+					"updated_by"	=> $updated_by,
+					"year"			=> $year,
+				);
+
+				$check_data_exist = $this->db->where("year", $year)->where("department_id", $department_id)->get(db_prefix().'leave_setting_yearly')->row();
+				
+				if($check_data_exist > 0)
+				{
+					$this->db->where("department_id", $department_id);
+					$this->db->where("year", $year);
+					unset($tmp_data['created_at']);
+					unset($tmp_data['created_by']);
+					$this->db->update(db_prefix()."leave_setting_yearly", $tmp_data);
+				}
+				else
+				{
+					$this->db->insert(db_prefix()."leave_setting_yearly", $tmp_data);
+				}
+			}
+			set_alert('success', 'Leave Update Successfully');
+		}
+		redirect(admin_url('timesheets/setting?group=leave_setting'));
 	}
 }

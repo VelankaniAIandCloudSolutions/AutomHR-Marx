@@ -492,6 +492,17 @@ class Staff_model extends App_Model
                     'userid'         => $staffid,
                 ]);
             }
+
+            // Start	: leave assign for new staff
+                $tmp_data = array();
+                $tmp_data = array(
+                    "staff_id" => $staffid,
+                    "department_id" =>$departments
+                ); 
+                $this->load->model('timesheets/timesheets_model', 'timesheets_model');
+                $this->timesheets_model->staff_leave_assign($tmp_data);
+            // End	: leave assign for new staff`
+
             hooks()->do_action('staff_member_created', $staffid);
 
             return $staffid;
@@ -640,6 +651,16 @@ class Staff_model extends App_Model
 
         if ($this->update_permissions((isset($data['admin']) && $data['admin'] == 1 ? [] : $permissions), $id)) {
             $affectedRows++;
+
+            // Start	: leave assign for new staff
+                $tmp_data = array();
+                $tmp_data = array(
+                    "staff_id" => $id,
+                    "department_id" =>$departments
+                ); 
+                $this->load->model('timesheets/timesheets_model', 'timesheets_model');
+                $this->timesheets_model->staff_leave_assign($tmp_data);
+            // End	: leave assign for new staff`
         }
 
         if ($affectedRows > 0) {

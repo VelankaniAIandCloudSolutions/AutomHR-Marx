@@ -619,6 +619,7 @@ class Staff extends AdminController
                     "consultant_name"       => $this->input->post("consultant_name"),
                     "line_manager"          => $this->input->post("line_manager"),
                     "day_display"           => $this->input->post("day_display"),
+                    "hour_display"           => $this->input->post("hour_display"),
                     "created_at"            => date("Y-m-d H:i:s"),
                     "modified_at"            => date("Y-m-d H:i:s"),
                 );
@@ -949,6 +950,10 @@ class Staff extends AdminController
 
     public function timesheet_export($file_type = '', $data = array())
     {   
+        $query = "SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))";
+        $this->db->query($query);
+
+       
         if(!empty($data))
         {
            $post_data['timesheet_staff_id'] = $data['staff_id'];
@@ -963,10 +968,13 @@ class Staff extends AdminController
            $post_data['consultant_name'] = $data['consultant_name'];
            $post_data['line_manager'] = $data['line_manager'];
            $post_data['day_display'] = $data['day_display'];
+           $post_data['hour_display'] = $data['hour_display'];
+            $export = '';
         }
         else
         {
             $post_data = $this->input->post();
+            $export = '';
             $export = $post_data['export'];
         }
 
@@ -986,15 +994,20 @@ class Staff extends AdminController
              $project_id             = $post_data['timesheet_project_id'] ? $post_data['timesheet_project_id'] : '';
         }
        
+        $select = '';
+
+        if($export != 'export')
+        {
+            $select = ' ,tsa.day_display,tsa.hour_display, tsa.line_manager, tsa.consultant_name , tsa.supplier_name, tsa.contractor_id';
+        }
 
         $this->db->select("taskstimer.*, tasks.name as task_name, tasks.description as task_description,
             staff.firstname as staff_first_name, staff.lastname as staff_last_name,
              reporting_manager.firstname as manager_first_name, reporting_manager.lastname as manager_last_name,
-             tsa.day_display, tsa.line_manager, tsa.consultant_name , tsa.supplier_name, tsa.contractor_id,
              projects.name as project_name,
              projects.clientid as clientid,
              staff.job_position as position,
-             sd.departmentid as departmentid
+             sd.departmentid as departmentid $select
             ");
 
         $this->db->from(db_prefix()."taskstimers as taskstimer");
@@ -1003,8 +1016,12 @@ class Staff extends AdminController
         $this->db->join(db_prefix()."staff as staff","staff.staffid = taskstimer.staff_id","left");
         $this->db->join(db_prefix()."staff as reporting_manager","reporting_manager.staffid = staff.team_manage","left");
 
-        $this->db->join(db_prefix()."time_sheet_approval as tsa","tsa.staff_id = taskstimer.staff_id","left");
-         $this->db->join(db_prefix()."staff_departments as sd","sd.staffid = staff.staffid","left");
+        if($export != 'export')
+        {
+            $this->db->join(db_prefix()."time_sheet_approval as tsa","tsa.staff_id = taskstimer.staff_id","left");
+        }
+
+        $this->db->join(db_prefix()."staff_departments as sd","sd.staffid = staff.staffid","left");
 
         if($timesheet_staff_id != "")
         {
@@ -1043,28 +1060,47 @@ class Staff extends AdminController
             $this->db->where_in("projects.id", $project_id);
         }
 
-        
-        $this->db->where("tsa.status !=2");
-        $this->db->where("tsa.teamlead_status !=2");
+        if($export != 'export')
+        {
+            $this->db->where("tsa.status !=2");
+            $this->db->where("tsa.teamlead_status !=2");
 
-        $this->db->where("tsa.id IN (
-            (SELECT MAX(id) as id 
-             FROM tbltime_sheet_approval 
-             WHERE tbltime_sheet_approval.status != 2 
-               AND tbltime_sheet_approval.teamlead_status != 2  
-             GROUP BY staff_id, project_ids, from_date)
-        )");
+            $this->db->where("tsa.id IN (
+                (SELECT MAX(id) as id 
+                 FROM tbltime_sheet_approval 
+                 WHERE tbltime_sheet_approval.status != 2 
+                   AND tbltime_sheet_approval.teamlead_status != 2  
+                 GROUP BY staff_id, project_ids, from_date)
+            )");   
+        }
+
+        if($export === 'export')
+        {
+            $this->db->group_by("taskstimer.id"); 
+        }
+        
 
         $this->db->order_by("taskstimer.id","desc");
 
         $time_sheet_query = $this->db->get();
+        // echo $this->db->last_query();die;
+
         
         $timesheet_task_records = $time_sheet_query->result_array();
         
+        // print_r($timesheet_task_records); die;
+
         if(!empty($timesheet_task_records))
         {
-
+           if($_SERVER['HTTP_HOST'] === 'localhost')
+           {
+            $imagePath = MARX_LOGO_PATH;
+           }
+           else{
             $imagePath = base_url('assets/images/marx-logo.png');
+           }
+
+            
             $columnHeaders = ["Days","Date", "Tasks", "Hours"];
             $day = 0;
 
@@ -1073,27 +1109,31 @@ class Staff extends AdminController
             $department = $position = '';
             
             $project_name = $timesheet_task_records[0]['project_name'];
-            $contractor_id = $timesheet_task_records[0]['contractor_id'];
-            $supplier_name = $timesheet_task_records[0]['supplier_name'];
-            $consultant_name = $timesheet_task_records[0]['consultant_name'];
+
+            $line_manager_name = '';
+
+            if($export === 'export')
+            {
+                $contractor_id = $post_data['contractor_id'];
+                $supplier_name = $post_data['supplier_name'];
+                $consultant_name = $post_data['consultant_name'];
+                $line_manager_name = get_staff_full_name($post_data['reporting_manager_id']);
+            }
+            else{
+                $contractor_id = $timesheet_task_records[0]['contractor_id'];
+                $supplier_name = $timesheet_task_records[0]['supplier_name'];
+                $consultant_name = $timesheet_task_records[0]['consultant_name'];
+                $line_manager_name = $timesheet_task_records[0]['line_manager'];
+            }
             
             $department = $timesheet_task_records[0]['departmentid'];
             $position = $timesheet_task_records[0]['position'];
-
-            $line_manager_name = '';
-            
-            if(isset($timesheet_task_records[0]['line_manager']) && $timesheet_task_records[0]['line_manager'] != "")
-            {
-                 $line_manager_name = $timesheet_task_records[0]['line_manager'];
-            }
-           
             
             $address ='';
             $line_manager_type ='';
             
             foreach($timesheet_task_records as $timesheet_task_records_val)
             {
-
                 $this->db->select("customfields.id as customfield_id,
                  customfields.slug as customfields_slug,
                  customfields.options as customfields_options,
@@ -1139,6 +1179,7 @@ class Staff extends AdminController
                 $tmp_time_sheet_data['day'] = $day++;
                 $tmp_time_sheet_data['date'] = date("Y-m-d", $timesheet_task_records_val['start_time']);
                 $tmp_time_sheet_data['task'] = '';
+                $tmp_time_sheet_data['task_id'] = $timesheet_task_records_val['task_id'];
 
                 if($timesheet_task_records_val['task_name'] != "")
                 {
@@ -1171,16 +1212,20 @@ class Staff extends AdminController
 
             }
 
-
             $csvContent = array();
-
-            $is_display_day_column = 0;
+           
+            $is_display_day_column = $is_display_hour_column = 0;
+            
             if(isset($post_data['day_display']) && $post_data['day_display'] == '1')
             {
                 $is_display_day_column = 1;
             }
+            if(isset($post_data['hour_display']) && $post_data['hour_display'] == '1')
+            {
+                $is_display_hour_column = 1;
+            }
             
-            $csvContent = $this->timesheet_export_json($tmp_timesheet_task_records, $imagePath, $project_name, $contractor_id, $supplier_name, $consultant_name, $period_from, $address, $line_manager_name, $line_manager_type, $is_display_day_column, $department, $position);
+            $csvContent = $this->timesheet_export_json($tmp_timesheet_task_records, $imagePath, $project_name, $contractor_id, $supplier_name, $consultant_name, $period_from, $address, $line_manager_name, $line_manager_type, $is_display_day_column, $department, $position, $timesheet_staff_id, $is_display_hour_column);
 
             $curl = curl_init();
             
@@ -1192,6 +1237,8 @@ class Staff extends AdminController
             {
                 $this->api = TIMESHEET_EXCEL_EXPORT;
             }
+
+            // echo __LINE__; print_r($csvContent); die;
             
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $this->api,
@@ -1269,8 +1316,9 @@ class Staff extends AdminController
         return array($totalHours, $remainingMinutes);
     }
 
-    function timesheet_export_json($dynamicData = array(), $imgePath='', $project_name = '', $contractor_id = '', $supplier_name = '', $consultant_name = '', $period_from = '', $address = '', $line_manager_name = '', $line_manager_type = '', $is_display_day_column = '', $department = '', $position = '')
+    function timesheet_export_json($dynamicData = array(), $imgePath='', $project_name = '', $contractor_id = '', $supplier_name = '', $consultant_name = '', $period_from = '', $address = '', $line_manager_name = '', $line_manager_type = '', $is_display_day_column = '', $department = '', $position = '', $staff_id = '', $is_display_hour_column = '')
     {
+
         $output= array();
 
         if(!empty($dynamicData))
@@ -1287,7 +1335,6 @@ class Staff extends AdminController
             $output['address'] = $address ? $address : $default_value; 
 
             $groupedData = [];
-
             foreach ($dynamicData as $item) {
                 $date = $item['date'];
                 
@@ -1298,7 +1345,7 @@ class Staff extends AdminController
             }
 
             $output['date_wise_tasks'] = array();
-           
+            
             foreach($groupedData as $key => $groupedData_val)
             {
                 $date_wise_data = array();
@@ -1314,18 +1361,27 @@ class Staff extends AdminController
                 $task_days_total_hours = $this->calculateTotalTime($groupedData_val);
                 $date_wise_data['total_hours']  = $task_days_total_hours[0].":". $task_days_total_hours[1];
                 
+               $group_by_task = array();
 
                 foreach($groupedData_val as $tmp_groupedData_val)
                 {   
-                    $tmp_groupedData_val1 = array();
-                    $tmp_groupedData_val1['id'] = $tmp_groupedData_val['id'];
-                    $tmp_groupedData_val1['name'] = $tmp_groupedData_val['task'];
-                    $tmp_groupedData_val1['description'] = $tmp_groupedData_val['task_description'];
-                    $tmp_groupedData_val1['hours'] = $tmp_groupedData_val['task_hours'];
+                    $task_id_key = '';
+                    $task_id_key = $tmp_groupedData_val['task_id'];
 
-                    array_push($date_wise_data['tasks'] , $tmp_groupedData_val1);
+                    if(!in_array($task_id_key, $group_by_task))
+                    {   
+                        array_push($group_by_task, $task_id_key);
+                        
+                        $tmp_groupedData_val1 = array();
+                        $tmp_groupedData_val1['id'] = $tmp_groupedData_val['id'];
+                        $tmp_groupedData_val1['name'] = $tmp_groupedData_val['task'];
+                        $tmp_groupedData_val1['description'] = $tmp_groupedData_val['task_description'];
+                        $tmp_groupedData_val1['hours'] = $tmp_groupedData_val['task_hours'];
+                        $tmp_groupedData_val1['task_id'] = $tmp_groupedData_val['task_id'];
+
+                        array_push($date_wise_data['tasks'] , $tmp_groupedData_val1);
+                    }
                 }
-
                 array_push($output['date_wise_tasks'] , $date_wise_data);
             }
 
@@ -1335,12 +1391,18 @@ class Staff extends AdminController
             $output['total_hours'] = $total_hours[0].":". $total_hours[1];
 
             $output['total_days_worked'] = 0;
+            $output['hour_display'] = 0;
+            $output['day_display'] = 0;
             
             if($is_display_day_column == '1')
             {
                 $output['total_days_worked'] = $total_worked_days; 
+                $output['day_display'] = $is_display_day_column; 
             }
-            
+            if($is_display_hour_column == '1')
+            {
+                $output['hour_display'] = $is_display_hour_column; 
+            }
 
             $year = date("Y", strtotime($period_from));
             $month = date("m", strtotime($period_from));
@@ -1350,6 +1412,8 @@ class Staff extends AdminController
             $output['display_label'] = strtoupper($line_manager_type ? $line_manager_type : $default_value);
             $output['display_value'] = strtoupper($line_manager_name ? $line_manager_name : $default_value);
         }
+
+
 
         if(sizeof($output) > 0)
         {
@@ -1375,8 +1439,123 @@ class Staff extends AdminController
             else{
                 $output['holiday_details'] = $holiday_data;
             }
+
+             // Start -  staff leave for applying from leave form.
+
+            $staff_leave_data = array();
+            
+            $this->db->select("*");
+            $this->db->from(db_prefix() . 'timesheets_requisition_leave');
+            $this->db->where("staff_id", $staff_id);
+            $this->db->where("status !='2'");
+            $this->db->where("DATE(start_time) >=", $period_from);
+            $this->db->where("DATE(end_time) <=", date("Y-m-d", strtotime($output['confirmation_date'])));
+            $staff_leave_data = $this->db->get()->result_array();
+            
+            if(!empty($staff_leave_data))
+            {
+                $final_staff_leave_data = array();
+
+                foreach($staff_leave_data as $staff_leave_data_val)
+                {
+                    $tmp_staff_leave_data = array();
+                    $tmp_staff_leave_data['id'] = $staff_leave_data_val['id'];
+                    $tmp_staff_leave_data['off_type'] = $staff_leave_data_val['type_of_leave_text'];
+                    $tmp_staff_leave_data['off_reason'] = $staff_leave_data_val['subject'];
+                    $tmp_staff_leave_data['holiday_date'] = date("Y-m-d");
+                    $tmp_staff_leave_data['department'] = '';
+                    $tmp_staff_leave_data['position']   = '';
+                    // array_push($final_staff_leave_data, $tmp_staff_leave_data);
+                    array_push($output['holiday_details'], $tmp_staff_leave_data);
+                }
+            }
+            
+            // End - staff leave for applying from leave form.
+
         }
+
+        $output['total_working_days'] = '0';
+        
+        if($output['total_hours'] > 0)
+        {
+            $total_hours = $output['total_hours'];  // total hours in HH:MM format
+            $daily_work_hours = 8; // maximum number of hours working.
+
+            list($total_hours_h, $total_hours_m) = explode(':', $total_hours);
+
+            $total_minutes = ($total_hours_h * 60) + $total_hours_m;
+            
+            $decimalMinutes = 0;
+
+            $decimalMinutes = $total_hours_h + ($total_hours_m / 60);
+            $output['total_hours'] = $decimalMinutes;
+
+            $working_days = round($total_minutes / ($daily_work_hours * 60), 2);
+            $output['total_hours'] = round($decimalMinutes, 2);
+
+            $output['total_working_days'] = $working_days;
+        }
+        
         return json_encode($output);
+    }
+
+    public function customer_supplier_number()
+    {
+        $customer_id = $this->input->post("customer_id");
+        if(!empty($customer_id))
+        {
+            $custom_fields = array();
+            $this->db->select("custom_value.value as customer_supplier_number");
+            $this->db->from(db_prefix() . "customfieldsvalues as custom_value");
+            $this->db->join(db_prefix() . "customfields as customfields","customfields.id = custom_value.fieldid","inner");
+            $this->db->where("customfields.slug","customers_supplier_number");
+            $this->db->where("custom_value.fieldto","customers");
+            $this->db->where_in("custom_value.relid",$customer_id);
+            $query = $this->db->get();
+            $custom_fields = $query->result_array();
+            $customer_supplier_number = '';
+            if(!empty($custom_fields))
+            {
+                foreach($custom_fields as $custom_fields_val)
+                {
+                    $customer_supplier_number .= $custom_fields_val['customer_supplier_number'];
+                }
+            }
+            echo $customer_supplier_number; exit;
+        }
+        else{
+            echo"No custome selected"; exit;
+        }
+    }
+
+    //  Project contract id fetch by using project id
+    public function contract_id_by_project_id()
+    {
+        $project_id = $this->input->post("project_id");
+        if(!empty($project_id))
+        {
+            $custom_fields = array();
+            $this->db->select("custom_value.value as customer_supplier_number");
+            $this->db->from(db_prefix() . "customfieldsvalues as custom_value");
+            $this->db->join(db_prefix() . "customfields as customfields","customfields.id = custom_value.fieldid","inner");
+            $this->db->where("customfields.slug","projects_contract_id");
+            $this->db->where("custom_value.fieldto","projects");
+            $this->db->where_in("custom_value.relid",$project_id);
+            $query = $this->db->get();
+            $custom_fields = $query->result_array();
+            $project_contract_number = '';
+            if(!empty($custom_fields))
+            {
+                foreach($custom_fields as $custom_fields_val)
+                {
+                    $project_contract_number .= $custom_fields_val['customer_supplier_number'];
+                }
+            }
+            echo $project_contract_number; exit;
+        }
+        else{
+            echo"No Project selected"; exit;
+        }
     }
     
 }

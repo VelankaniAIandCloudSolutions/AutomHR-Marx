@@ -96,5 +96,44 @@ class Cron extends App_Controller
             }
         }
     }
-    
+
+    //  casual balance update by cron job
+    public function casual_leave_credit()
+    {
+        ini_set("memory_limit", "-1");
+        set_time_limit(0);
+
+        $data = array();
+		$this->db->select("staffid as staff_id");
+        $this->db->from(db_prefix()."staff");
+        $this->db->where("status_work","working");
+        $staff_id = $this->db->get()->result_array();
+        
+        $this->load->model(TIMESHEETS_MODULE_NAME . '/timesheets_model');
+        
+        if(!empty($staff_id))
+        {
+            foreach($staff_id as $staff_id_val)
+            {
+                $data = array();
+                $data['staff_id'] = $staff_id_val['staff_id'];
+                $leave_credited = $this->timesheets_model->casual_leave_credit($data);
+            }
+            echo "Casual leave updated.";
+        }
+        else{
+            echo "no data found";
+        }
+    }
+
+    // rest staff leave every year
+
+    public function reset_staff_leave()
+    {
+        ini_set("memory_limit", "-1");
+        set_time_limit(0);
+        $this->load->model("timesheets/timesheets_model","timesheets_model");
+        $this->timesheets_model->reset_staff_leave();
+        echo "Staff Reset Executed Successfully";
+    }
 }

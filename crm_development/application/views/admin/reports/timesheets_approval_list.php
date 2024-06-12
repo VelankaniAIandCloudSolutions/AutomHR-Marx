@@ -9,6 +9,23 @@
             border-left: 1px solid #CCCCCC;
             border-radius: 8px;
         }
+        
+    .modal-content {
+    position: relative;
+    }
+
+    .loader {
+    display: none; /* Hide loader by default */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999; /* Ensure it appears above other content */
+    }
+
+    .loader-content {
+    text-align: center;
+    }
 </style>
 
 
@@ -124,6 +141,12 @@
 <div id="myModalApprove" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content-->
+    <div id="loader" class="loader">
+        <div class="loader-content">
+            <img src="<?php echo base_url('assets/loader.gif')?>" height='100%' width="100%"  alt="Loading...">
+        </div>
+    </div>
+
     <form name="approval_comments" id="approval_comments" method="post" action="<?php base_url('admin/reports/timesheet_approve')?>">
         <div class="modal-content">
           <div class="modal-header">
@@ -135,11 +158,11 @@
             <input type="hidden" id="typeField" name="typeField">
             <input type="hidden" id="approval_level" name="approval_level">
 
-            <label>Commet/ Feedback</label>
+            <label>Comment/ Feedback</label>
             <textarea name="approve_comments" id="approve_comments" class="form-control"></textarea>
           </div>
           <div class="modal-footer">
-            <input type="button" onclick="approve_comment(); return false;" name="Save" id="approve_btn" class="btn btn-primary" value="Save">
+            <input type="button" onclick="approve_comment();" name="Save" id="approve_btn" class="btn btn-primary" value="Save">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -151,6 +174,11 @@
 <!-- Reject Modal -->
 <div id="myModalReject" class="modal fade" role="dialog">
   <div class="modal-dialog">
+  <div id="loader" class="loader">
+        <div class="loader-content">
+            <img src="<?php echo base_url('assets/loader.gif')?>" height='100%' width="100%"  alt="Loading...">
+        </div>
+    </div>
     <!-- Modal content-->
     <form name="approval_comments" id="approval_comments" method="post" >
         <div class="modal-content">
@@ -163,11 +191,11 @@
             <input type="hidden" id="typeFieldReject" name="typeField">
             <input type="hidden" id="approval_level_reject" name="approval_level_reject">
 
-            <label>Commet/ Feedback</label>
+            <label>Comment/ Feedback <font color="red">*</font></label>
             <textarea name="reject_comments" id="reject_comments" class="form-control"></textarea>
           </div>
           <div class="modal-footer">
-            <input type="button" onclick="reject_comment(); return false;" name="Save" id="reject_btn" value="Save" class="btn btn-primary">
+            <input type="button" onclick="reject_comment();" name="Save" id="reject_btn" value="Save" class="btn btn-primary">
             <button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>
           </div>
         </div>
@@ -239,12 +267,19 @@ function approve_comment()
     else{
          var action_url = "<?php echo base_url('admin/reports/teamlead_timesheet_approve');?>";
     }
+
+    $('.loader').show();
+    $("#approve_btn").prop("disabled", true);
     $.ajax({
         type: "POST",
         url: action_url, 
         data:{id:rowId,type:type,comment:comment },
         success: function(response) {
-            location.reload();
+            // console.log(response);
+            $('.loader').hide();
+            // window.location.reload(true);
+            window.location.href = window.location.href;
+
         }
     });
 }
@@ -279,20 +314,26 @@ function reject_comment()
          var action_url = "<?php echo base_url('admin/reports/teamlead_timesheet_reject');?>";
     }
 
-    if ($('#reject_comments').prop('required') && $('#reject_comments').val() === '') {
-            event.preventDefault(); // Prevent form submission
+    if ($('#reject_comments').val() == '') {
             alert('Please fill in the required field.');
-            return false;
-        }
-    
-    $.ajax({
-        type: "POST",
-        url: action_url,
-        data:{id:rowId,type:type,comment:comment },
-        success: function(response) {
-            location.reload();
-        }
-    });
+             document.addEventListener('click', function() {
+            closeAlert();
+          });
+    }
+    else{
+        $('.loader').show();
+        $("#reject_btn").prop("disabled", true);
+            $.ajax({
+            type: "POST",
+            url: action_url,
+            data:{id:rowId,type:type,comment:comment },
+            success: function(response) {
+                $('.loader').hide();
+                window.location.href = window.location.href;
+
+            }
+        });
+    }
 }
 
 </script>

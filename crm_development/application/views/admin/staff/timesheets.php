@@ -59,7 +59,7 @@
                     <div class="panel-body">
                         <div class="col-md-3">
                         <label><?php echo _l('reporting_to');?></label>
-                            <select name="reporting_manager_id" data-live-search="true" data-width="100%" id="reporting_manager_id" class="selectpicker" data-width="100%" disabled>
+                            <select name="reporting_manager_id" data-live-search="true" data-width="100%" id="reporting_manager_id" class="selectpicker" data-width="100%">
                                 <option value=''> <?php echo _l('reporting_to');?></option>
                                 <?php foreach ($reproting_to as $reproting_to_manager) {
                                 ?>
@@ -67,6 +67,12 @@
                                 <?php echo get_staff_full_name($reproting_to_manager['reporting_to_id']); ?>
                                 </option>
                                 <?php } ?>
+
+                                <?php foreach ($staff_members_with_timesheets as $staff) { ?>
+                                <option value="<?php echo $staff['staff_id']; ?>">
+                                    <?php echo get_staff_full_name($staff['staff_id']); ?></option>
+                                <?php } ?>
+                                
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -106,22 +112,23 @@
 
                          <div class="col-md-3">
                         <label>Contractor ID</label>
-                            <input class='form-control' type="text" name="contractor_id" id="contractor_id" placeholder="Enter Contractor ID">
+                            <input class='form-control' type="text" name="contractor_id" id="contractor_id" placeholder="Enter Contractor ID" disabled>
                         </div>
 
                         <div class="col-md-3">
                         <label>Supplier Number</label>
-                            <input class='form-control' type="text" name="supplier_name" id="supplier_name" placeholder="Enter Supplier Number">
+                            <input class='form-control' type="text" name="supplier_name" id="supplier_name" placeholder="Enter Supplier Number" disabled>
                         </div>
 
                         <hr>
                         <div class="clearfix"></div>
 
-                        <div class="col-md-3">
+                        <!-- <div class="col-md-3">
                         <label>Consultant Name</label>
-                            <input class='form-control' type="text" name="consultant_name" id="consultant_name" placeholder="Enter Consultant Name">
-                        </div>
-
+                            <input class='form-control' type="hidden" name="consultant_name" id="consultant_name" value="<?php echo get_staff_full_name(get_staff_user_id()); ?>" placeholder="Enter Consultant Name" disabled>
+                        </div> -->
+                        <input class='form-control' type="hidden" name="consultant_name" id="consultant_name" value="<?php echo get_staff_full_name(get_staff_user_id()); ?>" placeholder="Enter Consultant Name" disabled>
+                        
                         <?php if (isset($view_all)) { ?>
                         <div class="col-md-3">
                         <label><?php echo 'Select Staff Member';?></label>
@@ -137,14 +144,20 @@
                         </div>
                         <?php } ?>
 
-                         <div class="col-md-3">
+                         <!-- <div class="col-md-3">
                         <label>Line Manager/ Lead Architect/ Approver Name</label>
                             <input class='form-control' type="text" name="line_manager" id="line_manager" placeholder="Enter Line Manager/ Lead Architect/ Approver Name">
-                        </div>
+                        </div> -->
+                        <input class='form-control' type="hidden" name="line_manager" id="line_manager" placeholder="Enter Line Manager/ Lead Architect/ Approver Name">
 
                         <div class="col-md-3">
                         <label>Does the day column need to be displayed?</label>
                             <input type="checkbox" name="day_display" id="day_display" title="Does the day column need to be displayed?">
+                        </div>
+
+                        <div class="col-md-3">
+                        <label>Does the hour column need to be displayed?</label>
+                            <input type="checkbox" checked name="hour_display" id="hour_display" title="Does the hour column need to be displayed?">
                         </div>
 
                          <hr>
@@ -499,6 +512,7 @@ $("#submit_for_approval").on("click", function(){
     var consultant_name = $("#consultant_name").val();
     var line_manager = $("#line_manager").val();
     var day_display = $('#day_display').is(':checked') ? 1 : 0;
+    var hour_display = $('#hour_display').is(':checked') ? 1 : 0;
     
     $('#loader').show();
 
@@ -506,7 +520,7 @@ $("#submit_for_approval").on("click", function(){
         type: "POST",
         url: "<?php echo base_url('admin/staff/time_sheet_approval');?>",
         data: {timesheet_staff_id:timesheet_staff_id, range:range, period_from:period_from, period_to:period_to, project_id:project_id, clientid:clientid, reporting_manager_id:reporting_manager_id,
-            contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name, line_manager:line_manager, day_display:day_display},
+            contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name, line_manager:line_manager, day_display:day_display, hour_display:hour_display},
         success: function(response) {
             $('#loader').hide();
             location.reload();
@@ -646,6 +660,7 @@ $("#export_timesheet").on("click", function(){
 
     var line_manager = $("#line_manager").val();
     var day_display = $('#day_display').is(':checked') ? 1 : 0;
+    var hour_display = $('#hour_display').is(':checked') ? 1 : 0;
     
     $('#loader').show();
 
@@ -653,7 +668,7 @@ $("#export_timesheet").on("click", function(){
     $.ajax({
         type: "POST",
         url: "<?php echo base_url('admin/staff/timesheet_export');?>",
-        data: {timesheet_staff_id:timesheet_staff_id, range:range, period_from:period_from, period_to:period_to, project_id:project_id, clientid:clientid, reporting_manager_id:reporting_manager_id , contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name,line_manager:line_manager, day_display:day_display,export:'export' },
+        data: {timesheet_staff_id:timesheet_staff_id, range:range, period_from:period_from, period_to:period_to, project_id:project_id, clientid:clientid, reporting_manager_id:reporting_manager_id , contractor_id:contractor_id, supplier_name:supplier_name, consultant_name:consultant_name,line_manager:line_manager, day_display:day_display,hour_display:hour_display,export:'export' },
         success: function(response) {
             console.log(response);
             
@@ -713,7 +728,73 @@ function response_file_download(fileUrl, file_type = '')
     document.body.removeChild(link);
  }
 
+//  customer supplier number fetch based on customer id 
+
+    $("#clientid").on("change", function(){
+        let customer_id = $(this).val();
+            $.ajax({
+            type: "POST",
+            url: "<?php echo base_url('admin/staff/customer_supplier_number');?>",
+            data: {customer_id:customer_id},
+            success: function(response) {
+                if(response !== 'No custome selected')
+                {
+                    $("#supplier_name").val(response);
+                }
+                else{
+                    $("#supplier_name").val('');
+                }
+            }
+        });
+    });
+
+    //  Line Manager/ Lead Architect/ Approver Name on reporting_manager_id change 
+    $(document).ready(function(){
+        function updateManagerInfo() {
+            let reporting_manager_id = $("#reporting_manager_id").val();
+            let manager_name = '';
+
+            if(reporting_manager_id) {
+                manager_name = '<?php echo get_staff_full_name("68"); ?>';
+                if(manager_name != "")
+                {
+                    $("#line_manager").val(manager_name);
+                }
+            }
+        }
+
+        // Call the function on page load
+        updateManagerInfo();
+
+        // Call the function on change event
+        $("#reporting_manager_id").on("change", function(){
+            updateManagerInfo();
+        });
+    });
+
+
+
+// Project contract id fetch by using project id
+
+$("#timesheet_project_id").on("change", function(){
+        let project_id = $(this).val();
+            $.ajax({
+            type: "POST",
+            url: "<?php echo base_url('admin/staff/contract_id_by_project_id');?>",
+            data: {project_id:project_id},
+            success: function(response) {
+                if(response !== 'No Project Selected')
+                {
+                    $("#contractor_id").val(response);
+                }
+                else{
+                    $("#contractor_id").val('');
+                }
+            }
+        });
+    });
 </script>
+
 </body>
 
 </html>

@@ -96,7 +96,7 @@ function hr_payroll_module_init_menu_items()
         $CI->app_menu->add_sidebar_children_item('hr_payroll', [
             'slug'     => 'hr_manage_attendance',
             'name'     => _l('hr_manage_attendance'),
-            'icon'     => 'fa fa-pencil  menu-icon',
+            'icon'     => 'fa fa-pencil-square-o menu-icon',
             'href'     => admin_url('hr_payroll/manage_attendance'),
             'position' => 2,
         ]);

@@ -8693,7 +8693,7 @@ class timesheets_model extends app_model
 								if (!isset($accumulated_leave_data[$key])) {
 									$accumulated_leave_data[$key] = 0;
 								}
-								$accumulated_leave_data[$key] += $value ? $value : 0 ;
+								$accumulated_leave_data[$key] += $value ? $value : 0;
 							}
 						}
 					}

@@ -969,6 +969,7 @@ class Staff extends AdminController
            $post_data['line_manager'] = $data['line_manager'];
            $post_data['day_display'] = $data['day_display'];
            $post_data['hour_display'] = $data['hour_display'];
+            $export = '';
         }
         else
         {
@@ -1015,7 +1016,7 @@ class Staff extends AdminController
         $this->db->join(db_prefix()."staff as staff","staff.staffid = taskstimer.staff_id","left");
         $this->db->join(db_prefix()."staff as reporting_manager","reporting_manager.staffid = staff.team_manage","left");
 
-        if($export == 'export')
+        if($export != 'export')
         {
             $this->db->join(db_prefix()."time_sheet_approval as tsa","tsa.staff_id = taskstimer.staff_id","left");
         }

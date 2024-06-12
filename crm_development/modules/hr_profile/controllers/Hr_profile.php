@@ -5646,8 +5646,19 @@ class Hr_profile extends AdminController {
 					access_denied('staff');
 				}
 				$id = $this->hr_profile_model->add_staff($data);
-
 				if ($id) {
+					// Start	: leave assign for new staff
+					$tmp_data = array();
+					$tmp_data = array(
+						"staff_id" => $id,
+						"department_id" =>$data['departments']
+					); 
+
+					$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+					
+        			$this->timesheets_model->staff_leave_assign($tmp_data);
+					
+					// End	: leave assign for new staff
 					hr_profile_handle_staff_profile_image_upload($id);
 					set_alert('success', _l('added_successfully', _l('staff_member')));
 
@@ -5655,7 +5666,7 @@ class Hr_profile extends AdminController {
 
 		        	// $this->load->model("Razorpay_payroll","razorpay_payroll");
 		        	// $this->razorpay_payroll->add_employee($id); // $id is employee id
-					redirect(admin_url('hr_profile/member/' . $id));
+					// redirect(admin_url('hr_profile/member/' . $id));
 				}
 
 			} else {
@@ -5670,6 +5681,9 @@ class Hr_profile extends AdminController {
 				}
 				hr_profile_handle_staff_profile_image_upload($id);
 				$response = $this->hr_profile_model->update_staff($data, $id);
+
+
+				
 				if (is_array($response)) {
 					if (isset($response['cant_remove_main_admin'])) {
 						set_alert('warning', _l('staff_cant_remove_main_admin'));
@@ -5677,18 +5691,34 @@ class Hr_profile extends AdminController {
 						set_alert('warning', _l('staff_cant_remove_yourself_from_admin'));
 					}
 				} elseif ($response == true) {
+
+					// Start	: leave assign for new staff
+					$tmp_data = array();
+					$tmp_data = array(
+						"staff_id" => $id,
+						"department_id" =>$data['departments']
+					); 
+
+					$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+					
+					$this->timesheets_model->staff_leave_assign($tmp_data);
+					
+
+					// End	: leave assign for new staff
+
+
 					set_alert('success', _l('updated_successfully', _l('staff_member')));
 				}
 
 				//  Razorpay API integration for Update Employee in Razorpay
 
-		        //$this->load->model("Razorpay_payroll","razorpay_payroll");
+		        // $this->load->model("Razorpay_payroll","razorpay_payroll");
 
 		        // check employee exist on razorpay
 		        
-		        $exist_check = 0;
+		        // $exist_check = 0;
 
-		       // $exist_check = $this->razorpay_payroll->check_employee_exits($id); 
+		        // $exist_check = $this->razorpay_payroll->check_employee_exits($id); 
 
 		        // if check exist value return 1 it means employee profile already available in razorpay else create a new profile.
 		        

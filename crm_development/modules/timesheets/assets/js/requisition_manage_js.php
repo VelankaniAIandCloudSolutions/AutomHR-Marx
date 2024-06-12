@@ -87,6 +87,8 @@
 
     $('select[name="type_of_leave"]').on('change', function() {
       get_remain_day_off();
+      let staff_id = $(this).val();
+      staff_female(staff_id);
     });
 
     $('#rel_type').on('change', function() {
@@ -362,6 +364,8 @@
 
     $('select[name="staff_id"]').change(function(){
       get_remain_day_off();
+      let staff_id = $(this).val();
+      staff_female(staff_id);
     });
 
     $('.add_new_type_of_leave').click(function(){
@@ -851,4 +855,58 @@
     }  
     return result;
   }
+
+ // attachment required when leave more than 2 and sick leave 
+  $("#number_of_leaving_day, select[name='type_of_leave'], #start_time, #end_time, #file").on("change", function(){
+    let days_count = $("#number_of_leaving_day").val();
+    let rel_type =  $("select[name='type_of_leave']").val(); // leave type
+    
+    $(".file_required_lable").hide();
+    console.log(days_count);
+    console.log(rel_type);
+
+    if(days_count > 2 && rel_type == 1)
+    {
+      $(".file_required_lable").show();
+      
+      let inputField = $("#file").val();
+      
+      const message = $('#message').text();
+
+      if (inputField === "") 
+      {
+        $('#message').show();
+        $('#file').addClass('error');
+        $('.btn-submit').prop('disabled', true);
+      } 
+      else 
+      {
+        $('#message').hide();
+        $('#file').removeClass('error');
+        $('.btn-submit').prop('disabled', false);
+      }
+    }
+    else{
+      $(".file_required_lable").hide();
+      $('#message').hide();
+    }
+  });
+
+  function staff_female(id)
+  {
+    var leave_type = $('select[name="type_of_leave"]').val();
+    $.post(admin_url + 'timesheets/staff_gender/', { id: id })
+      .done(function(response) {
+        if(response != 1 && leave_type == 2)
+        {
+          $('#leave_type_message').text('Sorry, you are not eligible for this type of leave.');
+          $('.btn-submit').prop('disabled', true);
+        }
+        else{
+          $('#leave_type_message').text('');
+          $('.btn-submit').prop('disabled', false);
+        }
+      });
+  }
+  
 </script>

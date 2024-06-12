@@ -4,9 +4,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * timesheets model
  */
-class timesheets_model extends app_model {
-	public function __construct() {
+class timesheets_model extends app_model
+{
+	public function __construct()
+	{
 		parent::__construct();
+		$this->load->helper('timesheets');
+
 	}
 
 	/**
@@ -15,7 +19,8 @@ class timesheets_model extends app_model {
 	 * @param  array  $where
 	 * @return array
 	 */
-	public function get_staff($id = '', $where = []) {
+	public function get_staff($id = '', $where = [])
+	{
 		$select_str = '*,concat(firstname," ",lastname) as full_name';
 
 		if (is_staff_logged_in() && $id != '' && $id == get_staff_user_id()) {
@@ -44,7 +49,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staff_id
 	 * @return object
 	 */
-	public function get_staff_role($staff_id) {
+	public function get_staff_role($staff_id)
+	{
 
 		return $this->db->query('select r.name
 			from ' . db_prefix() . 'staff as s
@@ -57,7 +63,8 @@ class timesheets_model extends app_model {
 	 * @param   $departmentid
 	 * @return
 	 */
-	public function get_department_name($departmentid) {
+	public function get_department_name($departmentid)
+	{
 		return $this->db->query('select ' . db_prefix() . 'departments.name from ' . db_prefix() . 'departments where departmentid = ' . $departmentid)->result_array();
 	}
 
@@ -65,7 +72,8 @@ class timesheets_model extends app_model {
 	 * get month
 	 * @return month
 	 */
-	public function get_month() {
+	public function get_month()
+	{
 		$date = getdate();
 		$date_1 = mktime(0, 0, 0, ($date['mon'] - 5), 1, $date['year']);
 		$date_2 = mktime(0, 0, 0, ($date['mon'] - 4), 1, $date['year']);
@@ -79,7 +87,8 @@ class timesheets_model extends app_model {
 		$date_10 = mktime(0, 0, 0, ($date['mon'] + 4), 1, $date['year']);
 		$date_11 = mktime(0, 0, 0, ($date['mon'] + 5), 1, $date['year']);
 		$date_12 = mktime(0, 0, 0, ($date['mon'] + 6), 1, $date['year']);
-		$month = ['1' => ['id' => date('Y-m-d', $date_1), 'name' => date('m/y', $date_1)],
+		$month = [
+			'1' => ['id' => date('Y-m-d', $date_1), 'name' => date('m/y', $date_1)],
 			'2' => ['id' => date('Y-m-d', $date_2), 'name' => date('m/y', $date_2)],
 			'3' => ['id' => date('Y-m-d', $date_3), 'name' => date('m/y', $date_3)],
 			'4' => ['id' => date('Y-m-d', $date_4), 'name' => date('m/y', $date_4)],
@@ -98,7 +107,8 @@ class timesheets_model extends app_model {
 	 * set leave
 	 * @param object $data
 	 */
-	public function set_leave($data) {
+	public function set_leave($data)
+	{
 		$affectedrows = 0;
 		$date_create = date('Y-m-d H:i:s');
 		$current_year = date('Y');
@@ -178,7 +188,8 @@ class timesheets_model extends app_model {
 	 * add_day_off
 	 * @param  array $data
 	 */
-	public function add_day_off($data) {
+	public function add_day_off($data)
+	{
 		$department = '';
 		$position = '';
 		$repeat_by_year = 0;
@@ -214,7 +225,8 @@ class timesheets_model extends app_model {
 	 * @param   int $id
 	 * @return   bool
 	 */
-	public function update_day_off($data, $id) {
+	public function update_day_off($data, $id)
+	{
 		$department = '';
 		$position = '';
 		$repeat_by_year = 0;
@@ -250,7 +262,8 @@ class timesheets_model extends app_model {
 	 * @param  string $type
 	 * @return array
 	 */
-	public function get_break_dates($type = '') {
+	public function get_break_dates($type = '')
+	{
 		if ($type != '') {
 			$this->db->where('off_type', $type);
 			return $this->db->get(db_prefix() . 'day_off')->result_array();
@@ -263,7 +276,8 @@ class timesheets_model extends app_model {
 	 * @param  $id
 	 * @return bool
 	 */
-	public function delete_day_off($id) {
+	public function delete_day_off($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'day_off');
 		if ($this->db->affected_rows() > 0) {
@@ -277,7 +291,8 @@ class timesheets_model extends app_model {
 	 * @param  $type
 	 * @return
 	 */
-	public function get_requisition($type) {
+	public function get_requisition($type)
+	{
 		return $this->db->query('select rq.id, rq.name, rq.addedfrom, rq.date_create, rq.approval_deadline, rq.status
 			from ' . db_prefix() . 'request rq
 			left join ' . db_prefix() . 'request_type rqt on rqt.id = rq.request_type_id
@@ -289,7 +304,8 @@ class timesheets_model extends app_model {
 	 * @param object $data
 	 * @return integer
 	 */
-	public function add_work_shift($data) {
+	public function add_work_shift($data)
+	{
 		unset($data['id']);
 		if (!$this->check_format_date_ymd($data['from_date'])) {
 			$data_insert['from_date'] = to_sql_date($data['from_date']);
@@ -423,7 +439,8 @@ class timesheets_model extends app_model {
 	 * @param  $id
 	 * @return
 	 */
-	public function get_staff_id_by_department($id) {
+	public function get_staff_id_by_department($id)
+	{
 		$this->db->select('staffid');
 		$this->db->where('departmentid', $id);
 		return $this->db->get(db_prefix() . 'staff_departments')->result_array();
@@ -433,7 +450,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return  array
 	 */
-	public function get_staff_id_by_role($id) {
+	public function get_staff_id_by_role($id)
+	{
 		$this->db->select('staffid');
 		$this->db->where('role', $id);
 		return $this->db->get(db_prefix() . 'staff')->result_array();
@@ -443,7 +461,8 @@ class timesheets_model extends app_model {
 	 * @param   $from_date
 	 * @param   $to_date
 	 */
-	public function get_list_date($from_date, $to_date) {
+	public function get_list_date($from_date, $to_date)
+	{
 		$list_date = [];
 		if (strtotime($from_date) > strtotime($to_date)) {
 			return [];
@@ -465,7 +484,8 @@ class timesheets_model extends app_model {
 	 * @param  boolean $has_staff
 	 * @return array
 	 */
-	public function get_shift_repeat_periodically($shifts_detail, $has_staff = true) {
+	public function get_shift_repeat_periodically($shifts_detail, $has_staff = true)
+	{
 		$shifts_detail = explode(',', $shifts_detail);
 		$es_detail = [];
 		$row = [];
@@ -514,7 +534,8 @@ class timesheets_model extends app_model {
 	 * @return integer
 	 */
 
-	public function get_shift_by_absolute_time($shifts_detail, $list_date, $has_staff = true) {
+	public function get_shift_by_absolute_time($shifts_detail, $list_date, $has_staff = true)
+	{
 		$shifts_detail = explode(',', $shifts_detail);
 		$es_detail = [];
 		$row = [];
@@ -558,7 +579,8 @@ class timesheets_model extends app_model {
 	 * @param   $data
 	 * @return  boolean
 	 */
-	public function update_work_shift($data) {
+	public function update_work_shift($data)
+	{
 		if (!$this->check_format_date_ymd($data['from_date'])) {
 			$data_insert['from_date'] = to_sql_date($data['from_date']);
 		} else {
@@ -702,7 +724,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $work_shift
 	 * @return array
 	 */
-	public function get_data_edit_shift($work_shift) {
+	public function get_data_edit_shift($work_shift)
+	{
 		$this->db->where('id', $work_shift);
 		$shift = $this->db->get(db_prefix() . 'work_shift')->row();
 		$data['shifts_detail'] = $shift->shifts_detail;
@@ -719,18 +742,17 @@ class timesheets_model extends app_model {
 				}
 			}
 			unset($data['shifts_detail']);
-
 		}
 		return $shifts_detail;
-
 	}
 
-/**
- * get shift
- * @param integer $id
- * @return object or array
- */
-	public function get_shifts($id = '') {
+	/**
+	 * get shift
+	 * @param integer $id
+	 * @return object or array
+	 */
+	public function get_shifts($id = '')
+	{
 		if ($id != '') {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'work_shift')->row();
@@ -738,7 +760,8 @@ class timesheets_model extends app_model {
 			return $this->db->get(db_prefix() . 'work_shift')->result_array();
 		}
 	}
-	public function delete_shift($id) {
+	public function delete_shift($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'work_shift');
 		if ($this->db->affected_rows() > 0) {
@@ -749,7 +772,6 @@ class timesheets_model extends app_model {
 			return true;
 		}
 		return false;
-
 	}
 	/**
 	 * get timesheets ts by month
@@ -758,7 +780,8 @@ class timesheets_model extends app_model {
 	 * @param integer $staffid
 	 * @return array
 	 */
-	public function get_timesheets_ts_by_month($month, $year) {
+	public function get_timesheets_ts_by_month($month, $year)
+	{
 		$check_latch_timesheet = $this->check_latch_timesheet($month . '-' . $year);
 		if ($check_latch_timesheet) {
 			$query = 'select * from ' . db_prefix() . 'timesheets_timesheet where month(date_work) = ' . $month . ' and year(date_work) = ' . $year . ' and latch = 1';
@@ -774,7 +797,8 @@ class timesheets_model extends app_model {
 	 * @param  $staff
 	 * @return
 	 */
-	public function get_ts_by_date_and_staff($date, $staff) {
+	public function get_ts_by_date_and_staff($date, $staff)
+	{
 		$this->db->where('date_work', $date);
 		$this->db->where('staff_id', $staff);
 		return $this->db->get(db_prefix() . 'timesheets_timesheet')->result_array();
@@ -783,7 +807,8 @@ class timesheets_model extends app_model {
 	/**
 	 * staff chart by age
 	 */
-	public function staff_chart_by_age() {
+	public function staff_chart_by_age()
+	{
 		$staffs = $this->staff_model->get();
 
 		$chart = [];
@@ -806,7 +831,6 @@ class timesheets_model extends app_model {
 			} elseif ($age >= 40 && $age <= 60) {
 				$status_4['y'] += 1;
 			}
-
 		}
 		if ($status_1['y'] > 0) {
 			array_push($chart, $status_1);
@@ -830,7 +854,8 @@ class timesheets_model extends app_model {
 	 * @param integre $year
 	 * @return integre
 	 */
-	public function get_timesheets_ts_by_year($staff_id, $year) {
+	public function get_timesheets_ts_by_year($staff_id, $year)
+	{
 
 		return $this->db->query('select * from ' . db_prefix() . 'timesheets_timesheet where year(date_work) = ' . $year . ' and staff_id = ' . $staff_id . ' order by date_work asc ')->result_array();
 	}
@@ -838,7 +863,8 @@ class timesheets_model extends app_model {
 	 * get request leave
 	 * @param  integer $id
 	 */
-	public function get_request_leave($id = '') {
+	public function get_request_leave($id = '')
+	{
 		$this->load->model('staff_model');
 		if ($id == '') {
 			return $this->db->get(db_prefix() . 'timesheets_requisition_leave')->result_array();
@@ -863,7 +889,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staffid
 	 * @return object
 	 */
-	public function getdepartment_name($staffid) {
+	public function getdepartment_name($staffid)
+	{
 		return $this->db->query('select s.staffid, d.departmentid ,d.name
 			from ' . db_prefix() . 'staff as s
 			left join ' . db_prefix() . 'staff_departments as sd on sd.staffid = s.staffid
@@ -878,7 +905,8 @@ class timesheets_model extends app_model {
 	 * @param  array  $where
 	 * @return array
 	 */
-	public function get_requisition_attachments($id = '', $attachment_id = '', $where = []) {
+	public function get_requisition_attachments($id = '', $attachment_id = '', $where = [])
+	{
 		$this->db->where($where);
 		$idishash = !is_numeric($attachment_id) && strlen($attachment_id) == 32;
 		if (is_numeric($attachment_id) || $idishash) {
@@ -897,7 +925,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staffid
 	 * @return integer
 	 */
-	public function get_number_of_days_off($staffid = 0) {
+	public function get_number_of_days_off($staffid = 0)
+	{
 		if ($staffid == 0) {
 			$staffid = get_staff_user_id();
 		}
@@ -946,7 +975,8 @@ class timesheets_model extends app_model {
 	 * @return boolean
 	 */
 
-	public function get_timesheets_option_api($name) {
+	public function get_timesheets_option_api($name)
+	{
 		$options = [];
 		$val = '';
 		$name = trim($name);
@@ -972,17 +1002,18 @@ class timesheets_model extends app_model {
 	 * @param      integer  $year     the year
 	 * @return     <type>          the day off.
 	 */
-	public function get_day_off($staffid = 0, $year = 0, $type_of_leave = '') {
+	public function get_day_off($staffid = 0, $year = 0, $type_of_leave = '')
+	{
 		if ($staffid == 0 || $staffid == '') {
 			$staffid = get_staff_user_id();
 		}
 		if ($year == 0 || $year == '') {
 			$year = date('Y');
 		}
-		if($type_of_leave == ''){
+		if ($type_of_leave == '') {
 			$type_of_leave = '8';
 		}
-		$day_off = $this->db->query('select * from ' . db_prefix() . 'timesheets_day_off where staffid = ' . $staffid . ' and year = ' . $year.' and type_of_leave = "'.$type_of_leave.'"')->row();
+		$day_off = $this->db->query('select * from ' . db_prefix() . 'timesheets_day_off where staffid = ' . $staffid . ' and year = ' . $year . ' and type_of_leave = "' . $type_of_leave . '"')->row();
 		return $day_off;
 	}
 	/**
@@ -991,7 +1022,8 @@ class timesheets_model extends app_model {
 	 * @param   $rel_type
 	 * @return   bool
 	 */
-	public function check_approval_details($rel_id, $rel_type) {
+	public function check_approval_details($rel_id, $rel_type)
+	{
 		$this->db->where('rel_id', $rel_id);
 		$this->db->where('rel_type', $rel_type);
 		$approve_status = $this->db->get(db_prefix() . 'timesheets_approval_details')->result_array();
@@ -1016,7 +1048,8 @@ class timesheets_model extends app_model {
 	 * @param  string $rel_type
 	 * @return  array
 	 */
-	public function get_list_approval_details($rel_id, $rel_type) {
+	public function get_list_approval_details($rel_id, $rel_type)
+	{
 		$this->db->select('*');
 		$this->db->where('rel_id', $rel_id);
 		$this->db->where('rel_type', $rel_type);
@@ -1029,7 +1062,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staffid
 	 * @return
 	 */
-	public function cancel_request($data, $staffid = '') {
+	public function cancel_request($data, $staffid = '')
+	{
 		$rel_id = $data['rel_id'];
 		$rel_type = $data['rel_type'];
 		$data_update = [];
@@ -1040,70 +1074,69 @@ class timesheets_model extends app_model {
 
 		switch (strtolower($rel_type)) {
 
-		case 'leave':
-			$data_update['status'] = 0;
-			$this->db->where('id', $rel_id);
-			$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
+			case 'leave':
+				$data_update['status'] = 0;
+				$this->db->where('id', $rel_id);
+				$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
 
-			$this->db->where('id', $rel_id);
-			$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
+				$this->db->where('id', $rel_id);
+				$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
 
-			$st = $requisition_leave->start_time;
-			$et = $requisition_leave->end_time;
+				$st = $requisition_leave->start_time;
+				$et = $requisition_leave->end_time;
 
-			if ($staffid != '') {
-				$staff_id = $staffid;
-			} else {
-				$staff_id = get_staff_user_id();
-			}
+				if ($staffid != '') {
+					$staff_id = $staffid;
+				} else {
+					$staff_id = get_staff_user_id();
+				}
 
-			$type = '';
-			switch ($requisition_leave->type_of_leave) {
-			case 1:
-				$type = 'SI';
+				$type = '';
+				switch ($requisition_leave->type_of_leave) {
+					case 1:
+						$type = 'SI';
+						break;
+					case 2:
+						$type = 'M';
+						break;
+					case 3:
+						$type = 'R';
+						break;
+					case 4:
+						$type = 'P';
+						break;
+					case 6:
+						$type = 'PO';
+						break;
+					case 7:
+						$type = 'ME';
+						break;
+					case 8:
+						$type = 'AL';
+
+						$day_off = $this->get_day_off($requisition_leave->staff_id);
+						// Number of leaving day
+						$dd = $requisition_leave->number_of_leaving_day;
+						$update_days_off = $day_off->days_off - $dd;
+						$update_remain = $day_off->total - $update_days_off;
+						$this->db->where('staffid', $requisition_leave->staff_id);
+						$this->db->where('year', date('Y'));
+						$this->db->update(db_prefix() . 'timesheets_day_off', [
+							'remain' => $update_remain,
+							'days_off' => $update_days_off,
+						]);
+						break;
+				}
+
+				$this->db->where('relate_id', $rel_id);
+				$this->db->where('relate_type', 'leave');
+				$this->db->delete(db_prefix() . 'timesheets_timesheet');
+
+				return true;
 				break;
-			case 2:
-				$type = 'M';
+			default:
+				return false;
 				break;
-			case 3:
-				$type = 'R';
-				break;
-			case 4:
-				$type = 'P';
-				break;
-			case 6:
-				$type = 'PO';
-				break;
-			case 7:
-				$type = 'ME';
-				break;
-			case 8:
-				$type = 'AL';
-
-				$day_off = $this->get_day_off($requisition_leave->staff_id);
-				// Number of leaving day
-				$dd = $requisition_leave->number_of_leaving_day;
-				$update_days_off = $day_off->days_off - $dd;
-				$update_remain = $day_off->total - $update_days_off;
-				$this->db->where('staffid', $requisition_leave->staff_id);
-				$this->db->where('year', date('Y'));
-				$this->db->update(db_prefix() . 'timesheets_day_off', [
-					'remain' => $update_remain,
-					'days_off' => $update_days_off,
-				]);
-				break;
-
-			}
-
-			$this->db->where('relate_id', $rel_id);
-			$this->db->where('relate_type', 'leave');
-			$this->db->delete(db_prefix() . 'timesheets_timesheet');
-
-			return true;
-			break;
-		default:
-			return false;
-			break;
 		}
 	}
 	/**
@@ -1113,7 +1146,8 @@ class timesheets_model extends app_model {
 	 * @param  string $staff_id
 	 * @return  decimal
 	 */
-	public function get_value_by_time($st, $et = '', $staff_id = '') {
+	public function get_value_by_time($st, $et = '', $staff_id = '')
+	{
 
 		if ($staff_id == '') {
 			$staffid = get_staff_user_id();
@@ -1181,184 +1215,12 @@ class timesheets_model extends app_model {
 			}
 		} else {
 			switch (date('n', $time)) {
-			case 1:
-				$lunch_break = $date_time['lunch_break']['monday'];
-				$work_time = $date_time['work_time']['monday'];
+				case 1:
+					$lunch_break = $date_time['lunch_break']['monday'];
+					$work_time = $date_time['work_time']['monday'];
 
-				if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['monday'])) {
-					$stime = strtotime($date_time['late_for_work']['monday']);
-				} else {
-					$stime = strtotime(date('H:i:s', strtotime($st)));
-				}
-
-				if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
-					$_st = strtotime(date('H:i:s', strtotime($st)));
-					$_et = strtotime(date('H:i:s', strtotime($et)));
-					if ($_st < strtotime($date_time['late_for_work']['monday'])) {
-						$_st = strtotime($date_time['late_for_work']['monday']);
-					} elseif ($_st > strtotime($date_time['start_lunch_break_time']['monday']) && $_st < strtotime($date_time['start_afternoon_shift']['monday'])) {
-						$_st = strtotime($date_time['start_afternoon_shift']['monday']);
-					}
-					if ($_et > strtotime($date_time['come_home_early']['monday'])) {
-						$_et = strtotime($date_time['come_home_early']['monday']);
-					}
-					if (strtotime($date_time['start_lunch_break_time']['monday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
-						$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = ($_et - $_st) / 3600;
-					}
-				} else {
-
-					if (strtotime($date_time['start_lunch_break_time']['monday']) > $stime) {
-						$t = (strtotime($date_time['come_home_early']['monday']) - $stime) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = (strtotime($date_time['come_home_early']['monday']) - $stime) / 3600;
-					}
-				}
-
-				break;
-			case 2:
-				$lunch_break = $date_time['lunch_break']['tuesday'];
-				$work_time = $date_time['work_time']['tuesday'];
-
-				if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['tuesday'])) {
-					$stime = strtotime($date_time['late_for_work']['tuesday']);
-				} else {
-					$stime = strtotime(date('H:i:s', strtotime($st)));
-				}
-				if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
-					$_st = strtotime(date('H:i:s', strtotime($st)));
-					$_et = strtotime(date('H:i:s', strtotime($et)));
-					if ($_st < strtotime($date_time['late_for_work']['tuesday'])) {
-						$_st = strtotime($date_time['late_for_work']['tuesday']);
-					} elseif ($_st > strtotime($date_time['start_lunch_break_time']['tuesday']) && $_st < strtotime($date_time['start_afternoon_shift']['tuesday'])) {
-						$_st = strtotime($date_time['start_afternoon_shift']['tuesday']);
-					}
-					if ($_et > strtotime($date_time['come_home_early']['tuesday'])) {
-						$_et = strtotime($date_time['come_home_early']['tuesday']);
-					}
-					if (strtotime($date_time['start_lunch_break_time']['tuesday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
-						$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = ($_et - $_st) / 3600;
-					}
-				} else {
-					if (strtotime($date_time['start_lunch_break_time']['tuesday']) > $stime) {
-						$t = (strtotime($date_time['come_home_early']['tuesday']) - $stime) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = (strtotime($date_time['come_home_early']['tuesday']) - $stime) / 3600;
-					}
-				}
-				break;
-			case 3:
-				$lunch_break = $date_time['lunch_break']['wednesday'];
-				$work_time = $date_time['work_time']['wednesday'];
-
-				if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['wednesday'])) {
-					$stime = strtotime($date_time['late_for_work']['wednesday']);
-				} else {
-					$stime = strtotime(date('H:i:s', strtotime($st)));
-				}
-
-				if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
-					$_st = strtotime(date('H:i:s', strtotime($st)));
-					$_et = strtotime(date('H:i:s', strtotime($et)));
-					if ($_st < strtotime($date_time['late_for_work']['wednesday'])) {
-						$_st = strtotime($date_time['late_for_work']['wednesday']);
-					} elseif ($_st > strtotime($date_time['start_lunch_break_time']['wednesday']) && $_st < strtotime($date_time['start_afternoon_shift']['wednesday'])) {
-						$_st = strtotime($date_time['start_afternoon_shift']['wednesday']);
-					}
-					if ($_et > strtotime($date_time['come_home_early']['wednesday'])) {
-						$_et = strtotime($date_time['come_home_early']['wednesday']);
-					}
-					if (strtotime($date_time['start_lunch_break_time']['wednesday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
-						$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = ($_et - $_st) / 3600;
-					}
-				} else {
-
-					if (strtotime($date_time['start_lunch_break_time']['wednesday']) > $stime) {
-						$t = (strtotime($date_time['come_home_early']['wednesday']) - $stime) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = (strtotime($date_time['come_home_early']['wednesday']) - $stime) / 3600;
-					}
-				}
-				break;
-			case 4:
-				$lunch_break = $date_time['lunch_break']['thursday'];
-				$work_time = $date_time['work_time']['thursday'];
-
-				if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['thursday'])) {
-					$stime = strtotime($date_time['late_for_work']['thursday']);
-				} else {
-					$stime = strtotime(date('H:i:s', strtotime($st)));
-				}
-				if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
-					$_st = strtotime(date('H:i:s', strtotime($st)));
-					$_et = strtotime(date('H:i:s', strtotime($et)));
-					if ($_st < strtotime($date_time['late_for_work']['thursday'])) {
-						$_st = strtotime($date_time['late_for_work']['thursday']);
-					} elseif ($_st > strtotime($date_time['start_lunch_break_time']['thursday']) && $_st < strtotime($date_time['start_afternoon_shift']['thursday'])) {
-						$_st = strtotime($date_time['start_afternoon_shift']['thursday']);
-					}
-					if ($_et > strtotime($date_time['come_home_early']['thursday'])) {
-						$_et = strtotime($date_time['come_home_early']['thursday']);
-					}
-					if (strtotime($date_time['start_lunch_break_time']['thursday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
-						$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = ($_et - $_st) / 3600;
-					}
-				} else {
-					if (strtotime($date_time['start_lunch_break_time']['thursday']) > $stime) {
-						$t = (strtotime($date_time['come_home_early']['thursday']) - $stime) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = (strtotime($date_time['come_home_early']['thursday']) - $stime) / 3600;
-					}
-				}
-				break;
-			case 5:
-				$lunch_break = $date_time['lunch_break']['friday'];
-				$work_time = $date_time['work_time']['friday'];
-				if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['friday'])) {
-					$stime = strtotime($date_time['late_for_work']['friday']);
-				} else {
-					$stime = strtotime(date('H:i:s', strtotime($st)));
-				}
-				if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
-					$_st = strtotime(date('H:i:s', strtotime($st)));
-					$_et = strtotime(date('H:i:s', strtotime($et)));
-
-					if ($_st < strtotime($date_time['late_for_work']['friday'])) {
-						$_st = strtotime($date_time['late_for_work']['friday']);
-					} elseif ($_st > strtotime($date_time['start_lunch_break_time']['friday']) && $_st < strtotime($date_time['start_afternoon_shift']['friday'])) {
-						$_st = strtotime($date_time['start_afternoon_shift']['friday']);
-					}
-					if ($_et > strtotime($date_time['come_home_early']['friday'])) {
-						$_et = strtotime($date_time['come_home_early']['friday']);
-					}
-					if (strtotime($date_time['start_lunch_break_time']['friday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
-						$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = ($_et - $_st) / 3600;
-					}
-				} else {
-
-					if (strtotime($date_time['start_lunch_break_time']['friday']) > $stime) {
-						$t = (strtotime($date_time['come_home_early']['friday']) - $stime) / 3600 - ($lunch_break / 60);
-					} else {
-						$t = (strtotime($date_time['come_home_early']['friday']) - $stime) / 3600;
-					}
-				}
-				break;
-			case 6:
-				if ((date('d', $time) % 2) == 1) {
-					$lunch_break = $date_time['lunch_break']['saturday_odd'];
-					$work_time = $date_time['work_time']['saturday_odd'];
-
-					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['saturday_odd'])) {
-						$stime = strtotime($date_time['late_for_work']['saturday_odd']);
+					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['monday'])) {
+						$stime = strtotime($date_time['late_for_work']['monday']);
 					} else {
 						$stime = strtotime(date('H:i:s', strtotime($st)));
 					}
@@ -1366,33 +1228,68 @@ class timesheets_model extends app_model {
 					if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
 						$_st = strtotime(date('H:i:s', strtotime($st)));
 						$_et = strtotime(date('H:i:s', strtotime($et)));
-						if ($_st < strtotime($date_time['late_for_work']['saturday_odd'])) {
-							$_st = strtotime($date_time['late_for_work']['saturday_odd']);
-						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['saturday_odd']) && $_st < strtotime($date_time['start_afternoon_shift']['saturday_odd'])) {
-							$_st = strtotime($date_time['start_afternoon_shift']['saturday_odd']);
+						if ($_st < strtotime($date_time['late_for_work']['monday'])) {
+							$_st = strtotime($date_time['late_for_work']['monday']);
+						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['monday']) && $_st < strtotime($date_time['start_afternoon_shift']['monday'])) {
+							$_st = strtotime($date_time['start_afternoon_shift']['monday']);
 						}
-						if ($_et > strtotime($date_time['come_home_early']['saturday_odd'])) {
-							$_et = strtotime($date_time['come_home_early']['saturday_odd']);
+						if ($_et > strtotime($date_time['come_home_early']['monday'])) {
+							$_et = strtotime($date_time['come_home_early']['monday']);
 						}
-						if (strtotime($date_time['start_lunch_break_time']['saturday_odd']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
+						if (strtotime($date_time['start_lunch_break_time']['monday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
 							$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
 						} else {
 							$t = ($_et - $_st) / 3600;
 						}
 					} else {
-						if (strtotime($date_time['start_lunch_break_time']['saturday_odd']) > $stime) {
-							$t = (strtotime($date_time['come_home_early']['saturday_odd']) - $stime) / 3600 - ($lunch_break / 60);
+
+						if (strtotime($date_time['start_lunch_break_time']['monday']) > $stime) {
+							$t = (strtotime($date_time['come_home_early']['monday']) - $stime) / 3600 - ($lunch_break / 60);
 						} else {
-							$t = (strtotime($date_time['come_home_early']['saturday_odd']) - $stime) / 3600;
+							$t = (strtotime($date_time['come_home_early']['monday']) - $stime) / 3600;
 						}
 					}
 
-				} elseif ((date('d', $time) % 2) == 0) {
-					$lunch_break = $date_time['lunch_break']['saturday_even'];
-					$work_time = $date_time['work_time']['saturday_even'];
+					break;
+				case 2:
+					$lunch_break = $date_time['lunch_break']['tuesday'];
+					$work_time = $date_time['work_time']['tuesday'];
 
-					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['saturday_even'])) {
-						$stime = strtotime($date_time['late_for_work']['saturday_even']);
+					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['tuesday'])) {
+						$stime = strtotime($date_time['late_for_work']['tuesday']);
+					} else {
+						$stime = strtotime(date('H:i:s', strtotime($st)));
+					}
+					if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
+						$_st = strtotime(date('H:i:s', strtotime($st)));
+						$_et = strtotime(date('H:i:s', strtotime($et)));
+						if ($_st < strtotime($date_time['late_for_work']['tuesday'])) {
+							$_st = strtotime($date_time['late_for_work']['tuesday']);
+						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['tuesday']) && $_st < strtotime($date_time['start_afternoon_shift']['tuesday'])) {
+							$_st = strtotime($date_time['start_afternoon_shift']['tuesday']);
+						}
+						if ($_et > strtotime($date_time['come_home_early']['tuesday'])) {
+							$_et = strtotime($date_time['come_home_early']['tuesday']);
+						}
+						if (strtotime($date_time['start_lunch_break_time']['tuesday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
+							$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = ($_et - $_st) / 3600;
+						}
+					} else {
+						if (strtotime($date_time['start_lunch_break_time']['tuesday']) > $stime) {
+							$t = (strtotime($date_time['come_home_early']['tuesday']) - $stime) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = (strtotime($date_time['come_home_early']['tuesday']) - $stime) / 3600;
+						}
+					}
+					break;
+				case 3:
+					$lunch_break = $date_time['lunch_break']['wednesday'];
+					$work_time = $date_time['work_time']['wednesday'];
+
+					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['wednesday'])) {
+						$stime = strtotime($date_time['late_for_work']['wednesday']);
 					} else {
 						$stime = strtotime(date('H:i:s', strtotime($st)));
 					}
@@ -1400,61 +1297,197 @@ class timesheets_model extends app_model {
 					if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
 						$_st = strtotime(date('H:i:s', strtotime($st)));
 						$_et = strtotime(date('H:i:s', strtotime($et)));
-						if ($_st < strtotime($date_time['late_for_work']['saturday_even'])) {
-							$_st = strtotime($date_time['late_for_work']['saturday_even']);
-						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['saturday_even']) && $_st < strtotime($date_time['start_afternoon_shift']['saturday_even'])) {
-							$_st = strtotime($date_time['start_afternoon_shift']['saturday_even']);
+						if ($_st < strtotime($date_time['late_for_work']['wednesday'])) {
+							$_st = strtotime($date_time['late_for_work']['wednesday']);
+						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['wednesday']) && $_st < strtotime($date_time['start_afternoon_shift']['wednesday'])) {
+							$_st = strtotime($date_time['start_afternoon_shift']['wednesday']);
 						}
-						if ($_et > strtotime($date_time['come_home_early']['saturday_even'])) {
-							$_et = strtotime($date_time['come_home_early']['saturday_even']);
+						if ($_et > strtotime($date_time['come_home_early']['wednesday'])) {
+							$_et = strtotime($date_time['come_home_early']['wednesday']);
 						}
-						if (strtotime($date_time['start_lunch_break_time']['saturday_even']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
+						if (strtotime($date_time['start_lunch_break_time']['wednesday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
 							$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
 						} else {
 							$t = ($_et - $_st) / 3600;
 						}
 					} else {
-						if (strtotime($date_time['start_lunch_break_time']['saturday_even']) > $stime) {
-							$t = (strtotime($date_time['come_home_early']['saturday_even']) - $stime) / 3600 - ($lunch_break / 60);
+
+						if (strtotime($date_time['start_lunch_break_time']['wednesday']) > $stime) {
+							$t = (strtotime($date_time['come_home_early']['wednesday']) - $stime) / 3600 - ($lunch_break / 60);
 						} else {
-							$t = (strtotime($date_time['come_home_early']['saturday_even']) - $stime) / 3600;
+							$t = (strtotime($date_time['come_home_early']['wednesday']) - $stime) / 3600;
 						}
 					}
-				}
-				break;
-			case 7:
-				$lunch_break = $date_time['lunch_break']['sunday'];
-				$work_time = $date_time['work_time']['sunday'];
+					break;
+				case 4:
+					$lunch_break = $date_time['lunch_break']['thursday'];
+					$work_time = $date_time['work_time']['thursday'];
 
-				if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['sunday'])) {
-					$stime = strtotime($date_time['late_for_work']['sunday']);
-				} else {
-					$stime = strtotime(date('H:i:s', strtotime($st)));
-				}
-				if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
-					$_st = strtotime(date('H:i:s', strtotime($st)));
-					$_et = strtotime(date('H:i:s', strtotime($et)));
-					if ($_st < strtotime($date_time['late_for_work']['sunday'])) {
-						$_st = strtotime($date_time['late_for_work']['sunday']);
-					} elseif ($_st > strtotime($date_time['start_lunch_break_time']['sunday']) && $_st < strtotime($date_time['start_afternoon_shift']['sunday'])) {
-						$_st = strtotime($date_time['start_afternoon_shift']['sunday']);
-					}
-					if ($_et > strtotime($date_time['come_home_early']['sunday'])) {
-						$_et = strtotime($date_time['come_home_early']['sunday']);
-					}
-					if (strtotime($date_time['start_lunch_break_time']['sunday']) > $stime) {
-						$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
+					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['thursday'])) {
+						$stime = strtotime($date_time['late_for_work']['thursday']);
 					} else {
-						$t = ($_et - $_st) / 3600;
+						$stime = strtotime(date('H:i:s', strtotime($st)));
 					}
-				} else {
-					if (strtotime($date_time['start_lunch_break_time']['sunday']) > $stime) {
-						$t = (strtotime($date_time['come_home_early']['sunday']) - $stime) / 3600 - ($lunch_break / 60);
+					if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
+						$_st = strtotime(date('H:i:s', strtotime($st)));
+						$_et = strtotime(date('H:i:s', strtotime($et)));
+						if ($_st < strtotime($date_time['late_for_work']['thursday'])) {
+							$_st = strtotime($date_time['late_for_work']['thursday']);
+						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['thursday']) && $_st < strtotime($date_time['start_afternoon_shift']['thursday'])) {
+							$_st = strtotime($date_time['start_afternoon_shift']['thursday']);
+						}
+						if ($_et > strtotime($date_time['come_home_early']['thursday'])) {
+							$_et = strtotime($date_time['come_home_early']['thursday']);
+						}
+						if (strtotime($date_time['start_lunch_break_time']['thursday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
+							$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = ($_et - $_st) / 3600;
+						}
 					} else {
-						$t = (strtotime($date_time['come_home_early']['sunday']) - $stime) / 3600;
+						if (strtotime($date_time['start_lunch_break_time']['thursday']) > $stime) {
+							$t = (strtotime($date_time['come_home_early']['thursday']) - $stime) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = (strtotime($date_time['come_home_early']['thursday']) - $stime) / 3600;
+						}
 					}
-				}
-				break;
+					break;
+				case 5:
+					$lunch_break = $date_time['lunch_break']['friday'];
+					$work_time = $date_time['work_time']['friday'];
+					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['friday'])) {
+						$stime = strtotime($date_time['late_for_work']['friday']);
+					} else {
+						$stime = strtotime(date('H:i:s', strtotime($st)));
+					}
+					if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
+						$_st = strtotime(date('H:i:s', strtotime($st)));
+						$_et = strtotime(date('H:i:s', strtotime($et)));
+
+						if ($_st < strtotime($date_time['late_for_work']['friday'])) {
+							$_st = strtotime($date_time['late_for_work']['friday']);
+						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['friday']) && $_st < strtotime($date_time['start_afternoon_shift']['friday'])) {
+							$_st = strtotime($date_time['start_afternoon_shift']['friday']);
+						}
+						if ($_et > strtotime($date_time['come_home_early']['friday'])) {
+							$_et = strtotime($date_time['come_home_early']['friday']);
+						}
+						if (strtotime($date_time['start_lunch_break_time']['friday']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
+							$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = ($_et - $_st) / 3600;
+						}
+					} else {
+
+						if (strtotime($date_time['start_lunch_break_time']['friday']) > $stime) {
+							$t = (strtotime($date_time['come_home_early']['friday']) - $stime) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = (strtotime($date_time['come_home_early']['friday']) - $stime) / 3600;
+						}
+					}
+					break;
+				case 6:
+					if ((date('d', $time) % 2) == 1) {
+						$lunch_break = $date_time['lunch_break']['saturday_odd'];
+						$work_time = $date_time['work_time']['saturday_odd'];
+
+						if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['saturday_odd'])) {
+							$stime = strtotime($date_time['late_for_work']['saturday_odd']);
+						} else {
+							$stime = strtotime(date('H:i:s', strtotime($st)));
+						}
+
+						if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
+							$_st = strtotime(date('H:i:s', strtotime($st)));
+							$_et = strtotime(date('H:i:s', strtotime($et)));
+							if ($_st < strtotime($date_time['late_for_work']['saturday_odd'])) {
+								$_st = strtotime($date_time['late_for_work']['saturday_odd']);
+							} elseif ($_st > strtotime($date_time['start_lunch_break_time']['saturday_odd']) && $_st < strtotime($date_time['start_afternoon_shift']['saturday_odd'])) {
+								$_st = strtotime($date_time['start_afternoon_shift']['saturday_odd']);
+							}
+							if ($_et > strtotime($date_time['come_home_early']['saturday_odd'])) {
+								$_et = strtotime($date_time['come_home_early']['saturday_odd']);
+							}
+							if (strtotime($date_time['start_lunch_break_time']['saturday_odd']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
+								$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
+							} else {
+								$t = ($_et - $_st) / 3600;
+							}
+						} else {
+							if (strtotime($date_time['start_lunch_break_time']['saturday_odd']) > $stime) {
+								$t = (strtotime($date_time['come_home_early']['saturday_odd']) - $stime) / 3600 - ($lunch_break / 60);
+							} else {
+								$t = (strtotime($date_time['come_home_early']['saturday_odd']) - $stime) / 3600;
+							}
+						}
+					} elseif ((date('d', $time) % 2) == 0) {
+						$lunch_break = $date_time['lunch_break']['saturday_even'];
+						$work_time = $date_time['work_time']['saturday_even'];
+
+						if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['saturday_even'])) {
+							$stime = strtotime($date_time['late_for_work']['saturday_even']);
+						} else {
+							$stime = strtotime(date('H:i:s', strtotime($st)));
+						}
+
+						if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
+							$_st = strtotime(date('H:i:s', strtotime($st)));
+							$_et = strtotime(date('H:i:s', strtotime($et)));
+							if ($_st < strtotime($date_time['late_for_work']['saturday_even'])) {
+								$_st = strtotime($date_time['late_for_work']['saturday_even']);
+							} elseif ($_st > strtotime($date_time['start_lunch_break_time']['saturday_even']) && $_st < strtotime($date_time['start_afternoon_shift']['saturday_even'])) {
+								$_st = strtotime($date_time['start_afternoon_shift']['saturday_even']);
+							}
+							if ($_et > strtotime($date_time['come_home_early']['saturday_even'])) {
+								$_et = strtotime($date_time['come_home_early']['saturday_even']);
+							}
+							if (strtotime($date_time['start_lunch_break_time']['saturday_even']) > $stime && strtotime($date_time['start_afternoon_shift']['friday']) < $_et) {
+								$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
+							} else {
+								$t = ($_et - $_st) / 3600;
+							}
+						} else {
+							if (strtotime($date_time['start_lunch_break_time']['saturday_even']) > $stime) {
+								$t = (strtotime($date_time['come_home_early']['saturday_even']) - $stime) / 3600 - ($lunch_break / 60);
+							} else {
+								$t = (strtotime($date_time['come_home_early']['saturday_even']) - $stime) / 3600;
+							}
+						}
+					}
+					break;
+				case 7:
+					$lunch_break = $date_time['lunch_break']['sunday'];
+					$work_time = $date_time['work_time']['sunday'];
+
+					if (strtotime(date('H:i:s', strtotime($st))) < strtotime($date_time['late_for_work']['sunday'])) {
+						$stime = strtotime($date_time['late_for_work']['sunday']);
+					} else {
+						$stime = strtotime(date('H:i:s', strtotime($st)));
+					}
+					if (date('Y-m-d', strtotime($st)) == date('Y-m-d', strtotime($et))) {
+						$_st = strtotime(date('H:i:s', strtotime($st)));
+						$_et = strtotime(date('H:i:s', strtotime($et)));
+						if ($_st < strtotime($date_time['late_for_work']['sunday'])) {
+							$_st = strtotime($date_time['late_for_work']['sunday']);
+						} elseif ($_st > strtotime($date_time['start_lunch_break_time']['sunday']) && $_st < strtotime($date_time['start_afternoon_shift']['sunday'])) {
+							$_st = strtotime($date_time['start_afternoon_shift']['sunday']);
+						}
+						if ($_et > strtotime($date_time['come_home_early']['sunday'])) {
+							$_et = strtotime($date_time['come_home_early']['sunday']);
+						}
+						if (strtotime($date_time['start_lunch_break_time']['sunday']) > $stime) {
+							$t = ($_et - $_st) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = ($_et - $_st) / 3600;
+						}
+					} else {
+						if (strtotime($date_time['start_lunch_break_time']['sunday']) > $stime) {
+							$t = (strtotime($date_time['come_home_early']['sunday']) - $stime) / 3600 - ($lunch_break / 60);
+						} else {
+							$t = (strtotime($date_time['come_home_early']['sunday']) - $stime) / 3600;
+						}
+					}
+					break;
 			}
 		}
 		return number_format($t, 2);
@@ -1463,7 +1496,8 @@ class timesheets_model extends app_model {
 	 * check choose when approving
 	 * @param   $related
 	 */
-	public function check_choose_when_approving($related) {
+	public function check_choose_when_approving($related)
+	{
 		$this->db->select('choose_when_approving');
 		$this->db->where('related', $related);
 		$rs = $this->db->get(db_prefix() . 'timesheets_approval_setting')->row();
@@ -1479,7 +1513,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staff_id
 	 * @return bool
 	 */
-	public function send_request_approve($data, $staff_id = '') {
+	public function send_request_approve($data, $staff_id = '')
+	{
 		if (!isset($data['status'])) {
 			$data['status'] = '';
 		}
@@ -1555,7 +1590,8 @@ class timesheets_model extends app_model {
 	 * @param  string  $staff_id
 	 * @return bool
 	 */
-	public function get_approve_setting($type, $only_setting = true, $staff_id = '') {
+	public function get_approve_setting($type, $only_setting = true, $staff_id = '')
+	{
 		if ($staff_id == '') {
 			$staff_id = get_staff_user_id();
 		}
@@ -1643,7 +1679,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $rel_type
 	 * @return  bool
 	 */
-	public function delete_approval_details($rel_id, $rel_type) {
+	public function delete_approval_details($rel_id, $rel_type)
+	{
 		$this->db->where('rel_id', $rel_id);
 		$this->db->where('rel_type', $rel_type);
 		$this->db->delete(db_prefix() . 'timesheets_approval_details');
@@ -1658,7 +1695,8 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @return bool
 	 */
-	public function update_approval_details($id, $data) {
+	public function update_approval_details($id, $data)
+	{
 		$data['date'] = date('Y-m-d H:i:s');
 		$this->db->where('id', $id);
 		$this->db->update(db_prefix() . 'timesheets_approval_details', $data);
@@ -1675,182 +1713,183 @@ class timesheets_model extends app_model {
 	 * @param  string $staffid
 	 * @return integer
 	 */
-	public function update_approve_request($rel_id, $rel_type, $status, $staffid = '') {
+	public function update_approve_request($rel_id, $rel_type, $status, $staffid = '')
+	{
 		$data_update = [];
 		$find_a_case = false;
 		switch (strtolower($rel_type)) {
-		case 'late':
-			$data_update['status'] = $status;
-			$this->db->where('id', $rel_id);
-			$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
-			if ($status == 1) {
-				//Get
+			case 'late':
+				$data_update['status'] = $status;
 				$this->db->where('id', $rel_id);
-				$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
-				if ($requisition_leave) {
-					$start_time = $requisition_leave->start_time;
-					$check_latch_timesheet = $this->timesheets_model->check_latch_timesheet(date('m-Y', strtotime($start_time)));
-					if (!$check_latch_timesheet) {
-						$staffid = $requisition_leave->staff_id;
-						// Get current hour in shift
-						$shift_info = $this->get_info_hour_shift_staff($staffid, date('Y-m-d', strtotime($start_time)));
+				$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
+				if ($status == 1) {
+					//Get
+					$this->db->where('id', $rel_id);
+					$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
+					if ($requisition_leave) {
+						$start_time = $requisition_leave->start_time;
+						$check_latch_timesheet = $this->timesheets_model->check_latch_timesheet(date('m-Y', strtotime($start_time)));
+						if (!$check_latch_timesheet) {
+							$staffid = $requisition_leave->staff_id;
+							// Get current hour in shift
+							$shift_info = $this->get_info_hour_shift_staff($staffid, date('Y-m-d', strtotime($start_time)));
 
-						if ($shift_info->start_working != '') {
-							// Caculate hour
-							$value_ts = $this->get_hour($shift_info->start_working, date('H:i:s', strtotime($start_time)));
-							if ($value_ts > 0) {
-								// Save to timesheets
-								$this->db->insert(db_prefix() . 'timesheets_timesheet', [
-									'staff_id' => $staffid,
-									'date_work' => date('Y-m-d', strtotime($start_time)),
-									'value' => $value_ts,
-									'add_from' => $staffid,
-									'relate_id' => $rel_id,
-									'relate_type' => 'leave',
-									'type' => 'L',
-								]);
-								// // Save to timesheets
+							if ($shift_info->start_working != '') {
+								// Caculate hour
+								$value_ts = $this->get_hour($shift_info->start_working, date('H:i:s', strtotime($start_time)));
+								if ($value_ts > 0) {
+									// Save to timesheets
+									$this->db->insert(db_prefix() . 'timesheets_timesheet', [
+										'staff_id' => $staffid,
+										'date_work' => date('Y-m-d', strtotime($start_time)),
+										'value' => $value_ts,
+										'add_from' => $staffid,
+										'relate_id' => $rel_id,
+										'relate_type' => 'leave',
+										'type' => 'L',
+									]);
+									// // Save to timesheets
+								}
 							}
 						}
 					}
 				}
-			}
-			return true;
-			break;
-		case 'early':
-			$data_update['status'] = $status;
-			$this->db->where('id', $rel_id);
-			$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
-			if ($status == 1) {
-				//Get
+				return true;
+				break;
+			case 'early':
+				$data_update['status'] = $status;
 				$this->db->where('id', $rel_id);
-				$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
-				if ($requisition_leave) {
-					$start_time = $requisition_leave->start_time;
-					$check_latch_timesheet = $this->timesheets_model->check_latch_timesheet(date('m-Y', strtotime($start_time)));
-					if (!$check_latch_timesheet) {
-						$staffid = $requisition_leave->staff_id;
-						// Get current hour in shift
-						$shift_info = $this->get_info_hour_shift_staff($staffid, date('Y-m-d', strtotime($start_time)));
-						if ($shift_info->end_working != '') {
-							// Caculate hour
-							$value_ts = $this->get_hour($shift_info->end_working, date('H:i:s', strtotime($start_time)));
-							if ($value_ts > 0) {
-								// Save to timesheets
-								$this->db->insert(db_prefix() . 'timesheets_timesheet', [
-									'staff_id' => $staffid,
-									'date_work' => date('Y-m-d', strtotime($start_time)),
-									'value' => $value_ts,
-									'add_from' => $staffid,
-									'relate_id' => $rel_id,
-									'relate_type' => 'leave',
-									'type' => 'E',
-								]);
-								// // Save to timesheets
+				$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
+				if ($status == 1) {
+					//Get
+					$this->db->where('id', $rel_id);
+					$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
+					if ($requisition_leave) {
+						$start_time = $requisition_leave->start_time;
+						$check_latch_timesheet = $this->timesheets_model->check_latch_timesheet(date('m-Y', strtotime($start_time)));
+						if (!$check_latch_timesheet) {
+							$staffid = $requisition_leave->staff_id;
+							// Get current hour in shift
+							$shift_info = $this->get_info_hour_shift_staff($staffid, date('Y-m-d', strtotime($start_time)));
+							if ($shift_info->end_working != '') {
+								// Caculate hour
+								$value_ts = $this->get_hour($shift_info->end_working, date('H:i:s', strtotime($start_time)));
+								if ($value_ts > 0) {
+									// Save to timesheets
+									$this->db->insert(db_prefix() . 'timesheets_timesheet', [
+										'staff_id' => $staffid,
+										'date_work' => date('Y-m-d', strtotime($start_time)),
+										'value' => $value_ts,
+										'add_from' => $staffid,
+										'relate_id' => $rel_id,
+										'relate_type' => 'leave',
+										'type' => 'E',
+									]);
+									// // Save to timesheets
+								}
 							}
 						}
 					}
 				}
-			}
-			break;
-		case 'go_out':
-			$data_update['status'] = $status;
-			$this->db->where('id', $rel_id);
-			$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
-			return true;
-			break;
-		case 'go_on_bussiness':
-			$data_update['status'] = $status;
-			$this->db->where('id', $rel_id);
-			$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
-			if ($status == 1) {
+				break;
+			case 'go_out':
+				$data_update['status'] = $status;
 				$this->db->where('id', $rel_id);
-				$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
+				$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
+				return true;
+				break;
+			case 'go_on_bussiness':
+				$data_update['status'] = $status;
+				$this->db->where('id', $rel_id);
+				$this->db->update(db_prefix() . 'timesheets_requisition_leave', $data_update);
+				if ($status == 1) {
+					$this->db->where('id', $rel_id);
+					$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
 
-				$start_time = strtotime($requisition_leave->start_time);
-				$end_time = strtotime($requisition_leave->end_time);
+					$start_time = strtotime($requisition_leave->start_time);
+					$end_time = strtotime($requisition_leave->end_time);
 
-				$st = date('Y-m-d', $start_time);
-				$et = date('Y-m-d', $end_time);
+					$st = date('Y-m-d', $start_time);
+					$et = date('Y-m-d', $end_time);
 
-				if ($staffid != '') {
-					$staff_id = $staffid;
-				} else {
-					$staff_id = get_staff_user_id();
-				}
-
-				$type = 'B';
-				if ($requisition_leave->end_time != '') {
-					for ($i = 0; $i < 5; $i++) {
-						if (strtotime($st) <= strtotime($et)) {
-							$this->db->insert(db_prefix() . 'timesheets_timesheet', [
-								'staff_id' => $requisition_leave->staff_id,
-								'date_work' => $st,
-								'value' => 0,
-								'add_from' => $staff_id,
-								'relate_id' => $rel_id,
-								'relate_type' => 'leave',
-								'type' => $type,
-							]);
-							$st = date('Y-m-d', strtotime($st . ' + 1 days'));
-							$i = 0;
-						} else {
-							$i = 10;
-						}
+					if ($staffid != '') {
+						$staff_id = $staffid;
+					} else {
+						$staff_id = get_staff_user_id();
 					}
-				} else {
-					$this->db->insert(db_prefix() . 'timesheets_timesheet', [
-						'staff_id' => $requisition_leave->staff_id,
-						'date_work' => $st,
-						'value' => 0,
-						'add_from' => $staff_id,
-						'relate_id' => $rel_id,
-						'relate_type' => 'leave',
-						'type' => $type,
-					]);
-				}
-			}
-			return true;
-			break;
-		case 'additional_timesheets':
-			$data_update['status'] = $status;
-			$this->db->where('id', $rel_id);
-			$this->db->update(db_prefix() . 'timesheets_additional_timesheet', $data_update);
-			if ($status == 1) {
-				$this->db->where('id', $rel_id);
-				$additional_timesheet = $this->db->get(db_prefix() . 'timesheets_additional_timesheet')->row();
 
-				$check_latch_timesheet = $this->timesheets_model->check_latch_timesheet(date('m-y', strtotime($additional_timesheet->additional_day)));
-				if (!$check_latch_timesheet) {
-					$staffid = '';
-					$data_addts = $this->get_additional_timesheets($rel_id);
-					if ($data_addts) {
+					$type = 'B';
+					if ($requisition_leave->end_time != '') {
+						for ($i = 0; $i < 5; $i++) {
+							if (strtotime($st) <= strtotime($et)) {
+								$this->db->insert(db_prefix() . 'timesheets_timesheet', [
+									'staff_id' => $requisition_leave->staff_id,
+									'date_work' => $st,
+									'value' => 0,
+									'add_from' => $staff_id,
+									'relate_id' => $rel_id,
+									'relate_type' => 'leave',
+									'type' => $type,
+								]);
+								$st = date('Y-m-d', strtotime($st . ' + 1 days'));
+								$i = 0;
+							} else {
+								$i = 10;
+							}
+						}
+					} else {
 						$this->db->insert(db_prefix() . 'timesheets_timesheet', [
-							'staff_id' => $data_addts->creator,
-							'date_work' => $data_addts->additional_day,
-							'value' => $data_addts->timekeeping_value,
-							'add_from' => $data_addts->creator,
+							'staff_id' => $requisition_leave->staff_id,
+							'date_work' => $st,
+							'value' => 0,
+							'add_from' => $staff_id,
 							'relate_id' => $rel_id,
-							'relate_type' => 'additional_timesheet',
-							'type' => 'W',
+							'relate_type' => 'leave',
+							'type' => $type,
 						]);
 					}
-
 				}
-			}
+				return true;
+				break;
+			case 'additional_timesheets':
+				$data_update['status'] = $status;
+				$this->db->where('id', $rel_id);
+				$this->db->update(db_prefix() . 'timesheets_additional_timesheet', $data_update);
+				if ($status == 1) {
+					$this->db->where('id', $rel_id);
+					$additional_timesheet = $this->db->get(db_prefix() . 'timesheets_additional_timesheet')->row();
 
-			return true;
-			break;
+					$check_latch_timesheet = $this->timesheets_model->check_latch_timesheet(date('m-y', strtotime($additional_timesheet->additional_day)));
+					if (!$check_latch_timesheet) {
+						$staffid = '';
+						$data_addts = $this->get_additional_timesheets($rel_id);
+						if ($data_addts) {
+							$this->db->insert(db_prefix() . 'timesheets_timesheet', [
+								'staff_id' => $data_addts->creator,
+								'date_work' => $data_addts->additional_day,
+								'value' => $data_addts->timekeeping_value,
+								'add_from' => $data_addts->creator,
+								'relate_id' => $rel_id,
+								'relate_type' => 'additional_timesheet',
+								'type' => 'W',
+							]);
+						}
+					}
+				}
+
+				return true;
+				break;
 			default:
 				$this->update_requisition_after_approve($rel_id, $status, $rel_type);
-			break;
+				break;
 		}
 	}
 	/**
 	 * add requisition ajax
 	 * @param array $data
 	 */
-	public function add_requisition_ajax($data) {
+	public function add_requisition_ajax($data)
+	{
 		$staff_quit_job = $data['staff_id'];
 		$type = 'leave';
 		if ($data['rel_type'] == 2) {
@@ -1953,7 +1992,8 @@ class timesheets_model extends app_model {
 	 * delete requisition
 	 * @param  integer $id
 	 */
-	public function delete_requisition($id) {
+	public function delete_requisition($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->where('status', 1);
 		$data_requisition = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
@@ -1964,23 +2004,23 @@ class timesheets_model extends app_model {
 			}
 			if ($data_requisition->rel_type == '1') {
 
-					$type_of_leave_data = $this->get_type_of_leave_id($data_requisition->type_of_leave_text);
+				$type_of_leave_data = $this->get_type_of_leave_id($data_requisition->type_of_leave_text);
 
-					// Get total leave in year of staff
-					$day_off = $this->get_day_off($data_requisition->staff_id,'', $type_of_leave_data->type_id);
-					// Number of leaving day
-					$dd = $data_requisition->number_of_leaving_day;
+				// Get total leave in year of staff
+				$day_off = $this->get_day_off($data_requisition->staff_id, '', $type_of_leave_data->type_id);
+				// Number of leaving day
+				$dd = $data_requisition->number_of_leaving_day;
 
-					$update_days_off = abs($day_off->days_off - $dd);
-					$update_remain = abs($day_off->total - $update_days_off);
+				$update_days_off = abs($day_off->days_off - $dd);
+				$update_remain = abs($day_off->total - $update_days_off);
 
-					$this->db->where('type_of_leave', $type_of_leave_data->type_id);
-					$this->db->where('staffid', $data_requisition->staff_id);
-					$this->db->where('year', date('Y'));
-					$this->db->update(db_prefix() . 'timesheets_day_off', [
-						'remain' => $update_remain,
-						'days_off' => $update_days_off,
-					]);
+				$this->db->where('type_of_leave', $type_of_leave_data->type_id);
+				$this->db->where('staffid', $data_requisition->staff_id);
+				$this->db->where('year', date('Y'));
+				$this->db->update(db_prefix() . 'timesheets_day_off', [
+					'remain' => $update_remain,
+					'days_off' => $update_days_off,
+				]);
 			}
 			$this->db->where('relate_type', 'leave');
 			$this->db->delete(db_prefix() . 'timesheets_timesheet');
@@ -1999,7 +2039,8 @@ class timesheets_model extends app_model {
 	 * get option val
 	 * @return object
 	 */
-	public function get_option_val() {
+	public function get_option_val()
+	{
 		$this->db->select('option_val');
 		$this->db->from('timesheets_option');
 		$where_opt = 'option_name = "leave_according_process"';
@@ -2012,7 +2053,8 @@ class timesheets_model extends app_model {
 	 * get staff shift applicable object
 	 * @return array
 	 */
-	public function get_staff_shift_applicable_object() {
+	public function get_staff_shift_applicable_object()
+	{
 		$shift_applicable_object = [];
 		$this->db->select('option_val');
 		$this->db->where('option_name', 'shift_applicable_object');
@@ -2054,7 +2096,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $month
 	 * @return bool
 	 */
-	public function check_latch_timesheet($month) {
+	public function check_latch_timesheet($month)
+	{
 		if ($month != '') {
 			$this->db->where('month_latch', $month);
 			$count = $this->db->count_all_results(db_prefix() . 'timesheets_latch_timesheet');
@@ -2072,7 +2115,8 @@ class timesheets_model extends app_model {
 	 * get staff timekeeping applicable object
 	 * @return array
 	 */
-	public function get_staff_timekeeping_applicable_object($for_cronjob = false) {
+	public function get_staff_timekeeping_applicable_object($for_cronjob = false)
+	{
 		$data_timekeeping_form = get_timesheets_option('timekeeping_form');
 
 		$timekeeping_applicable_object = [];
@@ -2093,7 +2137,7 @@ class timesheets_model extends app_model {
 		if ($timekeeping_applicable_object && $timekeeping_applicable_object != '' && $timekeeping_applicable_object != null) {
 			$where .= 'find_in_set(role, "' . $timekeeping_applicable_object . '")';
 		}
-		if($for_cronjob == false){
+		if ($for_cronjob == false) {
 			if ($where != '') {
 				$where .= timesheet_staff_manager_query('attendance_management');
 			} else {
@@ -2117,7 +2161,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $month
 	 * @return bool
 	 */
-	public function unlatch_timesheet($month) {
+	public function unlatch_timesheet($month)
+	{
 		if ($month != '') {
 			$this->db->where('month_latch', $month);
 			$this->db->delete(db_prefix() . 'timesheets_latch_timesheet');
@@ -2134,7 +2179,6 @@ class timesheets_model extends app_model {
 		}
 
 		return false;
-
 	}
 	/**
 	 * get hour check in out staff
@@ -2142,7 +2186,8 @@ class timesheets_model extends app_model {
 	 * @param  date $datetime
 	 * @return integer
 	 */
-	public function get_hour_check_in_out_staff($staff_id, $datetime) {
+	public function get_hour_check_in_out_staff($staff_id, $datetime)
+	{
 		$list_check_in_out = $this->db->query('select date from ' . db_prefix() . 'check_in_out where staff_id = ' . $staff_id . ' and date(date) = \'' . $datetime . '\'')->result_array();
 		$hour = 0;
 		$lunch_time = 0;
@@ -2197,7 +2242,8 @@ class timesheets_model extends app_model {
 	/**
 	 * report by leave statistics
 	 */
-	public function report_by_leave_statistics() {
+	public function report_by_leave_statistics()
+	{
 		$months_report = $this->input->post('months_report');
 		$custom_date_select = '';
 		if ($months_report != '') {
@@ -2219,14 +2265,14 @@ class timesheets_model extends app_model {
 				$custom_date_select = '(hrl.start_time between "' . date('y-m-01') . '" and "' . date('y-m-t') . '")';
 			} elseif ($months_report == 'this_year') {
 				$custom_date_select = '(hrl.start_time between "' .
-				date('Y-m-d', strtotime(date('y-01-01'))) .
-				'" and "' .
-				date('Y-m-d', strtotime(date('y-12-31'))) . '")';
+					date('Y-m-d', strtotime(date('y-01-01'))) .
+					'" and "' .
+					date('Y-m-d', strtotime(date('y-12-31'))) . '")';
 			} elseif ($months_report == 'last_year') {
 				$custom_date_select = '(hrl.start_time between "' .
-				date('Y-m-d', strtotime(date(date('y', strtotime('last year')) . '-01-01'))) .
-				'" and "' .
-				date('Y-m-d', strtotime(date(date('y', strtotime('last year')) . '-12-31'))) . '")';
+					date('Y-m-d', strtotime(date(date('y', strtotime('last year')) . '-01-01'))) .
+					'" and "' .
+					date('Y-m-d', strtotime(date(date('y', strtotime('last year')) . '-12-31'))) . '")';
 			} elseif ($months_report == 'custom') {
 				$from_date = to_sql_date($this->input->post('report_from'));
 				$to_date = to_sql_date($this->input->post('report_to'));
@@ -2236,7 +2282,6 @@ class timesheets_model extends app_model {
 					$custom_date_select = '(hrl.start_time between "' . $from_date . '" and "' . $to_date . '")';
 				}
 			}
-
 		}
 
 		$chart = [];
@@ -2256,14 +2301,15 @@ class timesheets_model extends app_model {
 		return $chart;
 	}
 
-/**
- * count type leave
- * @param   integer $department
- * @param   integer $type
- * @param   date  $custom_date_select
- * @return array
- */
-	public function count_type_leave($department, $type, $custom_date_select) {
+	/**
+	 * count type leave
+	 * @param   integer $department
+	 * @param   integer $type
+	 * @param   date  $custom_date_select
+	 * @return array
+	 */
+	public function count_type_leave($department, $type, $custom_date_select)
+	{
 
 		if ($custom_date_select != '') {
 			$query = $this->db->query('select hrl.id, hrl.subject from ' . db_prefix() . 'timesheets_requisition_leave hrl left join ' . db_prefix() . 'staff_departments sd on sd.staffid = hrl.staff_id where sd.departmentid = ' . $department . ' and hrl.type_of_leave = ' . $type . ' and ' . $custom_date_select)->result_array();
@@ -2272,7 +2318,6 @@ class timesheets_model extends app_model {
 		}
 
 		return count($query);
-
 	}
 	/**
 	 * count timekeeping by month
@@ -2280,7 +2325,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $month
 	 * @return integer
 	 */
-	public function count_timekeeping_by_month($staffid, $month) {
+	public function count_timekeeping_by_month($staffid, $month)
+	{
 		if ($staffid != '' && $staffid != 0) {
 			$month = date('m-y', strtotime($month));
 
@@ -2317,7 +2363,8 @@ class timesheets_model extends app_model {
 	 * @param  date $date
 	 * @return array
 	 */
-	public function get_timesheets_task_ts_by_month($date) {
+	public function get_timesheets_task_ts_by_month($date)
+	{
 		$query = 'select date_format(from_unixtime(`start_time`), \'%y-%m-%d\') as date_work, date_format(from_unixtime(`end_time`), \'%y-%m-%d\') as end_date, staff_id, start_time, end_time from ' . db_prefix() . 'taskstimers where date_format(from_unixtime(`start_time`), \'%y-%m-%d\') <= \'' . $date . '\' and date_format(from_unixtime(`end_time`), \'%y-%m-%d\') >= \'' . $date . '\'';
 		$data_task = $this->db->query($query)->result_array();
 	}
@@ -2327,7 +2374,8 @@ class timesheets_model extends app_model {
 	 * @param  imteger $staff
 	 * @return array
 	 */
-	public function get_ts_by_task_and_staff($date, $staff) {
+	public function get_ts_by_task_and_staff($date, $staff)
+	{
 		$query = 'select date_format(from_unixtime(`start_time`), \'%y-%m-%d\') as date_work, date_format(from_unixtime(`end_time`), \'%y-%m-%d\') as end_date, staff_id, start_time, end_time from ' . db_prefix() . 'taskstimers where date_format(from_unixtime(`start_time`), \'%y-%m-%d\') <= \'' . $date . '\' and date_format(from_unixtime(`end_time`), \'%y-%m-%d\') >= \'' . $date . '\' and staff_id = ' . $staff;
 		$data_timesheets = $this->db->query($query)->result_array();
 	}
@@ -2336,7 +2384,8 @@ class timesheets_model extends app_model {
 	 * @param  date $date
 	 * @return boolean
 	 */
-	public function check_format_date_ymd($date) {
+	public function check_format_date_ymd($date)
+	{
 		if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $date)) {
 			return true;
 		} else {
@@ -2348,7 +2397,8 @@ class timesheets_model extends app_model {
 	 * @param  date $date
 	 * @return boolean
 	 */
-	public function check_format_date($date) {
+	public function check_format_date($date)
+	{
 		if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\s(0|[0-1][0-9]|2[0-4]):?((0|[0-5][0-9]):?(0|[0-5][0-9])|6000|60:00)$/", $date)) {
 			return true;
 		} else {
@@ -2360,7 +2410,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $roleid
 	 * @return object or array
 	 */
-	public function get_role($roleid) {
+	public function get_role($roleid)
+	{
 		$this->db->where('roleid', $roleid);
 		return $this->db->get(db_prefix() . 'roles')->row();
 	}
@@ -2370,7 +2421,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staff_id
 	 * @return object or array
 	 */
-	public function leave_of_the_year($staff_id = '') {
+	public function leave_of_the_year($staff_id = '')
+	{
 		if ($staff_id != '') {
 			$this->db->where('staff_id', $staff_id);
 			return $this->db->get(db_prefix() . 'leave_of_the_year')->row();
@@ -2383,17 +2435,19 @@ class timesheets_model extends app_model {
 	 * @param  string $query
 	 * @return array
 	 */
-	public function get_staff_query($query = '') {
+	public function get_staff_query($query = '')
+	{
 		if ($query != '') {
 			$query = ' where ' . $query;
 		}
-		return $this->db->query('select * from ' . db_prefix() . 'staff' . $query.' order by firstname desc')->result_array();
+		return $this->db->query('select * from ' . db_prefix() . 'staff' . $query . ' order by firstname desc')->result_array();
 	}
 	/**
 	 * add shift type
 	 * @param integer
 	 */
-	public function add_shift_type($data) {
+	public function add_shift_type($data)
+	{
 		if (isset($data['time_start'])) {
 			if (!$this->check_format_date_ymd($data['time_start'])) {
 				$data['time_start'] = to_sql_date($data['time_start']);
@@ -2415,7 +2469,8 @@ class timesheets_model extends app_model {
 	 * update shift type
 	 * @param integer
 	 */
-	public function update_shift_type($data) {
+	public function update_shift_type($data)
+	{
 		if (isset($data['time_start'])) {
 			if (!$this->check_format_date_ymd($data['time_start'])) {
 				$data['time_start'] = to_sql_date($data['time_start']);
@@ -2438,7 +2493,8 @@ class timesheets_model extends app_model {
 	 * @param  integer
 	 * @return bool
 	 */
-	public function delete_shift_type($id) {
+	public function delete_shift_type($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'shift_type');
 		if ($this->db->affected_rows() > 0) {
@@ -2451,7 +2507,8 @@ class timesheets_model extends app_model {
 	 * @param  integer
 	 * @return bool
 	 */
-	public function get_shift_type($id = '') {
+	public function get_shift_type($id = '')
+	{
 		if ($id != '') {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'shift_type')->row();
@@ -2463,7 +2520,8 @@ class timesheets_model extends app_model {
 	 * get staff shift list
 	 * @return db
 	 */
-	public function get_staff_shift_list() {
+	public function get_staff_shift_list()
+	{
 		return $this->db->query('select distinct(staff_id) from ' . db_prefix() . 'work_shift_detail')->result_array();
 	}
 
@@ -2471,7 +2529,8 @@ class timesheets_model extends app_model {
 	 * get data staff shift list
 	 * @return db
 	 */
-	public function get_data_staff_shift_list($staff_id) {
+	public function get_data_staff_shift_list($staff_id)
+	{
 		return $this->db->query('select * from ' . db_prefix() . 'work_shift_detail where staff_id = ' . $staff_id)->result_array();
 	}
 	/**
@@ -2479,40 +2538,37 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @return integer
 	 */
-	public function check_in($data) {
+	public function check_in($data)
+	{
 		// Check valid IP 
 		$enable_check_valid_ip = get_timesheets_option('timekeeping_enable_valid_ip');
 		if ($enable_check_valid_ip && $enable_check_valid_ip == 1) {
 			$client_ip = '';
-			if(isset($data['ip_address'])){
+			if (isset($data['ip_address'])) {
 				$client_ip = $data['ip_address'];
 				unset($data['ip_address']);
+			} else {
+				$client_ip = get_client_ip();
 			}
-			else{
-				$client_ip = get_client_ip();				
-			}
-			if($client_ip != ''){
+			if ($client_ip != '') {
 				$ip_list = $this->get_valid_ip();
-				if($ip_list && count($ip_list) > 0){
+				if ($ip_list && count($ip_list) > 0) {
 					$registered = false;
 					foreach ($ip_list as $key => $row) {
-						if($client_ip == $row['ip']){
+						if ($client_ip == $row['ip']) {
 							$registered = !$registered;
 							break;
 						}
 					}
-					if(!$registered){
+					if (!$registered) {
 						// Access denie
 						return 5;
 					}
-				}
-				else{
+				} else {
 					// Access denie
 					return 5;
 				}
-
-			}
-			else{
+			} else {
 				// Cannot get client IP address
 				return 6;
 			}
@@ -2574,60 +2630,60 @@ class timesheets_model extends app_model {
 							}
 						}
 						switch ($check_more) {
-						case 'check_route':
-							// Attendance by route point
-							// Get geolocation of this route point and caculation distance to location of you
-							// If valid will return route id to insert in check_in_out table
-							// Else return error:
-							// Error 2: Current location is not allowed to attendance
-							// Error 3: Location information is unknown
-							if ($point_id == '') {
-								if (isset($data['point_id'])) {
-									if ($data['point_id'] != '') {
-										$point_id = $data['point_id'];
-									}
-								}
-								if ($point_id == '') {
-									$point_id = $this->get_next_point($data['staff_id'], $date, $latitude, $longitude)->id;
-								}
-							}
-							if ($point_id != '') {
-								$route_point_latitude = '';
-								$route_point_longitude = '';
-								$max_distance = '';
-								$data_route_point = $this->get_route_point($point_id);
-								if ($data_route_point) {
-									$route_point_latitude = $data_route_point->latitude;
-									$route_point_longitude = $data_route_point->longitude;
-									$max_distance = $data_route_point->distance;
-								}
-								if ($latitude != '' && $longitude != '' && $route_point_latitude != '' && $route_point_longitude != '' && $max_distance != '') {
-									$cal_distance = $this->compute_distance($route_point_latitude, $route_point_longitude, $latitude, $longitude);
-									if ((float) $cal_distance > (float) $max_distance) {
-										// Invalid distance
-										// Error 2: Current location is not allowed to attendance
-										return 2;
-									}
-								} else {
-									// Error 3: Location information is unknown
-									return 3;
-								}
-							} else {
-								// Error 4: Route point is unknown
-								return 4;
-							}
-							break;
-						case 'check_coordinates':
-							// Attendance by geolocation
-							$res_coordinates = $this->check_attendance_by_coordinates($data['staff_id'], $latitude, $longitude);
-							$error = $res_coordinates->error_code;
-							$workplace_id = $res_coordinates->workplace_id;
-							if ($error == 2 || $error == 3) {
+							case 'check_route':
+								// Attendance by route point
+								// Get geolocation of this route point and caculation distance to location of you
+								// If valid will return route id to insert in check_in_out table
+								// Else return error:
 								// Error 2: Current location is not allowed to attendance
 								// Error 3: Location information is unknown
-								return $error;
-							}
-							break;
+								if ($point_id == '') {
+									if (isset($data['point_id'])) {
+										if ($data['point_id'] != '') {
+											$point_id = $data['point_id'];
+										}
+									}
+									if ($point_id == '') {
+										$point_id = $this->get_next_point($data['staff_id'], $date, $latitude, $longitude)->id;
+									}
+								}
+								if ($point_id != '') {
+									$route_point_latitude = '';
+									$route_point_longitude = '';
+									$max_distance = '';
+									$data_route_point = $this->get_route_point($point_id);
+									if ($data_route_point) {
+										$route_point_latitude = $data_route_point->latitude;
+										$route_point_longitude = $data_route_point->longitude;
+										$max_distance = $data_route_point->distance;
+									}
+									if ($latitude != '' && $longitude != '' && $route_point_latitude != '' && $route_point_longitude != '' && $max_distance != '') {
+										$cal_distance = $this->compute_distance($route_point_latitude, $route_point_longitude, $latitude, $longitude);
+										if ((float) $cal_distance > (float) $max_distance) {
+											// Invalid distance
+											// Error 2: Current location is not allowed to attendance
+											return 2;
+										}
+									} else {
+										// Error 3: Location information is unknown
+										return 3;
+									}
+								} else {
+									// Error 4: Route point is unknown
+									return 4;
+								}
+								break;
+							case 'check_coordinates':
+								// Attendance by geolocation
+								$res_coordinates = $this->check_attendance_by_coordinates($data['staff_id'], $latitude, $longitude);
+								$error = $res_coordinates->error_code;
+								$workplace_id = $res_coordinates->workplace_id;
+								if ($error == 2 || $error == 3) {
+									// Error 2: Current location is not allowed to attendance
+									// Error 3: Location information is unknown
+									return $error;
+								}
+								break;
 						}
 					} else {
 						// Error 3: Location information is unknown
@@ -2639,7 +2695,7 @@ class timesheets_model extends app_model {
 				}
 			}
 			$send_notify = false;
-			if(isset($data['send_notify']) && $data['send_notify'] == 1){
+			if (isset($data['send_notify']) && $data['send_notify'] == 1) {
 				$send_notify = true;
 				unset($data['send_notify']);
 			}
@@ -2647,7 +2703,7 @@ class timesheets_model extends app_model {
 			$data['workplace_id'] = $workplace_id;
 			unset($data['location_user']);
 			unset($data['point_id']);
-			if(isset($data['ip_address'])){
+			if (isset($data['ip_address'])) {
 				unset($data['ip_address']);
 			}
 			$this->db->insert(db_prefix() . 'check_in_out', $data);
@@ -2681,13 +2737,13 @@ class timesheets_model extends app_model {
 								$data_send_mail->date_time = _d($data['date']);
 								$template = mail_template('attendance_notice', 'timesheets', $data_send_mail);
 								$template->send();
-								$this->notifications($staffid, 'timesheets/requisition_manage', $type_check_notify.' ' . _d($data['date']));
+								$this->notifications($staffid, 'timesheets/requisition_manage', $type_check_notify . ' ' . _d($data['date']));
 							}
 						}
 						// Send email to customer when staff check in/out at customer location
-						if($check_more == 'check_route' && (get_timesheets_option('allow_employees_to_create_work_points') == 1)){
+						if ($check_more == 'check_route' && (get_timesheets_option('allow_employees_to_create_work_points') == 1)) {
 							$customer_email = $this->get_customer_email_route_point($point_id);
-							if($customer_email != ''){
+							if ($customer_email != '') {
 								$staff_name = get_staff_full_name($data['staff_id']);
 								$data_send_mail = new stdClass();
 								$data_send_mail->receiver = $customer_email;
@@ -2699,7 +2755,7 @@ class timesheets_model extends app_model {
 							}
 						}
 					}
-				}				
+				}
 				return true;
 			}
 		}
@@ -2711,7 +2767,8 @@ class timesheets_model extends app_model {
 	 * @param  date $date
 	 * @return stdclass
 	 */
-	public function check_ts($staff_id, $date) {
+	public function check_ts($staff_id, $date)
+	{
 		$check_in = 0;
 		$check_out = 0;
 		$date_check_in = '';
@@ -2738,7 +2795,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return stdclass
 	 */
-	public function get_shift_data($id) {
+	public function get_shift_data($id)
+	{
 		$data_shift_res = new stdclass();
 		$data_shift_res->name = '';
 		$data_shift_res->color = '';
@@ -2790,7 +2848,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $date
 	 * @return integer
 	 */
-	public function get_hour_shift_staff($staff_id, $date) {
+	public function get_hour_shift_staff($staff_id, $date)
+	{
 
 		$result = 0;
 		$data_shift_list = $this->get_shift_work_staff_by_date($staff_id, $date);
@@ -2811,7 +2870,8 @@ class timesheets_model extends app_model {
 	 * @param date $date2
 	 * @return decimal
 	 */
-	public function get_hour($date1, $date2) {
+	public function get_hour($date1, $date2)
+	{
 		$result = 0;
 		if ($date1 != '' && $date2 != '') {
 			$timestamp1 = strtotime($date1);
@@ -2825,19 +2885,21 @@ class timesheets_model extends app_model {
 	 * @param  date $date
 	 * @return date
 	 */
-	public function format_date($date) {
+	public function format_date($date)
+	{
 		if (!$this->check_format_date_ymd($date)) {
 			$date = to_sql_date($date);
 		}
 		return $date;
 	}
 
-/**
- * format date time
- * @param  date $date
- * @return date
- */
-	public function format_date_time($date) {
+	/**
+	 * format date time
+	 * @param  date $date
+	 * @return date
+	 */
+	public function format_date_time($date)
+	{
 		if (!$this->check_format_date($date)) {
 			$date = to_sql_date($date, true);
 		}
@@ -2848,7 +2910,8 @@ class timesheets_model extends app_model {
 	 * @param integer $id
 	 * @return integer
 	 */
-	public function get_workshiftms($id) {
+	public function get_workshiftms($id)
+	{
 		$this->db->where('id', $id);
 		return $this->db->get(db_prefix() . 'work_shift')->row();
 	}
@@ -2859,7 +2922,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $work_shift_id
 	 * @return integer
 	 */
-	public function get_id_shift_type_by_date_and_master_id($staff_id, $date, $work_shift_id) {
+	public function get_id_shift_type_by_date_and_master_id($staff_id, $date, $work_shift_id)
+	{
 		if ($staff_id != '' && $date != '' && $work_shift_id != '') {
 			$this->db->where('staff_id', $staff_id);
 			$this->db->where('date', $date);
@@ -2885,7 +2949,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     array   the staff select.
 	 */
-	public function get_total_work_time($staffid, $f_date, $t_date) {
+	public function get_total_work_time($staffid, $f_date, $t_date)
+	{
 		$total = 0;
 		while (strtotime($f_date) <= strtotime($t_date)) {
 			$standard_workload = $this->get_hour_shift_staff($staffid, $f_date);
@@ -2904,7 +2969,8 @@ class timesheets_model extends app_model {
 	 * @param  int $staff_id
 	 * @return int object
 	 */
-	public function get_shift_type_id_by_number_day($work_shift_id, $number, $staff_id = '') {
+	public function get_shift_type_id_by_number_day($work_shift_id, $number, $staff_id = '')
+	{
 		if ($work_shift_id != '') {
 			if ($staff_id != '') {
 				$query = 'select shift_id from ' . db_prefix() . 'work_shift_detail_number_day where work_shift_id = ' . $work_shift_id . ' and number = \'' . $number . '\' and staff_id = ' . $staff_id;
@@ -2916,7 +2982,8 @@ class timesheets_model extends app_model {
 		}
 	}
 
-	public function get_first_staff_work_shift($work_shift_id) {
+	public function get_first_staff_work_shift($work_shift_id)
+	{
 		if ($work_shift_id) {
 			if ($work_shift_id != '') {
 				$this->db->where('work_shift_id', $work_shift_id);
@@ -2932,7 +2999,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     integer  the number day.
 	 */
-	public function get_number_day($from_date, $to_date, $staffid) {
+	public function get_number_day($from_date, $to_date, $staffid)
+	{
 		$count = 0;
 		if ($to_date == '') {
 			$to_date = date('Y-m-d');
@@ -2958,7 +3026,8 @@ class timesheets_model extends app_model {
 	 * @param   string $day_name
 	 * @param   int $staff_id
 	 */
-	public function get_shift_staff_by_day_name($work_shift_id, $day_name, $staff_id = '') {
+	public function get_shift_staff_by_day_name($work_shift_id, $day_name, $staff_id = '')
+	{
 		if ($work_shift_id != '' && $day_name != '') {
 			if ($staff_id == '') {
 				$this->db->where('number', $day_name);
@@ -2977,22 +3046,23 @@ class timesheets_model extends app_model {
 	 * @param  int $day
 	 * @return  int
 	 */
-	public function convert_day_to_number($day) {
+	public function convert_day_to_number($day)
+	{
 		switch ($day) {
-		case 'mon':
-			return '1';
-		case 'tue':
-			return '2';
-		case 'wed':
-			return '3';
-		case 'thu':
-			return '4';
-		case 'fri':
-			return '5';
-		case 'sat':
-			return '6';
-		case 'sun':
-			return '7';
+			case 'mon':
+				return '1';
+			case 'tue':
+				return '2';
+			case 'wed':
+				return '3';
+			case 'thu':
+				return '4';
+			case 'fri':
+				return '5';
+			case 'sat':
+				return '6';
+			case 'sun':
+				return '7';
 		}
 	}
 
@@ -3002,7 +3072,8 @@ class timesheets_model extends app_model {
 	 * @param   string $day_name
 	 * @param   int $staff_id
 	 */
-	public function get_shift_staff_by_date($work_shift_id, $date, $staff_id = '') {
+	public function get_shift_staff_by_date($work_shift_id, $date, $staff_id = '')
+	{
 		if ($work_shift_id != '' && $date != '') {
 			if ($staff_id == '') {
 				$this->db->where('date', $date);
@@ -3021,7 +3092,8 @@ class timesheets_model extends app_model {
 	 * @param  int $id
 	 * @return object or array object
 	 */
-	public function get_work_shift($id = "") {
+	public function get_work_shift($id = "")
+	{
 		if ($id != '') {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'work_shift')->row();
@@ -3036,7 +3108,8 @@ class timesheets_model extends app_model {
 	 * @param  date $date
 	 * @return array
 	 */
-	public function get_day_off_staff_by_date($staff, $date) {
+	public function get_day_off_staff_by_date($staff, $date)
+	{
 		if ($staff != '' && $date != '') {
 			$this->db->where('staffid', $staff);
 			$this->db->select('role');
@@ -3100,7 +3173,8 @@ class timesheets_model extends app_model {
 	 * @param  string $month_array
 	 * @return array
 	 */
-	public function get_staffid_ts_by_year($month_array) {
+	public function get_staffid_ts_by_year($month_array)
+	{
 		$string = 'select * from ' . db_prefix() . 'timesheets_timesheet where year(date_work)="' . $month_array . '"';
 		return $this->db->query($string)->result_array();
 	}
@@ -3109,7 +3183,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $month
 	 * @return array
 	 */
-	public function get_staffid_ts_by_month($month) {
+	public function get_staffid_ts_by_month($month)
+	{
 		$string = 'select * from ' . db_prefix() . 'timesheets_timesheet where month(date_work)="' . $month . '"';
 		return $this->db->query($string)->result_array();
 	}
@@ -3119,7 +3194,8 @@ class timesheets_model extends app_model {
 	 * @param  array  $where
 	 * @return array
 	 */
-	public function getstaff($id = '', $where = []) {
+	public function getstaff($id = '', $where = [])
+	{
 		$select_str = '*,concat(firstname," ",lastname) as full_name';
 
 		if (is_staff_logged_in() && $id != '' && $id == get_staff_user_id()) {
@@ -3147,7 +3223,8 @@ class timesheets_model extends app_model {
 	/**
 	 * fetch all timesheet
 	 */
-	function fetch_all_timesheet() {
+	function fetch_all_timesheet()
+	{
 		$this->db->select('*');
 		$this->db->order_by('id');
 		$this->db->from('timesheets_timesheet');
@@ -3159,7 +3236,8 @@ class timesheets_model extends app_model {
 	 * @param  string $option
 	 * @return object or array
 	 */
-	public function get_timesheets_option($option) {
+	public function get_timesheets_option($option)
+	{
 		if ($option != '') {
 			$this->db->where('option_name', $option);
 			return $this->db->get(db_prefix() . 'timesheets_option')->row();
@@ -3173,7 +3251,8 @@ class timesheets_model extends app_model {
 	 * @param  date $date
 	 * @return array
 	 */
-	public function get_shift_work_staff_by_date($staff, $date = '') {
+	public function get_shift_work_staff_by_date($staff, $date = '')
+	{
 		$nv = $this->staff_model->get($staff);
 		$dpm = $this->departments_model->get_staff_departments($staff, true);
 		$sql_dpm = '';
@@ -3222,7 +3301,6 @@ class timesheets_model extends app_model {
 							$this->db->where('(staff = "" or staff is null)');
 							$this->db->where('("' . $date . '" >=  from_date and "' . $date . '" <= to_date)');
 							$shift = $this->db->get(db_prefix() . 'work_shift')->result_array();
-
 						}
 					}
 				}
@@ -3300,7 +3378,8 @@ class timesheets_model extends app_model {
 	 * @param   date $date
 	 * @return  array
 	 */
-	public function get_shift_work_staff_by_date_2($staff, $date) {
+	public function get_shift_work_staff_by_date_2($staff, $date)
+	{
 		if ($staff != '' && $date != '') {
 			$this->db->where('staffid', $staff);
 			$this->db->select('role');
@@ -3340,7 +3419,8 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @param  integer $staffid
 	 */
-	public function send_mail($data, $staffid = '') {
+	public function send_mail($data, $staffid = '')
+	{
 		if ($staffid == '') {
 			$staff_id = $staffid;
 		} else {
@@ -3359,167 +3439,59 @@ class timesheets_model extends app_model {
 		$link = '';
 		$rel_type = strtolower($data['rel_type']);
 		switch ($rel_type) {
-		case 'hr_planning':
-			$hrplanning = $this->get_proposal_hrplanning($data['rel_id']);
-			$staff_addedfrom = '';
-			$additional_data = '';
-			if ($hrplanning) {
-				$staff_addedfrom = $hrplanning->requester;
-				$additional_data = $hrplanning->proposal_name;
-			}
-			$type = _l('hr_planning');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve_hr_planning_proposal';
-			$mes_approve = 'notify_send_approve_hr_planning_proposal';
-			$mes_reject = 'notify_send_rejected_hr_planning_proposal';
-			$link = 'timesheets/hr_planning?tab=hr_planning_proposal#' . $data['rel_id'];
-			break;
+			case 'hr_planning':
+				$hrplanning = $this->get_proposal_hrplanning($data['rel_id']);
+				$staff_addedfrom = '';
+				$additional_data = '';
+				if ($hrplanning) {
+					$staff_addedfrom = $hrplanning->requester;
+					$additional_data = $hrplanning->proposal_name;
+				}
+				$type = _l('hr_planning');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve_hr_planning_proposal';
+				$mes_approve = 'notify_send_approve_hr_planning_proposal';
+				$mes_reject = 'notify_send_rejected_hr_planning_proposal';
+				$link = 'timesheets/hr_planning?tab=hr_planning_proposal#' . $data['rel_id'];
+				break;
 
-		case 'candidate_evaluation':
-			$this->load->model('recruitment/recruitment_model');
+			case 'candidate_evaluation':
+				$this->load->model('recruitment/recruitment_model');
 
-			$candidate = $this->recruitment_model->get_candidates($data['candidate']);
-			$additional_data = '';
-			if ($recruitment) {
-				$staff_addedfrom = $candidate->cp_add_from;
-				$additional_data = $candidate->candidate_name;
-			}
+				$candidate = $this->recruitment_model->get_candidates($data['candidate']);
+				$additional_data = '';
+				if ($recruitment) {
+					$staff_addedfrom = $candidate->cp_add_from;
+					$additional_data = $candidate->candidate_name;
+				}
 
-			$type = _l('interview_result');
+				$type = _l('interview_result');
 
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'recruitment/candidate/' . $data['candidate'] . '?evaluation=' . $data['rel_id'];
-			break;
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'recruitment/candidate/' . $data['candidate'] . '?evaluation=' . $data['rel_id'];
+				break;
 
-		case 'recruitment_campaign':
-			$this->load->model('recruitment/recruitment_model');
-			$staff_addedfrom = $data['addedfrom'];
-			$recruitment = $this->recruitment_model->get_campaign_by_id($data['rel_id']);
-			$additional_data = '';
-			if ($recruitment) {
-				$additional_data = $recruitment->campaign_name;
-			}
+			case 'recruitment_campaign':
+				$this->load->model('recruitment/recruitment_model');
+				$staff_addedfrom = $data['addedfrom'];
+				$recruitment = $this->recruitment_model->get_campaign_by_id($data['rel_id']);
+				$additional_data = '';
+				if ($recruitment) {
+					$additional_data = $recruitment->campaign_name;
+				}
 
-			$type = _l('recruitment_campaign');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'recruitment/recruitment_campaign/' . $data['rel_id'];
+				$type = _l('recruitment_campaign');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'recruitment/recruitment_campaign/' . $data['rel_id'];
 
-			break;
-		case 'leave':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('leave');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'maternity_leave':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('leave');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'private_work_without_pay':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('leave');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'sick_leave':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('leave');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'late':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('late');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'early':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('early');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'go_out':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('go_out');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'go_on_bussiness':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('go_on_bussiness');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		case 'additional_timesheets':
-			$additional_timesheets = $this->get_additional_timesheets($data['rel_id']);
-			$data['addedfrom'] = $additional_timesheets->creator;
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = '';
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve_additional_timesheets';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_manage?tab=additional_timesheets&additional_timesheets_id=' . $data['rel_id'];
-			break;
-		case 'recruitment_proposal':
-			$this->load->model('recruitment/recruitment_model');
-			$additional_data = '';
-			$staff_addedfrom = $data['addedfrom'];
-			$proposal = $this->recruitment_model->get_rec_proposal($data['rel_id']);
-			if ($proposal) {
-				$additional_data = $proposal->proposal_name;
-			}
-			$type = _l('recruitment_proposal');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'recruitment/recruitment_proposal/' . $data['rel_id'];
-			break;
-		case 'quit_job':
-			$staff_addedfrom = $data['addedfrom'];
-			$additional_data = _l('quit_job');
-			$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
-			$mes = 'notify_send_request_approve';
-			$mes_approve = 'notify_send_approve';
-			$mes_reject = 'notify_send_rejected';
-			$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			break;
-		default:
-			if ($data['rel_type'] != '' && $data['rel_id'] != '') {
+				break;
+			case 'leave':
 				$staff_addedfrom = $data['addedfrom'];
 				$additional_data = _l('leave');
 				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
@@ -3527,8 +3499,116 @@ class timesheets_model extends app_model {
 				$mes_approve = 'notify_send_approve';
 				$mes_reject = 'notify_send_rejected';
 				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-			}
-			break;
+				break;
+			case 'maternity_leave':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('leave');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			case 'private_work_without_pay':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('leave');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			case 'sick_leave':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('leave');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			case 'late':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('late');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			case 'early':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('early');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			case 'go_out':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('go_out');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			case 'go_on_bussiness':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('go_on_bussiness');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			case 'additional_timesheets':
+				$additional_timesheets = $this->get_additional_timesheets($data['rel_id']);
+				$data['addedfrom'] = $additional_timesheets->creator;
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = '';
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve_additional_timesheets';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_manage?tab=additional_timesheets&additional_timesheets_id=' . $data['rel_id'];
+				break;
+			case 'recruitment_proposal':
+				$this->load->model('recruitment/recruitment_model');
+				$additional_data = '';
+				$staff_addedfrom = $data['addedfrom'];
+				$proposal = $this->recruitment_model->get_rec_proposal($data['rel_id']);
+				if ($proposal) {
+					$additional_data = $proposal->proposal_name;
+				}
+				$type = _l('recruitment_proposal');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'recruitment/recruitment_proposal/' . $data['rel_id'];
+				break;
+			case 'quit_job':
+				$staff_addedfrom = $data['addedfrom'];
+				$additional_data = _l('quit_job');
+				$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+				$mes = 'notify_send_request_approve';
+				$mes_approve = 'notify_send_approve';
+				$mes_reject = 'notify_send_rejected';
+				$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				break;
+			default:
+				if ($data['rel_type'] != '' && $data['rel_id'] != '') {
+					$staff_addedfrom = $data['addedfrom'];
+					$additional_data = _l('leave');
+					$list_approve_status = $this->get_list_approval_details($data['rel_id'], $data['rel_type']);
+					$mes = 'notify_send_request_approve';
+					$mes_approve = 'notify_send_approve';
+					$mes_reject = 'notify_send_rejected';
+					$link = 'timesheets/requisition_detail/' . $data['rel_id'];
+				}
+				break;
 		}
 		$check_approve_status = $this->check_approval_details($data['rel_id'], $data['rel_type'], $data['status']);
 		if (isset($check_approve_status['staffid'])) {
@@ -3653,7 +3733,6 @@ class timesheets_model extends app_model {
 							$this->emails_model->send_simple_email($email, _l('approval_notification'), _l($mes_email, $type . ' <a href="' . admin_url($link) . '">' . $additional_data . '</a>') . ' ' . _l('by_staff', get_staff_full_name($staff_id)));
 						}
 					}
-
 				}
 			}
 		}
@@ -3663,7 +3742,8 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @return array
 	 */
-	public function send_notifi_handover_recipients($data) {
+	public function send_notifi_handover_recipients($data)
+	{
 		$this->load->model('emails_model');
 		if (!isset($data['status'])) {
 			$data['status'] = '';
@@ -3690,10 +3770,8 @@ class timesheets_model extends app_model {
 		if ($requisition_leave) {
 			$staff_handover_recipients = $requisition_leave->handover_recipients;
 			$additional_data = $requisition_leave->subject;
-
 		} else {
 			$staff_handover_recipients = 'false';
-
 		}
 
 		if (is_numeric($staff_handover_recipients)) {
@@ -3713,7 +3791,6 @@ class timesheets_model extends app_model {
 				if ($notified) {
 					pusher_trigger_notification([$staff_handover_recipients]);
 				}
-
 			}
 		}
 	}
@@ -3721,7 +3798,8 @@ class timesheets_model extends app_model {
 	 * send notification recipient
 	 * @param  array $data
 	 */
-	public function send_notification_recipient($data) {
+	public function send_notification_recipient($data)
+	{
 		$this->load->model('emails_model');
 		if (!isset($data['status'])) {
 			$data['status'] = '';
@@ -3729,24 +3807,21 @@ class timesheets_model extends app_model {
 
 		$mes = 'send_request';
 		$link = 'timesheets/requisition_detail/' . $data['rel_id'];
-		
+
 		$this->db->select('*');
 		$this->db->where('id', $data['rel_id']);
 		$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
 		if ($requisition_leave) {
 			$additional_data = $requisition_leave->subject;
-
 		} else {
 			$additional_data = '';
-
 		}
 
-		if(isset($data['staff_approve']) && isset($data['approve']) && is_numeric($data['approve'])){
-			if($data['approve'] == 1){
-				$mes = $additional_data.' '._l('ts_approved_by').' '.get_staff_full_name($data['staff_approve']);
-			}
-			else{
-				$mes = $additional_data.' '._l('ts_rejected_by').' '.get_staff_full_name($data['staff_approve']);
+		if (isset($data['staff_approve']) && isset($data['approve']) && is_numeric($data['approve'])) {
+			if ($data['approve'] == 1) {
+				$mes = $additional_data . ' ' . _l('ts_approved_by') . ' ' . get_staff_full_name($data['staff_approve']);
+			} else {
+				$mes = $additional_data . ' ' . _l('ts_rejected_by') . ' ' . get_staff_full_name($data['staff_approve']);
 			}
 		}
 
@@ -3764,7 +3839,7 @@ class timesheets_model extends app_model {
 		if (count($arr_notification_recipient) > 0) {
 
 			$mail_template = 'send-request-approve';
-			if(!in_array(get_staff_user_id(),$arr_notification_recipient)){
+			if (!in_array(get_staff_user_id(), $arr_notification_recipient)) {
 				foreach ($arr_notification_recipient as $value) {
 
 					$notified = add_notification([
@@ -3782,14 +3857,14 @@ class timesheets_model extends app_model {
 				}
 			}
 		}
-
 	}
 	/**
 	 * get date time
 	 * @param  integer $work_shift
 	 * @return array
 	 */
-	public function get_date_time($work_shift) {
+	public function get_date_time($work_shift)
+	{
 		$day = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'sunday', 'saturday_odd', 'saturday_even'];
 		$date_return = [];
 		foreach ($day as $value) {
@@ -3810,14 +3885,17 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     <type>  the overtime setting.
 	 */
-	public function get_overtime_setting($id = '') {
+	public function get_overtime_setting($id = '')
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_overtime_setting')->row();
 		}
 
 		return $this->db->get(db_prefix() . 'timesheets_overtime_setting')->result_array();
-	}public function add_overtime_setting($data) {
+	}
+	public function add_overtime_setting($data)
+	{
 		$this->db->insert(db_prefix() . 'timesheets_overtime_setting', $data);
 		$insert_id = $this->db->insert_id();
 		return $insert_id;
@@ -3828,7 +3906,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return bool
 	 */
-	public function update_overtime_setting($data, $id) {
+	public function update_overtime_setting($data, $id)
+	{
 		$this->db->where('id', $id);
 		$this->db->update(db_prefix() . 'timesheets_overtime_setting', $data);
 		if ($this->db->affected_rows() > 0) {
@@ -3841,7 +3920,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return boolean
 	 */
-	public function delete_overtime_setting($id) {
+	public function delete_overtime_setting($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'timesheets_overtime_setting');
 		if ($this->db->affected_rows() > 0) {
@@ -3855,7 +3935,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return array
 	 */
-	public function get_additional_timesheets($id = '') {
+	public function get_additional_timesheets($id = '')
+	{
 		if (is_numeric($id)) {
 			$this->db->select('*');
 			$this->db->where('id', $id);
@@ -3873,11 +3954,12 @@ class timesheets_model extends app_model {
 	 * @param  integer $staff_id
 	 * @return integer $year
 	 */
-	public function get_requisition_number_of_day_off($staff_id, $year = false) {
+	public function get_requisition_number_of_day_off($staff_id, $year = false, $type_of_leave = '')
+	{
 		if ($year == false) {
 			$year = date('Y');
 		}
-		$result_total_day_off = $this->get_day_off_by_year($staff_id, $year);
+		$result_total_day_off = $this->get_day_off_by_year($staff_id, $year, $type_of_leave);
 		if ($result_total_day_off) {
 			$total_day_off_in_year = (float) $result_total_day_off->total;
 			$total_day_off_allowed_in_year = (float) $result_total_day_off->remain;
@@ -3905,7 +3987,8 @@ class timesheets_model extends app_model {
 	 * @param  [int] $staff_id
 	 * @return [y-mm] $month
 	 */
-	public function get_date_leave_in_month($staff_id, $month) {
+	public function get_date_leave_in_month($staff_id, $month)
+	{
 		if ($staff_id != '' && $staff_id != 0) {
 			$this->db->where('date_format(date_work, "%Y-%m") = "' . $month . '" and staff_id = ' . $staff_id . ' and type = \'al\'');
 			$timekeeping = $this->db->get(db_prefix() . 'timesheets_timesheet')->result_array();
@@ -3931,9 +4014,13 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     <type>  the day off by year.
 	 */
-	public function get_day_off_by_year($staffid, $year) {
+	public function get_day_off_by_year($staffid, $year, $leave_type = '')
+	{
 		$this->db->where('staffid', $staffid);
 		$this->db->where('year', $year);
+		if ($leave_type != "") {
+			$this->db->where('type_of_leave', $leave_type);
+		}
 		return $this->db->get(db_prefix() . 'timesheets_day_off')->row();
 	}
 
@@ -3942,7 +4029,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return object or array
 	 */
-	public function get_allowance_type($id = false) {
+	public function get_allowance_type($id = false)
+	{
 		if (is_numeric($id)) {
 			$this->db->where('type_id', $id);
 
@@ -3959,7 +4047,8 @@ class timesheets_model extends app_model {
 	 * @param  $id
 	 * @return  boolean
 	 */
-	public function update_allowance_type($data, $id) {
+	public function update_allowance_type($data, $id)
+	{
 		$data['allowance_val'] = reformat_currency($data['allowance_val']);
 		$this->db->where('type_id', $id);
 		$this->db->update(db_prefix() . 'allowance_type', $data);
@@ -3973,7 +4062,8 @@ class timesheets_model extends app_model {
 	 * @param  $id
 	 * @return  boolean
 	 */
-	public function delete_allowance_type($id) {
+	public function delete_allowance_type($id)
+	{
 		$this->db->where('type_id', $id);
 		$this->db->delete(db_prefix() . 'allowance_type');
 		if ($this->db->affected_rows() > 0) {
@@ -3987,7 +4077,8 @@ class timesheets_model extends app_model {
 	 * @param  boolean $id
 	 * @return object or array
 	 */
-	public function get_salary_form($id = false) {
+	public function get_salary_form($id = false)
+	{
 		if (is_numeric($id)) {
 			$this->db->where('form_id', $id);
 
@@ -4003,7 +4094,8 @@ class timesheets_model extends app_model {
 	 * @param array $data
 	 * @return object or array
 	 */
-	public function add_salary_form($data) {
+	public function add_salary_form($data)
+	{
 		$data['salary_val'] = reformat_currency($data['salary_val']);
 		$this->db->insert(db_prefix() . 'salary_form', $data);
 		$insert_id = $this->db->insert_id();
@@ -4015,7 +4107,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return boolean
 	 */
-	public function update_salary_form($data, $id) {
+	public function update_salary_form($data, $id)
+	{
 		$data['salary_val'] = reformat_currency($data['salary_val']);
 		$this->db->where('form_id', $id);
 		$this->db->update(db_prefix() . 'salary_form', $data);
@@ -4029,7 +4122,8 @@ class timesheets_model extends app_model {
 	 * @param $id
 	 * @return boolean
 	 */
-	public function delete_salary_form($id) {
+	public function delete_salary_form($id)
+	{
 		$this->db->where('form_id', $id);
 		$this->db->delete(db_prefix() . 'salary_form');
 		if ($this->db->affected_rows() > 0) {
@@ -4043,10 +4137,12 @@ class timesheets_model extends app_model {
 	 * get province
 	 * @return [type]
 	 */
-	public function get_province() {
+	public function get_province()
+	{
 		return $this->db->get(db_prefix() . 'province_city')->result_array();
 	}
-	public function get_procedure_retire($id = '') {
+	public function get_procedure_retire($id = '')
+	{
 		if ($id == '') {
 			return $this->db->get(db_prefix() . 'procedure_retire')->result_array();
 		} else {
@@ -4054,12 +4150,13 @@ class timesheets_model extends app_model {
 			return $this->db->get(db_prefix() . 'procedure_retire')->result_array();
 		}
 	}
-/**
- * get staff info
- * @param  integer $staffid
- * @return integer
- */
-	public function get_staff_info($staffid) {
+	/**
+	 * get staff info
+	 * @param  integer $staffid
+	 * @return integer
+	 */
+	public function get_staff_info($staffid)
+	{
 		$this->db->where('staffid', $staffid);
 		$results = $this->db->get(db_prefix() . 'staff')->row();
 		return $results;
@@ -4069,7 +4166,8 @@ class timesheets_model extends app_model {
 	 * timesheets setting get allowance key
 	 * @return array
 	 */
-	public function timesheets_setting_get_allowance_key() {
+	public function timesheets_setting_get_allowance_key()
+	{
 		$allowance_no_taxable = json_decode(get_timesheets_option('allowance_no_taxable'), true);
 		$arr_allowance_key = [];
 		if ($allowance_no_taxable) {
@@ -4085,7 +4183,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return object array
 	 */
-	public function get_approval_process($id = '') {
+	public function get_approval_process($id = '')
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_approval_setting')->row();
@@ -4093,20 +4192,22 @@ class timesheets_model extends app_model {
 		return $this->db->get(db_prefix() . 'timesheets_approval_setting')->result_array();
 	}
 
-/**
- * get_timesheet
- * @param  integer $staffid
- * @param  date $from_date
- * @param  date $to_date
- * @return array
- */
-	public function get_timesheet($staffid = '', $from_date, $to_date) {
+	/**
+	 * get_timesheet
+	 * @param  integer $staffid
+	 * @param  date $from_date
+	 * @param  date $to_date
+	 * @return array
+	 */
+	public function get_timesheet($staffid = '', $from_date, $to_date)
+	{
 		return $this->db->query('select * from ' . db_prefix() . 'timesheets_timesheet where staff_id = ' . $staffid . ' and date_work between \'' . $from_date . '\' and \'' . $to_date . '\'')->result_array();
 	}
 	/**
 	 * report by working hours
 	 */
-	public function report_by_working_hours() {
+	public function report_by_working_hours()
+	{
 		$months_report = $this->input->post('months_report');
 
 		// $custom_date_select = '';
@@ -4255,7 +4356,8 @@ class timesheets_model extends app_model {
 	 * @param  date $custom_date_select1
 	 * @return integer
 	 */
-	public function count_work_hours_approve($department, $from_date, $to_date) {
+	public function count_work_hours_approve($department, $from_date, $to_date)
+	{
 		$list_app = $this->db->query('select ht.creator, ht.additional_day, ht.timekeeping_value from ' . db_prefix() . 'timesheets_additional_timesheet ht left join ' . db_prefix() . 'staff_departments sd on sd.staffid = ht.creator where sd.departmentid = ' . $department . ' and ht.status = 1 and ht.additional_day between "' . $from_date . '" and "' . $to_date . '"')->result_array();
 		$sum = 0;
 		if (count($list_app) > 0) {
@@ -4272,7 +4374,8 @@ class timesheets_model extends app_model {
 	 * @param array $data
 	 * @return boolean
 	 */
-	public function add_approval_process($data) {
+	public function add_approval_process($data)
+	{
 		unset($data['approval_setting_id']);
 
 		if (isset($data['staff'])) {
@@ -4325,7 +4428,8 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @return boolean
 	 */
-	public function update_approval_process($id, $data) {
+	public function update_approval_process($id, $data)
+	{
 		if (isset($data['staff'])) {
 			$setting = [];
 			foreach ($data['staff'] as $key => $value) {
@@ -4376,7 +4480,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return boolean
 	 */
-	public function delete_approval_setting($id) {
+	public function delete_approval_setting($id)
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			$this->db->delete(db_prefix() . 'timesheets_approval_setting');
@@ -4387,7 +4492,8 @@ class timesheets_model extends app_model {
 		}
 		return false;
 	}
-	public function setting_timekeeper($data) {
+	public function setting_timekeeper($data)
+	{
 		$affectedrows = 0;
 		if (isset($data['timekeeping_task_role'])) {
 
@@ -4460,7 +4566,8 @@ class timesheets_model extends app_model {
 		return false;
 	}
 
-	public function edit_timesheets($data, $staffid = '') {
+	public function edit_timesheets($data, $staffid = '')
+	{
 		if ($staffid != '') {
 			$staff_id = $staffid;
 		} else {
@@ -4528,7 +4635,8 @@ class timesheets_model extends app_model {
 	 * @param array $data
 	 * @param integer $staffid
 	 */
-	public function add_additional_timesheets($data, $staffid = '') {
+	public function add_additional_timesheets($data, $staffid = '')
+	{
 		if ($staffid == '') {
 			$staff_id = get_staff_user_id();
 		} else {
@@ -4593,7 +4701,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $date
 	 * @return integer
 	 */
-	public function get_info_hour_shift_staff($staff_id, $date) {
+	public function get_info_hour_shift_staff($staff_id, $date)
+	{
 		$result = new stdclass();
 		$result->woking_hour = 0;
 		$result->lunch_break_hour = 0;
@@ -4631,7 +4740,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     object   the file requisition.
 	 */
-	public function get_file_requisition($id, $rel_id = false) {
+	public function get_file_requisition($id, $rel_id = false)
+	{
 		if (is_client_logged_in()) {
 			$this->db->where('visible_to_customer', 1);
 		}
@@ -4656,7 +4766,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     boolean
 	 */
-	public function automatic_insert_timesheets($staffid, $time_in, $time_out) {
+	public function automatic_insert_timesheets($staffid, $time_in, $time_out)
+	{
 
 		$date_work = date('Y-m-d', strtotime($time_in));
 		$work_time = $this->get_hour_shift_staff($staffid, $date_work);
@@ -4761,14 +4872,16 @@ class timesheets_model extends app_model {
 			$this->db->delete(db_prefix() . 'timesheets_timesheet');
 
 			if ($value > 0) {
-				$this->db->insert(db_prefix() . 'timesheets_timesheet',
+				$this->db->insert(
+					db_prefix() . 'timesheets_timesheet',
 					[
 						'value' => $value,
 						'date_work' => $date_work,
 						'staff_id' => $staffid,
 						'type' => 'W',
 						'add_from' => get_staff_user_id(),
-					]);
+					]
+				);
 
 				$insert_id = $this->db->insert_id();
 
@@ -4778,14 +4891,16 @@ class timesheets_model extends app_model {
 			}
 
 			if ($late > 0) {
-				$this->db->insert(db_prefix() . 'timesheets_timesheet',
+				$this->db->insert(
+					db_prefix() . 'timesheets_timesheet',
 					[
 						'value' => $late,
 						'date_work' => $date_work,
 						'staff_id' => $staffid,
 						'type' => 'L',
 						'add_from' => get_staff_user_id(),
-					]);
+					]
+				);
 
 				$insert_id = $this->db->insert_id();
 				if ($insert_id) {
@@ -4794,14 +4909,16 @@ class timesheets_model extends app_model {
 			}
 
 			if ($early > 0) {
-				$this->db->insert(db_prefix() . 'timesheets_timesheet',
+				$this->db->insert(
+					db_prefix() . 'timesheets_timesheet',
 					[
 						'value' => $early,
 						'date_work' => $date_work,
 						'staff_id' => $staffid,
 						'type' => 'E',
 						'add_from' => get_staff_user_id(),
-					]);
+					]
+				);
 				$insert_id = $this->db->insert_id();
 				if ($insert_id) {
 					$affectedrows++;
@@ -4822,7 +4939,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     integer
 	 */
-	public function add_update_timesheet($data, $is_timesheets = false) {
+	public function add_update_timesheet($data, $is_timesheets = false)
+	{
 		$type_valid = ['AL', 'W', 'U', 'HO', 'E', 'L', 'B', 'SI', 'M', 'ME', 'NS', 'P'];
 		$results = 0;
 		foreach ($data as $row) {
@@ -4869,7 +4987,6 @@ class timesheets_model extends app_model {
 										$results++;
 									}
 								}
-
 							}
 
 							if ($val == '') {
@@ -4895,7 +5012,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     boolean
 	 */
-	public function latch_timesheet($month) {
+	public function latch_timesheet($month)
+	{
 		if ($month != '') {
 			$this->db->insert(db_prefix() . 'timesheets_latch_timesheet', [
 				'month_latch' => $month,
@@ -4915,7 +5033,6 @@ class timesheets_model extends app_model {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -4926,7 +5043,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     array  the taskstimers.
 	 */
-	public function get_taskstimers($staff_id, $where) {
+	public function get_taskstimers($staff_id, $where)
+	{
 		$this->db->where($where);
 		$this->db->where('staff_id', $staff_id);
 		$this->db->select('*, CASE
@@ -4937,7 +5055,8 @@ class timesheets_model extends app_model {
 		return $this->db->get(db_prefix() . 'taskstimers')->result_array();
 	}
 
-	public function get_data_insert_timesheets($staffid, $time_in, $time_out) {
+	public function get_data_insert_timesheets($staffid, $time_in, $time_out)
+	{
 		$date_work = date('Y-m-d', strtotime($time_in));
 		$work_time = $this->get_hour_shift_staff($staffid, $date_work);
 		$affectedrows = 0;
@@ -5000,27 +5119,36 @@ class timesheets_model extends app_model {
 		return $data;
 	}
 
-	public function import_timesheets($data) {
+	public function import_timesheets($data)
+	{
 		foreach ($data as $key => $value) {
 			$test = $this->check_ts($value['staffid'], date('Y-m-d', strtotime($value['time_in'])));
 			if ($test->check_in != 0) {
 				$this->db->where('id', $test->check_in);
 				$this->db->update(db_prefix() . 'check_in_out', ['date' => $value['time_in']]);
 			} else {
-				$this->db->insert(db_prefix() . 'check_in_out',
-					['staff_id' => $value['staffid'],
+				$this->db->insert(
+					db_prefix() . 'check_in_out',
+					[
+						'staff_id' => $value['staffid'],
 						'date' => $value['time_in'],
-						'type_check' => 1]);
+						'type_check' => 1
+					]
+				);
 			}
 
 			if ($test->check_out != 0) {
 				$this->db->where('id', $test->check_out);
 				$this->db->update(db_prefix() . 'check_in_out', ['date' => $value['time_out']]);
 			} else {
-				$this->db->insert(db_prefix() . 'check_in_out',
-					['staff_id' => $value['staffid'],
+				$this->db->insert(
+					db_prefix() . 'check_in_out',
+					[
+						'staff_id' => $value['staffid'],
 						'date' => $value['time_out'],
-						'type_check' => 2]);
+						'type_check' => 2
+					]
+				);
 			}
 			$this->automatic_insert_timesheets($value['staffid'], $value['time_in'], $value['time_out']);
 		}
@@ -5028,12 +5156,13 @@ class timesheets_model extends app_model {
 		return true;
 	}
 
-/**
- * delete additional timesheets
- * @param  integer $id
- * @return boolean
- */
-	public function delete_additional_timesheets($id) {
+	/**
+	 * delete additional timesheets
+	 * @param  integer $id
+	 * @return boolean
+	 */
+	public function delete_additional_timesheets($id)
+	{
 
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'timesheets_additional_timesheet');
@@ -5053,7 +5182,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     boolean  ( description_of_the_return_value )
 	 */
-	public function delete_timesheets_attachment_file($attachment_id) {
+	public function delete_timesheets_attachment_file($attachment_id)
+	{
 		$deleted = false;
 		$attachment = $this->get_timesheets_attachments_delete($attachment_id);
 		if ($attachment) {
@@ -5087,7 +5217,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @return     object  the timesheets attachments delete.
 	 */
-	public function get_timesheets_attachments_delete($id) {
+	public function get_timesheets_attachments_delete($id)
+	{
 
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
@@ -5104,7 +5235,8 @@ class timesheets_model extends app_model {
 	 * @param  string $staffid
 	 * @return
 	 */
-	public function get_list_check_in_out($date, $staffid = '', $route_point_id = '') {
+	public function get_list_check_in_out($date, $staffid = '', $route_point_id = '')
+	{
 		if ($staffid != '') {
 			$this->db->where('staff_id', $staffid);
 		}
@@ -5120,7 +5252,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staff_id
 	 * @param  date $date_work
 	 */
-	public function get_ts_staff_by_date($staff_id, $date_work) {
+	public function get_ts_staff_by_date($staff_id, $date_work)
+	{
 		return $this->db->query('select * from ' . db_prefix() . 'timesheets_timesheet where staff_id = ' . $staff_id . ' and date_work = \'' . $date_work . '\'')->result_array();
 	}
 	/**
@@ -5129,7 +5262,8 @@ class timesheets_model extends app_model {
 	 * @param  string $max_hour
 	 * @return string
 	 */
-	public function merge_ts($string, $max_hour, $type_valid) {
+	public function merge_ts($string, $max_hour, $type_valid)
+	{
 		if ($string != '') {
 			$array = explode(';', $string);
 			$list_type = [];
@@ -5143,7 +5277,7 @@ class timesheets_model extends app_model {
 						array_push($list_type, $split[0]);
 					}
 				} else {
-					if ((isset($split[0]) && ctype_alpha($split[0]) && in_array(strtoupper($split[0]), $type_valid)) ) {
+					if ((isset($split[0]) && ctype_alpha($split[0]) && in_array(strtoupper($split[0]), $type_valid))) {
 						return $string;
 					}
 				}
@@ -5164,8 +5298,8 @@ class timesheets_model extends app_model {
 				if ($total > $max_hour) {
 					$total = $max_hour;
 				}
-				if($total > 0){
-					$array_result[] = $type . ':' . $total;					
+				if ($total > 0) {
+					$array_result[] = $type . ':' . $total;
 				}
 			}
 			if (count($array_result) > 0) {
@@ -5183,7 +5317,8 @@ class timesheets_model extends app_model {
 	 * @param  mixed $where where in query
 	 * @return mixed if id is passed return object else array
 	 */
-	public function get_staff_list($where = '') {
+	public function get_staff_list($where = '')
+	{
 		return $this->db->query('select * from ' . db_prefix() . 'staff ' . $where)->result_array();
 	}
 	/**
@@ -5191,7 +5326,8 @@ class timesheets_model extends app_model {
 	 *
 	 * @param      <type>  $request_leave  the request leave
 	 */
-	public function get_go_bussiness_advance_payment($request_leave) {
+	public function get_go_bussiness_advance_payment($request_leave)
+	{
 		$this->db->where('requisition_leave', $request_leave);
 		return $this->db->get(db_prefix() . 'timesheets_go_bussiness_advance_payment')->result_array();
 	}
@@ -5200,7 +5336,8 @@ class timesheets_model extends app_model {
 	 * @param  $data array
 	 * @return boolean
 	 */
-	public function advance_payment_update($id, $data) {
+	public function advance_payment_update($id, $data)
+	{
 		$data['amount_received'] = timesheets_reformat_currency_asset($data['amount_received']);
 		$data['received_date'] = to_sql_date($data['received_date']);
 		$this->db->where('id', $id);
@@ -5217,7 +5354,8 @@ class timesheets_model extends app_model {
 	 * @param  dagte $date
 	 * @return object
 	 */
-	public function check_holiday($staffid, $date) {
+	public function check_holiday($staffid, $date)
+	{
 		$department_id = '';
 		$role_id = '';
 		$departments = $this->departments_model->get_staff_departments($staffid, true);
@@ -5255,7 +5393,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staffid
 	 * @return string $email
 	 */
-	public function get_staff_email($staffid) {
+	public function get_staff_email($staffid)
+	{
 		$this->db->where('staffid', $staffid);
 		$this->db->select('email');
 		$email = '';
@@ -5265,12 +5404,13 @@ class timesheets_model extends app_model {
 		}
 		return $email;
 	}
-/**
- * default settings
- * @param  array $data
- * @return boolean
- */
-	public function default_settings($data) {
+	/**
+	 * default settings
+	 * @param  array $data
+	 * @return boolean
+	 */
+	public function default_settings($data)
+	{
 		$affectedrows = 0;
 		if (isset($data['attendance_notice_recipient'])) {
 			$attendance_notice_recipient = implode(',', $data['attendance_notice_recipient']);
@@ -5510,7 +5650,8 @@ class timesheets_model extends app_model {
 	 * @param  string $link
 	 * @param  string $description
 	 */
-	public function notifications($id_staff, $link, $description) {
+	public function notifications($id_staff, $link, $description)
+	{
 		$notifiedusers = [];
 		$id_userlogin = get_staff_user_id();
 
@@ -5532,7 +5673,8 @@ class timesheets_model extends app_model {
 	 * add check in out value to timesheet
 	 * @param integer $staff_id 
 	 */
-	public function add_check_in_out_value_to_timesheet($staff_id, $date) {
+	public function add_check_in_out_value_to_timesheet($staff_id, $date)
+	{
 		$data_check_in_out = $this->get_list_check_in_out($date, $staff_id);
 		$check_in_date = '';
 		$check_out_date = '';
@@ -5557,7 +5699,7 @@ class timesheets_model extends app_model {
 		$break_time = 0;
 
 		$break_time = $this->break_time_calculate($date, $staff_id); // return time in minutes
-		$total_work_hours = $total_work_hours - ($break_time / 60); 
+		$total_work_hours = $total_work_hours - ($break_time / 60);
 
 
 		$data_ts = $this->get_ts_staff($staff_id, $date, 'W');
@@ -5602,7 +5744,8 @@ class timesheets_model extends app_model {
 	 * @param  $type
 	 * @return
 	 */
-	public function get_ts_staff($staff, $date, $type = '') {
+	public function get_ts_staff($staff, $date, $type = '')
+	{
 		if ($type != '') {
 			$this->db->where('type', $type);
 		}
@@ -5610,11 +5753,12 @@ class timesheets_model extends app_model {
 		$this->db->where('staff_id', $staff);
 		return $this->db->get(db_prefix() . 'timesheets_timesheet')->row();
 	}
-/**
- * get_client_ip
- * @return string $ipaddress
- */
-	public function get_client_ip() {
+	/**
+	 * get_client_ip
+	 * @return string $ipaddress
+	 */
+	public function get_client_ip()
+	{
 		$ipaddress = '';
 		if (isset($_SERVER['HTTP_CLIENT_IP'])) {
 			$ipaddress = $_SERVER['HTTP_CLIENT_IP'];
@@ -5634,12 +5778,13 @@ class timesheets_model extends app_model {
 
 		return $ipaddress;
 	}
-/**
- * get location
- * @param  string $ip
- * @return json
- */
-	public function get_location($ip = '') {
+	/**
+	 * get location
+	 * @param  string $ip
+	 * @return json
+	 */
+	public function get_location($ip = '')
+	{
 		if ($ip == '') {
 			$ip = $this->get_client_ip();
 		}
@@ -5651,7 +5796,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return object or object array
 	 */
-	public function get_workplace($id = false) {
+	public function get_workplace($id = false)
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_workplace')->row();
@@ -5664,7 +5810,8 @@ class timesheets_model extends app_model {
 	 * add workplace
 	 * @param array $data
 	 */
-	public function add_workplace($data) {
+	public function add_workplace($data)
+	{
 		if (!isset($data['default'])) {
 			$data['default'] = 0;
 		}
@@ -5690,7 +5837,8 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @return boolean
 	 */
-	public function update_workplace($data) {
+	public function update_workplace($data)
+	{
 		if (!isset($data['default'])) {
 			$data['default'] = 0;
 		}
@@ -5720,7 +5868,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return boolean
 	 */
-	public function delete_workplace($id) {
+	public function delete_workplace($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'timesheets_workplace');
 		if ($this->db->affected_rows() > 0) {
@@ -5744,7 +5893,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return object or object array
 	 */
-	public function get_workplace_assign($id = false) {
+	public function get_workplace_assign($id = false)
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_workplace_assign')->row();
@@ -5757,7 +5907,8 @@ class timesheets_model extends app_model {
 	 * add workplace assign
 	 * @param array $data
 	 */
-	public function add_workplace_assign($data) {
+	public function add_workplace_assign($data)
+	{
 		$workplace_id = '';
 		$affectedrows = 0;
 		if (isset($data['workplace_id'])) {
@@ -5799,7 +5950,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return boolean
 	 */
-	public function delete_workplace_assign($id) {
+	public function delete_workplace_assign($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'timesheets_workplace_assign');
 		if ($this->db->affected_rows() > 0) {
@@ -5812,7 +5964,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return object or object array
 	 */
-	public function get_workplace_assign_by_workplace_id($workplace_id) {
+	public function get_workplace_assign_by_workplace_id($workplace_id)
+	{
 		$this->db->where('workplace_id', $workplace_id);
 		return $this->db->get(db_prefix() . 'timesheets_workplace_assign')->result_array();
 	}
@@ -5825,7 +5978,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $radius
 	 * @return float (m)
 	 */
-	public function compute_distance($lat1, $lng1, $lat2, $lng2, $radius = 6378137) {
+	public function compute_distance($lat1, $lng1, $lat2, $lng2, $radius = 6378137)
+	{
 		static $x = M_PI / 180;
 		$lat1 *= $x;
 		$lng1 *= $x;
@@ -5838,7 +5992,8 @@ class timesheets_model extends app_model {
 	 * get current location
 	 * @return object
 	 */
-	public function get_current_location() {
+	public function get_current_location()
+	{
 		$data = $this->get_location();
 		$obj = new stdclass();
 		$obj->latitude = '';
@@ -5857,7 +6012,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $staffid
 	 * @return integer
 	 */
-	public function get_location_staff($staffid) {
+	public function get_location_staff($staffid)
+	{
 		$latitude = '';
 		$longitude = '';
 		$distance = '';
@@ -5880,14 +6036,15 @@ class timesheets_model extends app_model {
 		$obj->workplace_id = $workplace_id;
 		return $obj;
 	}
-/**
- * check attendance by coordinates
- * @param  integer $staffid
- * @param  string $cur_latitude
- * @param  string $cur_longitude
- * @return integer
- */
-	public function check_attendance_by_coordinates($staffid, $cur_latitude, $cur_longitude) {
+	/**
+	 * check attendance by coordinates
+	 * @param  integer $staffid
+	 * @param  string $cur_latitude
+	 * @param  string $cur_longitude
+	 * @return integer
+	 */
+	public function check_attendance_by_coordinates($staffid, $cur_latitude, $cur_longitude)
+	{
 		$latitude = '';
 		$longitude = '';
 		$max_distance = '';
@@ -5927,18 +6084,20 @@ class timesheets_model extends app_model {
 	 * @param  $staff
 	 * @return array object
 	 */
-	public function get_ts_by_date_and_staff_leave($date, $staff) {
+	public function get_ts_by_date_and_staff_leave($date, $staff)
+	{
 		$this->db->where('(relate_type = "leave")');
 		$this->db->where('date_work', $date);
 		$this->db->where('staff_id', $staff);
 		return $this->db->get(db_prefix() . 'timesheets_timesheet')->result_array();
 	}
-/**
- * delete mass workplace assign
- * @param  array $data
- * @return boolean
- */
-	public function delete_mass_workplace_assign($data) {
+	/**
+	 * delete mass workplace assign
+	 * @param  array $data
+	 * @return boolean
+	 */
+	public function delete_mass_workplace_assign($data)
+	{
 		$affectedrows = 0;
 		if (isset($data['mass_delete'])) {
 			if ($data['mass_delete'] == 'on') {
@@ -5958,12 +6117,13 @@ class timesheets_model extends app_model {
 		}
 		return false;
 	}
-/**
- * get route point
- * @param  integer $id
- * @return object or array object
- */
-	public function get_route_point($id = false) {
+	/**
+	 * get route point
+	 * @param  integer $id
+	 * @return object or array object
+	 */
+	public function get_route_point($id = false)
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_route_point')->row();
@@ -5977,7 +6137,8 @@ class timesheets_model extends app_model {
 	 * add route_point
 	 * @param array $data
 	 */
-	public function add_route_point($data) {
+	public function add_route_point($data)
+	{
 		if (isset($data['related_to'])) {
 			// If related is workplace
 			if ($data['related_to'] == 2) {
@@ -6011,7 +6172,8 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @return boolean
 	 */
-	public function update_route_point($data) {
+	public function update_route_point($data)
+	{
 		if (isset($data['related_to'])) {
 			// If related is workplace
 			if ($data['related_to'] == 2) {
@@ -6048,7 +6210,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return boolean
 	 */
-	public function delete_route_point($id) {
+	public function delete_route_point($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'timesheets_route_point');
 		if ($this->db->affected_rows() > 0) {
@@ -6068,7 +6231,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return object or array object
 	 */
-	public function get_route($id = false) {
+	public function get_route($id = false)
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_route')->row();
@@ -6082,7 +6246,8 @@ class timesheets_model extends app_model {
 	 * add route
 	 * @param array $data
 	 */
-	public function add_route($data) {
+	public function add_route($data)
+	{
 		$data_detail = json_decode($data['data_hanson']);
 		$new_rowdb = [];
 		foreach ($data_detail as $key => $row) {
@@ -6135,12 +6300,13 @@ class timesheets_model extends app_model {
 		}
 		return false;
 	}
-/**
- * get route point id by name
- * @param  string $name
- * @return integer
- */
-	public function get_route_point_id_by_name($name) {
+	/**
+	 * get route point id by name
+	 * @param  string $name
+	 * @return integer
+	 */
+	public function get_route_point_id_by_name($name)
+	{
 		$id = '';
 		$this->db->where('name', $name);
 		$data = $this->db->get(db_prefix() . 'timesheets_route_point')->row();
@@ -6155,7 +6321,8 @@ class timesheets_model extends app_model {
 	 * @param  array $data
 	 * @return boolean
 	 */
-	public function update_route($data) {
+	public function update_route($data)
+	{
 		if (isset($data['related_to'])) {
 			// If related is workplace
 			if ($data['related_to'] == 2) {
@@ -6192,7 +6359,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $id
 	 * @return boolean
 	 */
-	public function delete_route($id) {
+	public function delete_route($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'timesheets_route');
 		if ($this->db->affected_rows() > 0) {
@@ -6208,7 +6376,8 @@ class timesheets_model extends app_model {
 	 * @param  $end_char
 	 * @return string
 	 */
-	public function get_content_between_character($str, $start_char, $end_char) {
+	public function get_content_between_character($str, $start_char, $end_char)
+	{
 		$start_index = '';
 		$end_index = '';
 		for ($i = (strlen($str) - 1); $i >= 0; $i--) {
@@ -6232,7 +6401,8 @@ class timesheets_model extends app_model {
 		return '';
 	}
 
-	public function get_route_text($staffid, $date_work, $where = '') {
+	public function get_route_text($staffid, $date_work, $where = '')
+	{
 		$this->db->where('staffid', $staffid);
 		$this->db->where('date_work', $date_work);
 		if ($where != '') {
@@ -6264,7 +6434,8 @@ class timesheets_model extends app_model {
 		$obj->list_route_id = $list_route_id;
 		return $obj;
 	}
-	public function get_route_by_fillter($staffid = '', $date_work = '') {
+	public function get_route_by_fillter($staffid = '', $date_work = '')
+	{
 		if ($staffid != '') {
 			$this->db->where('staffid', $staffid);
 		} else {
@@ -6278,7 +6449,8 @@ class timesheets_model extends app_model {
 		$this->db->order_by('order', 'ASC');
 		return $this->db->get(db_prefix() . 'timesheets_route')->result_array();
 	}
-	public function get_next_point($staff_id, $date, $user_latitude, $user_longitude) {
+	public function get_next_point($staff_id, $date, $user_latitude, $user_longitude)
+	{
 		$return_id = '';
 		$type = 'order';
 		$data_route = $this->get_route_by_fillter($staff_id, $date);
@@ -6336,14 +6508,15 @@ class timesheets_model extends app_model {
 		$obj->id = $return_id;
 		return $obj;
 	}
-/**
- * check full check in out route point
- * @param  date $date
- * @param  integer $staff_id
- * @param  integer $route_point_id
- * @return boolean
- */
-	public function check_full_check_in_out_route_point($date, $staff_id, $route_point_id) {
+	/**
+	 * check full check in out route point
+	 * @param  date $date
+	 * @param  integer $staff_id
+	 * @param  integer $route_point_id
+	 * @return boolean
+	 */
+	public function check_full_check_in_out_route_point($date, $staff_id, $route_point_id)
+	{
 		$valid_check = 0;
 		$return_id = '';
 		$check = $this->get_list_check_in_out($date, $staff_id, $route_point_id);
@@ -6366,12 +6539,13 @@ class timesheets_model extends app_model {
 			return true;
 		}
 	}
-/**
- * check exist route point name
- * @param  string $name
- * @return boolean
- */
-	public function check_exist_route_point_name($name, $id = '') {
+	/**
+	 * check exist route point name
+	 * @param  string $name
+	 * @return boolean
+	 */
+	public function check_exist_route_point_name($name, $id = '')
+	{
 		if ($id != '') {
 			$this->db->where('id !=' . $id);
 		}
@@ -6382,14 +6556,15 @@ class timesheets_model extends app_model {
 		}
 		return false;
 	}
-/**
- * staff at same route
- * @param  integer $route
- * @param  integer $staffid
- * @param  date $date
- * @return array
- */
-	public function staff_at_same_route($route, $staffid, $date) {
+	/**
+	 * staff at same route
+	 * @param  integer $route
+	 * @param  integer $staffid
+	 * @param  date $date
+	 * @return array
+	 */
+	public function staff_at_same_route($route, $staffid, $date)
+	{
 		$list_staff = $this->db->query('select distinct(staffid) as staffid from ' . db_prefix() . 'timesheets_route where staffid != ' . $staffid . ' and date_work=\'' . $date . '\'')->result_array();
 		$list = [];
 		foreach ($list_staff as $key => $staff) {
@@ -6428,22 +6603,24 @@ class timesheets_model extends app_model {
 		}
 		return $list_result;
 	}
-/**
- * get check in out by route point
- * @param  integer $staff_id
- * @param  date $date
- * @param  integer $route_point_id
- * @return array
- */
-	public function get_check_in_out_by_route_point($staff_id, $date, $route_point_id) {
+	/**
+	 * get check in out by route point
+	 * @param  integer $staff_id
+	 * @param  date $date
+	 * @param  integer $route_point_id
+	 * @return array
+	 */
+	public function get_check_in_out_by_route_point($staff_id, $date, $route_point_id)
+	{
 		return $this->db->query('SELECT * FROM ' . db_prefix() . 'check_in_out where date(' . db_prefix() . 'check_in_out.date) = \'' . $date . '\' and staff_id = ' . $staff_id . ' and route_point_id = ' . $route_point_id)->result_array();
 	}
-/**
- * choose approver
- * @param  array $data
- * @return boolean
- */
-	public function choose_approver($data) {
+	/**
+	 * choose approver
+	 * @param  array $data
+	 * @return boolean
+	 */
+	public function choose_approver($data)
+	{
 		$date_send = date('Y-m-d H:i:s');
 		$this->delete_approval_details($data['rel_id'], $data['rel_type']);
 		$list_staff = $this->staff_model->get();
@@ -6470,16 +6647,17 @@ class timesheets_model extends app_model {
 		}
 	}
 
-/**
- * get attendance task
- * @param  array $staffs_list
- * @param  string $month
- * @param  string $year
- * @param  string $from_date
- * @param  string $to_date
- * @return array
- */
-	public function get_attendance_task($staffs_list, $month = '', $year = '', $from_date = '', $to_date = '') {
+	/**
+	 * get attendance task
+	 * @param  array $staffs_list
+	 * @param  string $month
+	 * @param  string $year
+	 * @param  string $from_date
+	 * @param  string $to_date
+	 * @return array
+	 */
+	public function get_attendance_task($staffs_list, $month = '', $year = '', $from_date = '', $to_date = '')
+	{
 		$data['staff_row_tk'] = [];
 		$data['staff_row_tk_detailt'] = [];
 
@@ -6573,7 +6751,8 @@ class timesheets_model extends app_model {
 		return $data;
 	}
 
-	public function get_hour_range_between_date($date1, $date2, $curr_date) {
+	public function get_hour_range_between_date($date1, $date2, $curr_date)
+	{
 		$list_date = $this->get_list_date(date('Y-m-d', strtotime($date1)), date('Y-m-d', strtotime($date2)));
 		$start_hour = date('H:i:s', strtotime($date1));
 		$end_hour = date('H:i:s', strtotime($date2));
@@ -6595,16 +6774,17 @@ class timesheets_model extends app_model {
 		}
 	}
 
-/**
- * get attendance manual
- * @param  [type] $staffs_list
- * @param  string $month
- * @param  string $year
- * @param  string $from_date
- * @param  string $to_date
- * @return [type]
- */
-	public function get_attendance_manual($staffs_list, $month = '', $year = '', $from_date = '', $to_date = '') {
+	/**
+	 * get attendance manual
+	 * @param  [type] $staffs_list
+	 * @param  string $month
+	 * @param  string $year
+	 * @param  string $from_date
+	 * @param  string $to_date
+	 * @return [type]
+	 */
+	public function get_attendance_manual($staffs_list, $month = '', $year = '', $from_date = '', $to_date = '')
+	{
 		$type_valid = ['AL', 'W', 'U', 'HO', 'E', 'L', 'B', 'SI', 'M', 'ME', 'NS', 'P'];
 		$data['staff_row_tk'] = [];
 		$data['staff_row_tk_detailt'] = [];
@@ -6673,7 +6853,7 @@ class timesheets_model extends app_model {
 				}
 			}
 			foreach ($list_date as $key => $value) {
-				
+
 				$break_time = $this->break_time_calculate($value, $s['staffid']);
 
 				$date_s = date('D d', strtotime($value));
@@ -6707,18 +6887,16 @@ class timesheets_model extends app_model {
 				}
 				// $dt_ts[$date_s] = $result_lack;
 				// $dt_ts_detail[$value] = $result_lack;
-				
-				if($break_time > 0)
-				{
+
+				if ($break_time > 0) {
 					$hours = 0;
 					$min = 0;
 					$hours = floor($break_time / 60);
 					$min = $break_time - ($hours * 60);
 
-					$dt_ts_detail[$value] = $result_lack.' | Break: '.$hours.":".$min ;
-					$dt_ts[$date_s] = $result_lack.' | Break: '.$hours.":".$min ;
-				}
-				else{
+					$dt_ts_detail[$value] = $result_lack . ' | Break: ' . $hours . ":" . $min;
+					$dt_ts[$date_s] = $result_lack . ' | Break: ' . $hours . ":" . $min;
+				} else {
 					$dt_ts_detail[$value] = $result_lack;
 					$dt_ts[$date_s] = $result_lack;
 				}
@@ -6733,7 +6911,8 @@ class timesheets_model extends app_model {
 	 * @param   $from_date
 	 * @param   $to_date
 	 */
-	public function get_list_month($from_date, $to_date) {
+	public function get_list_month($from_date, $to_date)
+	{
 		$start = new DateTime($from_date);
 		$start->modify('first day of this month');
 		$end = new DateTime($to_date);
@@ -6753,7 +6932,8 @@ class timesheets_model extends app_model {
 	 * @param integer $to_date
 	 * @return array
 	 */
-	public function get_timesheets_between_date($from_date, $to_date) {
+	public function get_timesheets_between_date($from_date, $to_date)
+	{
 		$query = 'select * from ' . db_prefix() . 'timesheets_timesheet where date(date_work) between "' . $from_date . '" and "' . $to_date . '"';
 		return $this->db->query($query)->result_array();
 	}
@@ -6764,17 +6944,19 @@ class timesheets_model extends app_model {
 	 * @param  integer $max_hour   
 	 * @return date             
 	 */
-	function round_to_next_hour($datestring, $max_hour) {
+	function round_to_next_hour($datestring, $max_hour)
+	{
 		$nextHour = strtotime($datestring . ' +' . $max_hour . ' hours');
 		return date('Y-m-d H:i:s', $nextHour);
 	}
 
 	/**
-    * get hour auto checkout type
-    * @param  string $type 
-    * @return array       
-    */
-	public function get_hour_auto_checkout_type($type) {
+	 * get hour auto checkout type
+	 * @param  string $type 
+	 * @return array       
+	 */
+	public function get_hour_auto_checkout_type($type)
+	{
 		$staffs = $this->get_staff_timekeeping_applicable_object(true);
 		$result_list = [];
 		$auto_checkout_value = 1;
@@ -6826,7 +7008,8 @@ class timesheets_model extends app_model {
 	 * @param  date $date  
 	 * @return object        
 	 */
-	function check_check_out($staff, $date) {
+	function check_check_out($staff, $date)
+	{
 		$obj = new stdClass();
 		$type_check_in_out = '';
 		$data_check_in_out = $this->db->query('select id, type_check, ' . db_prefix() . 'check_in_out.date from ' . db_prefix() . 'check_in_out where staff_id = ' . $staff . ' and date(' . db_prefix() . 'check_in_out.date) = "' . $date . '" order by id desc limit 1')->row();
@@ -6849,18 +7032,20 @@ class timesheets_model extends app_model {
 	}
 
 	/**
-	* get bussiness trip info
-	* @param  date $date 
-	* @return object       
-	*/
-	public function get_bussiness_trip_info($date) {
+	 * get bussiness trip info
+	 * @param  date $date 
+	 * @return object       
+	 */
+	public function get_bussiness_trip_info($date)
+	{
 		return $this->db->query('select * from ' . db_prefix() . 'timesheets_requisition_leave where rel_type = 4 and status = 1 and "' . $date . '" between date(start_time) and date(end_time)')->row();
 	}
 
 	/**
 	 * report by working hours
 	 */
-	public function report_leave_by_department() {
+	public function report_leave_by_department()
+	{
 		$months_report = $this->input->post('months_report');
 		$custom_date_select = '';
 		$custom_date_select1 = '';
@@ -6918,15 +7103,16 @@ class timesheets_model extends app_model {
 		$chart['series'] = $list_type;
 		return $chart;
 	}
-/**
- * count leave by department
- * @param  string $departmentid
- * @param  string $type
- * @param  string $from_date
- * @param  string $to_date
- * @return integer $count
- */
-	public function count_leave_by_department($departmentid, $type, $from_date, $to_date) {
+	/**
+	 * count leave by department
+	 * @param  string $departmentid
+	 * @param  string $type
+	 * @param  string $from_date
+	 * @param  string $to_date
+	 * @return integer $count
+	 */
+	public function count_leave_by_department($departmentid, $type, $from_date, $to_date)
+	{
 		$count = 0;
 		$query = 'select count(1) as count from ' . db_prefix() . 'timesheets_requisition_leave where rel_type = ' . $type . ' and staff_id in (select staffid from ' . db_prefix() . 'staff_departments where departmentid = ' . $departmentid . ') and ((date(start_time) between "' . $from_date . '" and "' . $to_date . '") or (date(end_time) between "' . $from_date . '" and "' . $to_date . '"))';
 		$data = $this->db->query($query)->row();
@@ -6935,10 +7121,11 @@ class timesheets_model extends app_model {
 		}
 		return (int) $count;
 	}
-/**
- * report ratio check in out by workplace
- */
-	public function report_ratio_check_in_out_by_workplace() {
+	/**
+	 * report ratio check in out by workplace
+	 */
+	public function report_ratio_check_in_out_by_workplace()
+	{
 		$months_report = $this->input->post('months_report');
 		$custom_date_select = '';
 		$custom_date_select1 = '';
@@ -6992,15 +7179,16 @@ class timesheets_model extends app_model {
 		$chart['series'] = $list_serial;
 		return $chart;
 	}
-/**
- * count check by workplace
- * @param  string $workplace_id
- * @param  string $type
- * @param  string $from_date
- * @param  string $to_date
- * @return integer $count
- */
-	public function count_check_by_workplace($workplace_id, $type, $from_date, $to_date) {
+	/**
+	 * count check by workplace
+	 * @param  string $workplace_id
+	 * @param  string $type
+	 * @param  string $from_date
+	 * @param  string $to_date
+	 * @return integer $count
+	 */
+	public function count_check_by_workplace($workplace_id, $type, $from_date, $to_date)
+	{
 		$count = 0;
 		$query = 'select count(1) as count from ' . db_prefix() . 'check_in_out where workplace_id = ' . $workplace_id . ' and type_check = ' . $type . ' and date(date) between "' . $from_date . '" and "' . $to_date . '"';
 		$data = $this->db->query($query)->row();
@@ -7009,10 +7197,11 @@ class timesheets_model extends app_model {
 		}
 		return (int) $count;
 	}
-/**
- * report of leave by month
- */
-	public function report_of_leave_by_month() {
+	/**
+	 * report of leave by month
+	 */
+	public function report_of_leave_by_month()
+	{
 		$months_report = $this->input->post('months_report');
 		$custom_date_select = '';
 		$custom_date_select1 = '';
@@ -7073,13 +7262,14 @@ class timesheets_model extends app_model {
 		$chart['series'] = $list_type;
 		return $chart;
 	}
-/**
- * count leave by month
- * @param  string $year_month
- * @param  string $type
- * @return  integer $count
- */
-	public function count_leave_by_month($year_month, $type) {
+	/**
+	 * count leave by month
+	 * @param  string $year_month
+	 * @param  string $type
+	 * @return  integer $count
+	 */
+	public function count_leave_by_month($year_month, $type)
+	{
 		$count = 0;
 		$query = 'select count(1) as count from ' . db_prefix() . 'timesheets_requisition_leave where rel_type = ' . $type . ' and "' . $year_month . '" between date_format(start_time, "%Y-%m") and date_format(end_time, "%Y-%m")';
 		$data = $this->db->query($query)->row();
@@ -7089,12 +7279,14 @@ class timesheets_model extends app_model {
 		return (int) $count;
 	}
 
-	function round_to_next_minutes($datestring, $max_hour) {
+	function round_to_next_minutes($datestring, $max_hour)
+	{
 		$nextHour = strtotime($datestring . ' +' . $max_hour . ' minute');
 		return date('Y-m-d H:i:s', $nextHour);
 	}
 
-	public function get_datetime_send_notification_forgotten_value($minute) {
+	public function get_datetime_send_notification_forgotten_value($minute)
+	{
 		$staffs = $this->get_staff_timekeeping_applicable_object(true);
 		$result_list = [];
 		$current_date = date('Y-m-d');
@@ -7118,14 +7310,16 @@ class timesheets_model extends app_model {
 		}
 		return $result_list;
 	}
-	function has_check_in($staff, $date) {
+	function has_check_in($staff, $date)
+	{
 		$data_check_in_out = $this->db->query('select id from ' . db_prefix() . 'check_in_out where staff_id = ' . $staff . ' and date(' . db_prefix() . 'check_in_out.date) = "' . $date . '" and type_check = 1 order by id desc limit 1')->row();
 		if ($data_check_in_out) {
 			return true;
 		}
 		return false;
 	}
-	public function send_mail_remider_check_in($staffid) {
+	public function send_mail_remider_check_in($staffid)
+	{
 		$email = $this->get_staff_email($staffid);
 		if ($email != '') {
 			$this->add_log_send_notify($staffid, 1, date('Y-m-d'), 'check_in');
@@ -7138,7 +7332,8 @@ class timesheets_model extends app_model {
 			$this->notifications($staffid, 'timesheets/timekeeping', _l('remind_you_to_check_in_today_to_record_the_start_time_of_the_shift') . ' ' . _d(date('Y-m-d')));
 		}
 	}
-	public function add_log_send_notify($staffid, $status, $date, $type) {
+	public function add_log_send_notify($staffid, $status, $date, $type)
+	{
 		$this->db->insert(db_prefix() . 'timesheets_log_send_notify', [
 			'staffid' => $staffid,
 			'sent' => $status,
@@ -7147,7 +7342,8 @@ class timesheets_model extends app_model {
 		]);
 	}
 
-	public function check_log_send_notify($staffid, $status, $date, $type) {
+	public function check_log_send_notify($staffid, $status, $date, $type)
+	{
 		$this->db->where('staffid', $staffid);
 		$this->db->where('date', $date);
 		$this->db->where('sent', $status);
@@ -7158,7 +7354,8 @@ class timesheets_model extends app_model {
 		}
 		return false;
 	}
-	public function get_data_attendance_export($month_filter, $department_filter, $role_filter, $staff_filter) {
+	public function get_data_attendance_export($month_filter, $department_filter, $role_filter, $staff_filter)
+	{
 		$data = $this->input->post();
 		$date_ts = $this->format_date($month_filter . '-01');
 		$date_ts_end = $this->format_date($month_filter . '-' . date('t'));
@@ -7230,7 +7427,6 @@ class timesheets_model extends app_model {
 					}
 				}
 			}
-
 		}
 
 		$arrQuery = array($staff_querystring, $department_querystring, $month_year_querystring, $job_position_querystring, $querystring);
@@ -7299,14 +7495,15 @@ class timesheets_model extends app_model {
 		return $staff_row_tk;
 	}
 
-/**
- * automatic insert timesheets
- * @param      int   $staffid   the staffid
- * @param      datetime  $time_in   the time in
- * @param      datetime  $time_out  the time out
- * @return     boolean
- */
-	public function calculate_attendance_timesheets($staffid, $time_in, $time_out) {
+	/**
+	 * automatic insert timesheets
+	 * @param      int   $staffid   the staffid
+	 * @param      datetime  $time_in   the time in
+	 * @param      datetime  $time_out  the time out
+	 * @return     boolean
+	 */
+	public function calculate_attendance_timesheets($staffid, $time_in, $time_out)
+	{
 		$obj = new stdclass();
 		$obj->working_hour = 0;
 		$obj->late_hour = 0;
@@ -7402,13 +7599,14 @@ class timesheets_model extends app_model {
 		}
 	}
 
-/**
- * get next shift date
- * @param  integer  $staff_id
- * @param  integer  $date
- * @param  integer $count
- */
-	public function get_next_shift_date($staff_id, $date, $count = 0) {
+	/**
+	 * get next shift date
+	 * @param  integer  $staff_id
+	 * @param  integer  $date
+	 * @param  integer $count
+	 */
+	public function get_next_shift_date($staff_id, $date, $count = 0)
+	{
 		if ($count == 30) {
 			return '';
 		}
@@ -7419,18 +7617,18 @@ class timesheets_model extends app_model {
 
 		if ($data_work_time > 0 && count($data_day_off) == 0) {
 			return $date;
-
 		} else {
 			$next_date = date('Y-m-d', strtotime($date . ' +1 day'));
 			return $this->get_next_shift_date($staff_id, $next_date, $count);
 		}
 	}
 
-/**
- * get date leave
- * @return object
- */
-	public function get_date_leave() {
+	/**
+	 * get date leave
+	 * @return object
+	 */
+	public function get_date_leave()
+	{
 		$start_month_for_annual_leave_cycle = '1';
 		$start_month = get_timesheets_option('start_month_for_annual_leave_cycle');
 		if ($start_month) {
@@ -7449,12 +7647,13 @@ class timesheets_model extends app_model {
 		return $obj;
 	}
 
-/**
- * get current date off
- * @param  integer $staff_id
- * @return integer
- */
-	public function get_current_date_off($staff_id, $type_of_leave = '') {
+	/**
+	 * get current date off
+	 * @param  integer $staff_id
+	 * @return integer
+	 */
+	public function get_current_date_off($staff_id, $type_of_leave = '')
+	{
 		$obj = new stdclass();
 		$obj->number_day_off = 0;
 		$obj->days_off = 0;
@@ -7477,11 +7676,12 @@ class timesheets_model extends app_model {
 		return $obj;
 	}
 
-/**
- * get list leave application
- * @param  array $data
- */
-	public function get_list_leave_application($data) {
+	/**
+	 * get list leave application
+	 * @param  array $data
+	 */
+	public function get_list_leave_application($data)
+	{
 		$from_date = $data['start'];
 		$to_date = $data['end'];
 		$user_id = get_staff_user_id();
@@ -7519,7 +7719,6 @@ class timesheets_model extends app_model {
 				if ($department != '') {
 					if ($where_dpm == '') {
 						$where_dpm = ' AND (staff_id IN (SELECT staffid FROM ' . db_prefix() . 'staff_departments WHERE departmentid = ' . $statues . ')';
-
 					} else {
 						$where_dpm .= ' OR staff_id IN (SELECT staffid FROM ' . db_prefix() . 'staff_departments WHERE departmentid = ' . $statues . ')';
 					}
@@ -7562,12 +7761,13 @@ class timesheets_model extends app_model {
 		return $this->db->query($total_query)->result_array();
 	}
 
-/**
- * get calendar leave data
- * @param  array $data
- * @return array
- */
-	public function get_calendar_leave_data($data) {
+	/**
+	 * get calendar leave data
+	 * @param  array $data
+	 * @return array
+	 */
+	public function get_calendar_leave_data($data)
+	{
 		$data_calendar = [];
 		$data_leave_application = $this->get_list_leave_application($data);
 		foreach ($data_leave_application as $data_row) {
@@ -7603,12 +7803,13 @@ class timesheets_model extends app_model {
 		return $data_calendar;
 	}
 
-/**
- * delete permission
- * @param  integer $id
- * @return boolean
- */
-	public function delete_permission($id) {
+	/**
+	 * delete permission
+	 * @param  integer $id
+	 * @return boolean
+	 */
+	public function delete_permission($id)
+	{
 		$str_permissions = '';
 		foreach (list_timesheet_permisstion() as $per_key => $per_value) {
 			if (strlen($str_permissions) > 0) {
@@ -7634,7 +7835,8 @@ class timesheets_model extends app_model {
 	 * @param  array $approve_value
 	 * @return array
 	 */
-	public function get_staff_id_by_approve_value($data, $approve_value) {
+	public function get_staff_id_by_approve_value($data, $approve_value)
+	{
 		$this->load->model('departments_model');
 		$list_staff = $this->staff_model->get();
 		$list = [];
@@ -7647,12 +7849,13 @@ class timesheets_model extends app_model {
 		}
 		return $staffid;
 	}
-/**
- * add timesheet leave
- * @param string $type
- * @param integer $rel_id
- */
-	public function add_timesheet_leave($type, $rel_id) {
+	/**
+	 * add timesheet leave
+	 * @param string $type
+	 * @param integer $rel_id
+	 */
+	public function add_timesheet_leave($type, $rel_id)
+	{
 		$this->db->where('id', $rel_id);
 		$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
 		$st = $requisition_leave->start_time;
@@ -7747,11 +7950,12 @@ class timesheets_model extends app_model {
 		}
 		return true;
 	}
-/**
- * send notify approval expiration
- * @param  string $curr_date
- */
-	function send_notify_approval_expiration($curr_date) {
+	/**
+	 * send notify approval expiration
+	 * @param  string $curr_date
+	 */
+	function send_notify_approval_expiration($curr_date)
+	{
 		if (!$this->check_log_send_notify(0, 1, $curr_date, 'approval_expiration')) {
 			$this->add_log_send_notify(0, 1, $curr_date, 'approval_expiration');
 			$this->db->where('approval_deadline', $curr_date);
@@ -7765,11 +7969,12 @@ class timesheets_model extends app_model {
 		}
 	}
 
-/**
- * add type of leave
- * @param array $data
- */
-	public function add_type_of_leave($data) {
+	/**
+	 * add type of leave
+	 * @param array $data
+	 */
+	public function add_type_of_leave($data)
+	{
 		$this->db->insert(db_prefix() . 'timesheets_type_of_leave', $data);
 		$insert_id = $this->db->insert_id();
 		if ($insert_id) {
@@ -7778,11 +7983,12 @@ class timesheets_model extends app_model {
 		return 0;
 	}
 
-/**
- * update type of leave
- * @param array $data
- */
-	public function update_type_of_leave($data) {
+	/**
+	 * update type of leave
+	 * @param array $data
+	 */
+	public function update_type_of_leave($data)
+	{
 		$this->db->where('id', $data['id']);
 		$this->db->update(db_prefix() . 'timesheets_type_of_leave', $data);
 		if ($this->db->affected_rows() > 0) {
@@ -7791,12 +7997,13 @@ class timesheets_model extends app_model {
 		return false;
 	}
 
-/**
- * get type of leave
- * @param  string $id
- * @return array or object
- */
-	public function get_type_of_leave($id = '') {
+	/**
+	 * get type of leave
+	 * @param  string $id
+	 * @return array or object
+	 */
+	public function get_type_of_leave($id = '')
+	{
 		if (is_numeric($id)) {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_type_of_leave')->row();
@@ -7804,12 +8011,13 @@ class timesheets_model extends app_model {
 			return $this->db->get(db_prefix() . 'timesheets_type_of_leave')->result_array();
 		}
 	}
-/**
- * get custom leave name by slug
- * @param  string $slug
- * @return string
- */
-	public function get_custom_leave_name_by_slug($slug = '') {
+	/**
+	 * get custom leave name by slug
+	 * @param  string $slug
+	 * @return string
+	 */
+	public function get_custom_leave_name_by_slug($slug = '')
+	{
 		$slug_name = '';
 		$this->db->where('slug', $slug);
 		$data = $this->db->get(db_prefix() . 'timesheets_type_of_leave')->row();
@@ -7818,12 +8026,13 @@ class timesheets_model extends app_model {
 		}
 		return $slug_name;
 	}
-/**
- * get custom leave name by symbol
- * @param  string $slug
- * @return string
- */
-	public function get_custom_leave_name_by_symbol($symbol = '') {
+	/**
+	 * get custom leave name by symbol
+	 * @param  string $slug
+	 * @return string
+	 */
+	public function get_custom_leave_name_by_symbol($symbol = '')
+	{
 		$symbol_name = '';
 		$this->db->where('symbol', $symbol);
 		$data = $this->db->get(db_prefix() . 'timesheets_type_of_leave')->row();
@@ -7832,22 +8041,24 @@ class timesheets_model extends app_model {
 		}
 		return $symbol_name;
 	}
-/**
- * get custom leave by slug
- * @param  string $slug
- * @return string
- */
-	public function get_custom_leave_by_slug($slug = '') {
+	/**
+	 * get custom leave by slug
+	 * @param  string $slug
+	 * @return string
+	 */
+	public function get_custom_leave_by_slug($slug = '')
+	{
 		$this->db->where('slug', $slug);
 		return $this->db->get(db_prefix() . 'timesheets_type_of_leave')->row();
 	}
 
-/**
- * delete type of leave
- * @param  integer $id
- * @return integer
- */
-	public function delete_type_of_leave($id) {
+	/**
+	 * delete type of leave
+	 * @param  integer $id
+	 * @return integer
+	 */
+	public function delete_type_of_leave($id)
+	{
 		$this->db->where('id', $id);
 		$this->db->delete(db_prefix() . 'timesheets_type_of_leave');
 		if ($this->db->affected_rows() > 0) {
@@ -7856,13 +8067,14 @@ class timesheets_model extends app_model {
 		return false;
 	}
 
-/**
- * check duplicate character type of leave
- * @param  string $character
- * @param  integer $id
- * @return boolean
- */
-	public function check_duplicate_character_type_of_leave($character, $id = '') {
+	/**
+	 * check duplicate character type of leave
+	 * @param  string $character
+	 * @param  integer $id
+	 * @return boolean
+	 */
+	public function check_duplicate_character_type_of_leave($character, $id = '')
+	{
 		$res = false;
 		$this->db->where('symbol', $character);
 		if ($id != '') {
@@ -7875,13 +8087,14 @@ class timesheets_model extends app_model {
 		return $res;
 	}
 
-/**
- * check duplicate slug type of leave
- * @param  string $slug
- * @param  integer $id
- * @return boolean
- */
-	public function check_duplicate_slug_type_of_leave($slug, $id = '') {
+	/**
+	 * check duplicate slug type of leave
+	 * @param  string $slug
+	 * @param  integer $id
+	 * @return boolean
+	 */
+	public function check_duplicate_slug_type_of_leave($slug, $id = '')
+	{
 		$res = false;
 		$this->db->where('slug', $slug);
 		if ($id != '') {
@@ -7900,7 +8113,8 @@ class timesheets_model extends app_model {
 	 * @param  string $rel_type
 	 * @return  array
 	 */
-	public function get_list_approver($rel_id, $rel_type) {
+	public function get_list_approver($rel_id, $rel_type)
+	{
 		$result = [];
 		$this->db->select('staffid');
 		$this->db->where('rel_id', $rel_id);
@@ -7911,13 +8125,14 @@ class timesheets_model extends app_model {
 		}
 		return $result;
 	}
-/**
- * valid_date
- * @param  integer $staffid
- * @param  date $date
- * @return boolean
- */
-	public function valid_date($staffid, $date) {
+	/**
+	 * valid_date
+	 * @param  integer $staffid
+	 * @param  date $date
+	 * @return boolean
+	 */
+	public function valid_date($staffid, $date)
+	{
 		$max_hour = $this->get_hour_shift_staff($staffid, $date);
 		$check_holiday = $this->check_holiday($staffid, $date);
 		$result_lack = '';
@@ -7932,59 +8147,60 @@ class timesheets_model extends app_model {
 		}
 		return false;
 	}
-/**
- * notify create new leave
- * @param  integer $rel_id
- * @param  string $rel_type
- * @param  integer $status
- * @return integer
- */
-	public function notify_create_new_leave($rel_id, $rel_type) {
+	/**
+	 * notify create new leave
+	 * @param  integer $rel_id
+	 * @param  string $rel_type
+	 * @param  integer $status
+	 * @return integer
+	 */
+	public function notify_create_new_leave($rel_id, $rel_type)
+	{
 		$additional_data = '';
 		$rel_type = strtolower($rel_type);
 		switch ($rel_type) {
-		case 'leave':
-			$additional_data = _l('leave');
-			break;
-		case 'maternity_leave':
-			$additional_data = _l('leave');
-			break;
-		case 'private_work_without_pay':
-			$additional_data = _l('leave');
-			break;
-		case 'sick_leave':
-			$additional_data = _l('sick_leave');
-			break;
-		case 'late':
-			$additional_data = _l('late');
-			break;
-		case 'early':
-			$additional_data = _l('early');
-			break;
-		case 'go_out':
-			$additional_data = _l('go_out');
-			break;
-		case 'go_on_bussiness':
-			$additional_data = _l('go_on_bussiness');
-			break;
-		case 'additional_timesheets':
-			$additional_data = _l('additional_timesheets');
-			break;
-		default:
-			if ($rel_type != '' && $rel_id != '') {
-				$this->db->select('type_of_leave_text');
-				$this->db->where('id', $rel_id);
-				$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
-				if ($requisition_leave) {
-					$slug = $requisition_leave->type_of_leave_text;
-					$this->db->where('slug', $slug);
-					$data_type_custom = $this->db->get(db_prefix() . 'timesheets_type_of_leave')->row();
-					if ($data_type_custom) {
-						$additional_data = $data_type_custom->type_name;
+			case 'leave':
+				$additional_data = _l('leave');
+				break;
+			case 'maternity_leave':
+				$additional_data = _l('leave');
+				break;
+			case 'private_work_without_pay':
+				$additional_data = _l('leave');
+				break;
+			case 'sick_leave':
+				$additional_data = _l('sick_leave');
+				break;
+			case 'late':
+				$additional_data = _l('late');
+				break;
+			case 'early':
+				$additional_data = _l('early');
+				break;
+			case 'go_out':
+				$additional_data = _l('go_out');
+				break;
+			case 'go_on_bussiness':
+				$additional_data = _l('go_on_bussiness');
+				break;
+			case 'additional_timesheets':
+				$additional_data = _l('additional_timesheets');
+				break;
+			default:
+				if ($rel_type != '' && $rel_id != '') {
+					$this->db->select('type_of_leave_text');
+					$this->db->where('id', $rel_id);
+					$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
+					if ($requisition_leave) {
+						$slug = $requisition_leave->type_of_leave_text;
+						$this->db->where('slug', $slug);
+						$data_type_custom = $this->db->get(db_prefix() . 'timesheets_type_of_leave')->row();
+						if ($data_type_custom) {
+							$additional_data = $data_type_custom->type_name;
+						}
 					}
 				}
-			}
-			break;
+				break;
 		}
 		$check_approve_status = $this->check_approval_details($rel_id, $rel_type);
 		if (isset($check_approve_status['notification_recipient'])) {
@@ -8026,7 +8242,8 @@ class timesheets_model extends app_model {
 	 * set leave
 	 * @param object $data
 	 */
-	public function set_valid_ip($data) {
+	public function set_valid_ip($data)
+	{
 		if (isset($data['timekeeping_enable_valid_ip'])) {
 			$this->db->where('option_name', 'timekeeping_enable_valid_ip');
 			$this->db->update(db_prefix() . 'timesheets_option', [
@@ -8042,11 +8259,11 @@ class timesheets_model extends app_model {
 		$list_db_ip = $this->get_valid_ip();
 		$affectedrows = 0;
 
-		$this->db->from(db_prefix() . 'timesheets_valid_ip'); 
-		$this->db->truncate(); 
+		$this->db->from(db_prefix() . 'timesheets_valid_ip');
+		$this->db->truncate();
 
 		foreach ($list_client_ip as $key => $value) {
-			if(isset($value[0]) && ($value[0] != null)){
+			if (isset($value[0]) && ($value[0] != null)) {
 				$data_update['ip'] = $value[0];
 				$this->db->insert(db_prefix() . 'timesheets_valid_ip', $data_update);
 				$affectedrows++;
@@ -8061,7 +8278,8 @@ class timesheets_model extends app_model {
 	 * @param  integer
 	 * @return array or object
 	 */
-	public function get_valid_ip($id = '') {
+	public function get_valid_ip($id = '')
+	{
 		if ($id != '') {
 			$this->db->where('id', $id);
 			return $this->db->get(db_prefix() . 'timesheets_valid_ip')->row();
@@ -8075,10 +8293,11 @@ class timesheets_model extends app_model {
 	 * @param  string $id 
 	 * @return      
 	 */
-	public function get_customer_email_route_point($id = ''){
+	public function get_customer_email_route_point($id = '')
+	{
 		$email = '';
-		$data = $this->db->query('select email from '.db_prefix().'timesheets_route_point a left join '.db_prefix().'clients b on a.related_id = b.userid left join '.db_prefix().'contacts c on b.userid = c.userid and is_primary = 1 where a.id = '.$id.' and a.related_to = 1')->row();
-		if($data){
+		$data = $this->db->query('select email from ' . db_prefix() . 'timesheets_route_point a left join ' . db_prefix() . 'clients b on a.related_id = b.userid left join ' . db_prefix() . 'contacts c on b.userid = c.userid and is_primary = 1 where a.id = ' . $id . ' and a.related_to = 1')->row();
+		if ($data) {
 			$email = $data->email;
 		}
 		return $email;
@@ -8090,7 +8309,8 @@ class timesheets_model extends app_model {
 	 * @param  integer $status        
 	 * @param  string $type_of_leave 
 	 */
-	public function update_requisition_after_approve($id, $status, $type_of_leave){
+	public function update_requisition_after_approve($id, $status, $type_of_leave)
+	{
 		$type_of_leave_data = $this->get_type_of_leave_id($type_of_leave);
 		$this->db->where('id', $id);
 		$this->db->update(db_prefix() . 'timesheets_requisition_leave', ['status' => $status]);
@@ -8098,9 +8318,9 @@ class timesheets_model extends app_model {
 			$this->db->where('id', $id);
 			$requisition_leave = $this->db->get(db_prefix() . 'timesheets_requisition_leave')->row();
 			if ($requisition_leave) {
-					// Get total leave in year of staff
-				$day_off = $this->get_day_off($requisition_leave->staff_id,'',$type_of_leave_data->type_id);
-					// Number of leaving day
+				// Get total leave in year of staff
+				$day_off = $this->get_day_off($requisition_leave->staff_id, '', $type_of_leave_data->type_id);
+				// Number of leaving day
 				$dd = $requisition_leave->number_of_leaving_day;
 
 				$update_days_off = abs($day_off->days_off + $dd);
@@ -8122,107 +8342,109 @@ class timesheets_model extends app_model {
 	 * get type of leave id
 	 * @param  string $type 
 	 */
-	public function get_type_of_leave_id($type){
+	public function get_type_of_leave_id($type)
+	{
 		$obj = new stdClass();
 		$obj->type_id = 0;
 		$obj->timesheet_type = '';
 		switch (strtolower($type)) {
 			case 'leave':
-			$obj->type_id = 8;
-			$obj->timesheet_type = 'AL';
-			break;
+				$obj->type_id = 8;
+				$obj->timesheet_type = 'AL';
+				break;
 			case 'maternity_leave':
-			$obj->type_id = 2;
-			$obj->timesheet_type = 'M';
-			break;
+				$obj->type_id = 2;
+				$obj->timesheet_type = 'M';
+				break;
 			case 'private_work_without_pay':
-			$obj->type_id = 4;
-			$obj->timesheet_type = 'P';
-			break;
+				$obj->type_id = 4;
+				$obj->timesheet_type = 'P';
+				break;
 			case 'sick_leave':
-			$obj->type_id = 1;
-			$obj->timesheet_type = 'SI';
-			break;
+				$obj->type_id = 1;
+				$obj->timesheet_type = 'SI';
+				break;
 			default:
-			$data_custome_type = $this->get_custom_leave_by_slug($type);
-			if ($data_custome_type) {
-				$obj->type_id = $type;
-				$obj->timesheet_type = $data_custome_type->symbol;
-			}
-			break;
+				$data_custome_type = $this->get_custom_leave_by_slug($type);
+				if ($data_custome_type) {
+					$obj->type_id = $type;
+					$obj->timesheet_type = $data_custome_type->symbol;
+				}
+				break;
 		}
 		return $obj;
 	}
 
-   /**
-     * login
-     * @param  string $email    
-     * @param  string $password 
-     * @return boolean           
-     */
-    public function login($email, $password)
-    {
-            $this->load->model('staff_model');
-            $user = $this->staff_model->get('', ['email' => $email]);
-            if ($user) {
-                // Email is okey lets check the password now
-                if (app_hasher()->CheckPassword($password, $user[0]['password'])) {
-                    if ($user[0]['active'] == 0) {
-                        return [
-                            'status' => false,
-                            'message' => 'Inactive user.',
-                        ];
-                    }else{
-                        $user_data = [
-                        'staff_user_id'   => $user[0]['staffid'],
-                        'staff_logged_in' => true,
-                        ];
+	/**
+	 * login
+	 * @param  string $email    
+	 * @param  string $password 
+	 * @return boolean           
+	 */
+	public function login($email, $password)
+	{
+		$this->load->model('staff_model');
+		$user = $this->staff_model->get('', ['email' => $email]);
+		if ($user) {
+			// Email is okey lets check the password now
+			if (app_hasher()->CheckPassword($password, $user[0]['password'])) {
+				if ($user[0]['active'] == 0) {
+					return [
+						'status' => false,
+						'message' => 'Inactive user.',
+					];
+				} else {
+					$user_data = [
+						'staff_user_id'   => $user[0]['staffid'],
+						'staff_logged_in' => true,
+					];
 
-                        $this->session->set_userdata($user_data);
+					$this->session->set_userdata($user_data);
 
-                        $user[0]['permissions'] = $this->staff_model->get_staff_permissions($user[0]['staffid']);
-                        return $user[0];
-                    }
-                }else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-            return true;
-    }
-    /**
-     * logout
-     */
-    public function logout()
-    {
-        $this->session->unset_userdata('staff_user_id');
-        $this->session->unset_userdata('staff_logged_in');
+					$user[0]['permissions'] = $this->staff_model->get_staff_permissions($user[0]['staffid']);
+					return $user[0];
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * logout
+	 */
+	public function logout()
+	{
+		$this->session->unset_userdata('staff_user_id');
+		$this->session->unset_userdata('staff_logged_in');
 
-        $this->session->sess_destroy();
-    }
-      /**
-     * check token logout
-     * @param  string $token 
-     * @return object or boolean        
-     */
-    public function check_token_logout($token)
-    {
-        $this->db->where('token', $token);
-        $user = $this->db->get(db_prefix() . 'staff')->row();
-        if($user){
-            return $user;
-        }
-        return false;
-    }
+		$this->session->sess_destroy();
+	}
+	/**
+	 * check token logout
+	 * @param  string $token 
+	 * @return object or boolean        
+	 */
+	public function check_token_logout($token)
+	{
+		$this->db->where('token', $token);
+		$user = $this->db->get(db_prefix() . 'staff')->row();
+		if ($user) {
+			return $user;
+		}
+		return false;
+	}
 
-    /**
+	/**
 	 * get list break in/out
 	 * @param  $date
 	 * @param  string $staffid
 	 * @return
 	 */
-	public function get_list_break_in_out($date, $staffid = '', $route_point_id = '') {
+	public function get_list_break_in_out($date, $staffid = '', $route_point_id = '')
+	{
 		if ($staffid != '') {
 			$this->db->where('staff_id', $staffid);
 		}
@@ -8237,7 +8459,7 @@ class timesheets_model extends app_model {
 	public function break_time_calculate($value, $staff_id)
 	{
 		$break_details = array();
-		$break_details = $this->db->get_where(db_prefix() ."break_in_out", array("DATE(date)" => $value, "staff_id" => $staff_id))->result_array();
+		$break_details = $this->db->get_where(db_prefix() . "break_in_out", array("DATE(date)" => $value, "staff_id" => $staff_id))->result_array();
 
 		$total_break_time = 0;
 		$break_in_array = array();
@@ -8268,7 +8490,292 @@ class timesheets_model extends app_model {
 		}
 		// $total_break_time now contains the total break time in minutes
 		return $total_break_time;
-
 	}
 
+
+	// Staff accruval leave data
+	public function staff_leave_accruval($staff_id = '', $month = '', $year = '', $leave_type = '')
+	{
+		$staff_joining_date = $this->staff_joining_date($staff_id);
+
+		if ($leave_type != "") {
+			$leave_type = $leave_type;
+		} else {
+			$leave_type = 8;
+		}
+
+		$requisition_number_of_day_off = $this->timesheets_model->get_requisition_number_of_day_off($staff_id, $year, $leave_type);
+
+		$timesheets_max_leave_in_year = 0;
+
+		$timesheets_max_leave_in_year = $requisition_number_of_day_off['total_day_off_in_year'];
+		$timesheets_total_day_off = 0;
+
+		$total_leave = $timesheets_max_leave_in_year;
+
+		$sum_count = 0;
+		$leave_count = 0;
+		$monthly_eligible_leave = 0;
+
+		$monthly_eligible_leave = round($total_leave / 12, 2);
+		$available_leave = 0;
+		$previous_month_available_leave = 0;
+
+		$balance = 0;
+
+		for ($i = 1; $i <= 12; $i++) {
+
+			if ($i < 10) {
+				$months_filter = $year . '-0' . $i;
+			} else {
+				$months_filter = $year . '-' . $i;
+			}
+
+			$count = $this->timesheets_model->get_date_leave_in_month($staff_id, $months_filter);
+			// $test[]  = $this->db->last_query();
+			$timesheets_total_day_off += $count;
+
+			if (date("m") < $i) {
+				$monthly_eligible_leave = 0;
+			}
+
+			$available_leave = round(($monthly_eligible_leave - $count), 2);
+
+			if ($i < date("m", strtotime($staff_joining_date))) {
+				$balance = 0;
+			} else {
+				$balance = round(($previous_month_available_leave + $available_leave), 2);
+				$previous_month_available_leave = round(($previous_month_available_leave + $available_leave), 2);
+			}
+		}
+		return $balance;
+	}
+
+	public function casual_leave_credit($data = array())
+	{
+		$staff_joining_date = $this->staff_joining_date($data['staff_id']);
+		// Fetch the total days count
+		$this->db->select("COUNT(DISTINCT `date`) AS total_days_count");
+		$this->db->from(db_prefix() . "check_in_out");
+		$this->db->where("staff_id", $data['staff_id']);
+		$this->db->where("type_check", '1');
+		$this->db->where("type", 'W');
+		if ($staff_joining_date != "") {
+			$this->db->where("DATE(date) >=", date("Y-m-d", strtotime($staff_joining_date)));
+		}
+
+		$total_days_count = $this->db->get()->row()->total_days_count;
+
+		// Calculate credit_leave based on the total days count
+		$credit_leave = floor($total_days_count / 80);
+		// Get the timesheets_day_off for the staff
+		$this->db->select("*");
+		$this->db->from(db_prefix() . "timesheets_day_off");
+		$this->db->where("staffid", $data['staff_id']);
+		$this->db->where("type_of_leave", "casual-leave");
+		$timesheets_day_off = $this->db->get()->row_array();
+
+		$current_year = date("Y");
+		$joining_year = date("Y", strtotime($staff_joining_date));
+
+		if ($timesheets_day_off) {
+			$year = $timesheets_day_off['year'];
+			if ($year == $current_year) {
+				// Update the existing record for the current year
+				$year_update_data = array(
+					"staffid" => $data['staff_id'],
+					"total" => $credit_leave,
+					"remain" => ($credit_leave - $timesheets_day_off['days_off'])
+				);
+
+				$this->db->where("type_of_leave", "casual-leave");
+				$this->db->where("staffid", $data['staff_id']);
+				$this->db->where("id", $timesheets_day_off['id']);
+				$this->db->update(db_prefix() . "timesheets_day_off", $year_update_data);
+			} else {
+				// Insert a new record for the new year
+				$year_insert_data = array(
+					"staffid" => $data['staff_id'],
+					"total" => $credit_leave,
+					"remain" => $credit_leave,
+					"year" => $current_year,
+					"type_of_leave" => "casual-leave",
+					"days_off" => 0
+				);
+				$this->db->insert(db_prefix() . "timesheets_day_off", $year_insert_data);
+			}
+		} else {
+			// Insert a new record if no previous record exists
+			$year_insert_data = array(
+				"staffid" => $data['staff_id'],
+				"total" => $credit_leave,
+				"remain" => $credit_leave,
+				"year" => $current_year,
+				"type_of_leave" => "casual-leave",
+				"days_off" => 0
+			);
+			$this->db->insert(db_prefix() . "timesheets_day_off", $year_insert_data);
+		}
+
+		// Reset credit_leave on the work anniversary
+		$current_date = date("Y-m-d");
+		$work_anniversary = date("Y-m-d", strtotime($joining_year . "-" . date("m-d", strtotime($staff_joining_date))));
+
+		if ($current_date == $work_anniversary) {
+			$year_insert_data = array(
+				"staffid" => $data['staff_id'],
+				"total" => 0,
+				"remain" => 0,
+				"year" => date("Y"),
+				"type_of_leave" => "casual-leave",
+				"days_off" => 0
+			);
+			$this->db->insert(db_prefix() . "timesheets_day_off", $year_insert_data);
+		}
+
+		return $credit_leave;
+	}
+
+
+	//  get staff joining date by using staff id
+
+	public function staff_joining_date($staff_id)
+	{
+		$custom_field_value = array();
+		$this->db->select("cv.value as staff_join_date");
+		$this->db->from(db_prefix() . "customfieldsvalues as cv");
+		$this->db->join(db_prefix() . "customfields as cf", "cf.id = cv.fieldid and cv.fieldto='staff'", "inner");
+		$this->db->where("cv.relid", $staff_id);
+		$this->db->where("cf.slug", "staff_date_of_joining");
+		$custom_field_query = $this->db->get();
+		$custom_field_value = $custom_field_query->row_array();
+
+		$staff_joining_date = '';
+
+		if (!empty($custom_field_value)) {
+			$staff_joining_date = $custom_field_value['staff_join_date'];
+		}
+		return $staff_joining_date;
+	}
+
+	public function leave_setting_department_wise()
+	{
+		$year = date("Y");
+		return $this->db->get_where(db_prefix() . "leave_setting_yearly", array("year" => $year))->result_array();
+	}
+
+
+	//  leave assigned when new staff will create based on department
+
+	public function staff_leave_assign($data = array())
+	{
+		$output = array();
+		
+		if (is_array($data) && !empty($data)) {
+			$department_ids = isset($data['department_id']) ? $data['department_id'] : array();
+			$staff_id = isset($data['staff_id']) ? $data['staff_id'] : 0;
+
+			if ($staff_id > 0 && !empty($department_ids)) {
+				$accumulated_leave_data = array();
+
+				foreach ($department_ids as $department_id) {
+					$this->db->select("*");
+					$this->db->from(db_prefix() . "leave_setting_yearly");
+					$this->db->where("department_id", $department_id);
+					$this->db->where("year", date("Y"));
+					$response = $this->db->get()->row_array();
+
+					if (!empty($response)) {
+						$tmp_response = json_decode($response['leave_data'], true);
+
+						if (!empty($tmp_response)) {
+							foreach ($tmp_response as $key => $value) {
+								if (!isset($accumulated_leave_data[$key])) {
+									$accumulated_leave_data[$key] = 0;
+								}
+								$accumulated_leave_data[$key] += $value ? $value : 0 ;
+							}
+						}
+					}
+				}	
+
+				if (!empty($accumulated_leave_data)) {
+					foreach ($accumulated_leave_data as $key => $value) {
+						$leave_id = '';
+						$total_leave = $value;
+						if ($key === 'annual_leave') {
+							$leave_id = 8;
+						} else if ($key === 'maternity_leave') {
+							$leave_id = 2;
+						} else if ($key === 'private_work_without_pay') {
+							$leave_id = 4;
+						} else if ($key === 'sick_leave') {
+							$leave_id = 1;
+						} else {
+							$leave_id = $key;
+						}
+
+						$insert_data = array(
+							"staffid" => $staff_id,
+							"year" => date("Y"),
+							"total" => $total_leave,
+							"remain" => $total_leave,
+							"days_off" => 0,
+							"type_of_leave" => $leave_id
+						);
+
+						$check_exist = $this->db->where("staffid", $staff_id)
+							->where("year", date("Y"))
+							->where("type_of_leave", $leave_id)
+							->get(db_prefix() . "timesheets_day_off")
+							->row_array();
+						if (empty($check_exist)) {
+							$this->db->insert(db_prefix() . "timesheets_day_off", $insert_data);
+						}
+					}
+				}
+
+				$output = array(
+					"status" => true,
+					"message" => "User Assigned Leave as per leave policy"
+				);
+			} else {
+				$output = array(
+					"status" => false,
+					"message" => "Please select a correct user and department"
+				);
+			}
+			return json_encode($output);
+		}
+	}
+
+	//  Staff leave reset by using cron job
+	public function reset_staff_leave()
+	{
+		$result = array();
+
+		$this->db->select("dayoff.*");
+		$this->db->from(db_prefix()."timesheets_day_off as dayoff");
+		$this->db->join(db_prefix()."staff as staff", "staff.staffid = dayoff.staffid","inner");
+		$this->db->where("staff.status_work","working");
+		$result = $this->db->get()->result_array();
+		if(!empty($result))
+		{
+			foreach($result as $result_val)
+			{
+				$insert_data = array();
+				$insert_data = array(
+					"staffid"		=>	$result_val['staffid'],
+					"year"			=>	date("Y"),
+					"total"			=>	$result_val['total'],
+					"remain"		=>	$result_val['total'],
+					"accumulated"	=>	$result_val['accumulated'],
+					"days_off"		=>	0,
+					"type_of_leave"	=>	$result_val['type_of_leave'],
+				);
+
+				$this->db->insert(db_prefix()."timesheets_day_off", $insert_data);
+			}
+		}
+	}
 }

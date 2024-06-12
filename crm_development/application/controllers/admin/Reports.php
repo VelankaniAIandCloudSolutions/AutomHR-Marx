@@ -1567,7 +1567,7 @@ class Reports extends AdminController
                 $this->db->where("cv.relid",$user_login_id);
                 $this->db->where("cv.fieldto","staff");
                 $custom_field = $this->db->get()->row_array();
-                
+
                 if($custom_field['is_timesheet_approval'] != "")
                 {
                     $aRow['is_timesheet_approval'] = '1';
@@ -1650,7 +1650,6 @@ class Reports extends AdminController
                         $action .= '<button type="button" data-toggle="modal" data-target="#myModalApprove" class="btn btn-success btn-xs open-modal" data-rowid="'.$aRow['id'].'" data-approval_level ="2" data-type="approve">'._l('approve').'</button>';
                         $action .= '  ';
                         $action .= '<button type="button" data-toggle="modal" data-target="#myModalReject" class="btn btn-danger btn-xs open-modal" data-rowid="'.$aRow['id'].'" data-approval_level ="2" data-type="reject">'._l('reject').'</button>';
-
                     }
                 }
                 elseif($aRow['status'] == "1" && $aRow['teamlead_status'] =='1')
@@ -1715,7 +1714,56 @@ class Reports extends AdminController
         if($id > 0)
         {
             $this->db->where("id", $id);
-            $this->db->update("tbltime_sheet_approval", array("status" => '1', "comment" => $_POST['comment'],"modified_at" => date("Y-m-d H:i:s")));
+            $this->db->update(db_prefix()."time_sheet_approval", array("status" => '1', "comment" => $_POST['comment'],"modified_at" => date("Y-m-d H:i:s")));
+
+             // Start : Email send to user and hire manager
+
+            //  Email send to Reporting Manager
+
+            $time_sheet_approval_data = array();
+
+            $time_sheet_approval_data = $this->db->get_where(db_prefix()."time_sheet_approval", array("id" => $id))->row_array();
+            
+            // Start : this mail send to time sheet requester 
+
+            $this->load->model('emails_model');
+
+            $this->db->where('staffid', $time_sheet_approval_data['staff_id']);
+            $this->db->select('firstname,lastname,email');
+            $to = '';
+            $data = $this->db->get(db_prefix() . 'staff')->row();
+
+            if ($data) {
+                $to = $data->email;
+            }
+
+            $requester_name = $period_from = $period_to = '';
+            
+            $requester_name = get_staff_full_name($time_sheet_approval_data['staff_id']);
+            
+            $period_from = $time_sheet_approval_data['from_date'];
+            $period_to = $time_sheet_approval_data['to_date'];
+
+
+            $subject = "Timesheet Approved by  ".get_staff_full_name(get_staff_user_id());
+
+            $message = "Hi ".ucwords($requester_name).",
+
+            Your timesheet for the period ".date('d/m/Y', strtotime($period_from))." to ".date('d/m/Y', strtotime($period_to))." has been approved by your final approver. <br>
+            Reason: ".$_POST['comment']."<br>
+
+            Approval : Level 2 <br>
+            You can view the details by following the link below:<br>
+
+            <a href='".base_url('admin/reports/timesheet_approval_list')."' target='_blank'> Click Here </a><br>";
+
+
+            if($to != "")
+            {
+                $this->emails_model->send_simple_email($to, $subject, $message);
+            }
+             // End : Request Email 
+
             set_alert('success', _l('updated_successfully'));
             redirect(base_url("admin/reports/timesheet_approval_list"));
         }
@@ -1728,6 +1776,56 @@ class Reports extends AdminController
         {
             $this->db->where("id", $id);
             $this->db->update("tbltime_sheet_approval", array("status" => '2', "comment" => $_POST['comment'], "modified_at" => date("Y-m-d H:i:s")));
+
+             // Start : Email send to user and hire manager
+
+            //  Email send to Reporting Manager
+
+            $time_sheet_approval_data = array();
+
+            $time_sheet_approval_data = $this->db->get_where(db_prefix()."time_sheet_approval", array("id" => $id))->row_array();
+            
+            // Start : this mail send to time sheet requester 
+
+            $this->load->model('emails_model');
+
+            $this->db->where('staffid', $time_sheet_approval_data['staff_id']);
+            $this->db->select('firstname,lastname,email');
+            $to = '';
+            $data = $this->db->get(db_prefix() . 'staff')->row();
+
+            if ($data) {
+                $to = $data->email;
+            }
+
+            $requester_name = $period_from = $period_to = '';
+            
+            $requester_name = get_staff_full_name($time_sheet_approval_data['staff_id']);
+
+            $period_from = $time_sheet_approval_data['from_date'];
+            $period_to = $time_sheet_approval_data['to_date'];
+
+
+            $subject = "Timesheet Rejected by  ".get_staff_full_name(get_staff_user_id());
+
+            $message = "Hi ".ucwords($requester_name).",
+
+            Your timesheet for the period ".date('d/m/Y', strtotime($period_from))." to ".date('d/m/Y', strtotime($period_to))." has been rejected by your final approver. <br>
+            Reason: ".$_POST['comment']."<br>
+            Approval : Level 2 <br>
+            You can view the details by following the link below:<br>
+
+            <a href='".base_url('admin/reports/timesheet_approval_list')."' target='_blank'> Click Here </a><br>";
+
+            if($to != "")
+            {
+                $this->emails_model->send_simple_email($to, $subject, $message);
+            }
+             // End : Request Email 
+
+            // End : Email
+
+
             set_alert('success', _l('updated_successfully'));
             redirect(base_url("admin/reports/timesheet_approval_list"));
         }
@@ -1740,6 +1838,53 @@ class Reports extends AdminController
         {
             $this->db->where("id", $id);
             $this->db->update("tbltime_sheet_approval", array("teamlead_status" => '1', "teamlead_comment" => $_POST['comment'], "modified_at" => date("Y-m-d H:i:s")));
+
+            // Start : Email send to user and hire manager
+
+            $time_sheet_approval_data = array();
+
+            $time_sheet_approval_data = $this->db->get_where(db_prefix()."time_sheet_approval", array("id" => $id))->row_array();
+
+            // Start : this mail send to time sheet requester 
+
+            $this->load->model('emails_model');
+
+            $this->db->where('staffid', $time_sheet_approval_data['staff_id']);
+            $this->db->select('firstname,lastname,email');
+            $to = '';
+            $data = $this->db->get(db_prefix() . 'staff')->row();
+
+            if ($data) {
+                $to = $data->email;
+            }
+
+            $requester_name = $period_from = $period_to = '';
+
+            $requester_name = get_staff_full_name($time_sheet_approval_data['staff_id']);
+
+            $period_from = $time_sheet_approval_data['from_date'];
+            $period_to = $time_sheet_approval_data['to_date'];
+
+
+            $subject = "Timesheet Approved by  ".get_staff_full_name(get_staff_user_id());
+
+            $message = "Hi ".ucwords($requester_name).",
+
+            Your timesheet for the period ".date('d/m/Y', strtotime($period_from))." to ".date('d/m/Y', strtotime($period_to))." has been approved by your reporting manager. <br>
+            Reason: ".$_POST['comment']."<br>
+             Approval : Level 1 <br>
+            You can view the details by following the link below:<br>
+
+            <a href='".base_url('admin/reports/timesheet_approval_list')."' target='_blank'> Click Here </a><br>";
+
+            if($to != "")
+            {
+                $this->emails_model->send_simple_email($to, $subject, $message);
+            }
+             // End : Request Email 
+
+            // End : Email
+
             set_alert('success', _l('updated_successfully'));
             redirect(base_url("admin/reports/timesheet_approval_list"));
         }
@@ -1752,6 +1897,54 @@ class Reports extends AdminController
         {
             $this->db->where("id", $id);
             $this->db->update("tbltime_sheet_approval", array("teamlead_status" => '2', "teamlead_comment" => $_POST['comment'], "modified_at" => date("Y-m-d H:i:s")));
+
+             // Start : Email send to user and hire manager
+
+            $time_sheet_approval_data = array();
+
+            $time_sheet_approval_data = $this->db->get_where(db_prefix()."time_sheet_approval", array("id" => $id))->row_array();
+
+            // Start : this mail send to time sheet requester 
+
+            $this->load->model('emails_model');
+
+            $this->db->where('staffid', $time_sheet_approval_data['staff_id']);
+            $this->db->select('firstname,lastname,email');
+            $to = '';
+            $data = $this->db->get(db_prefix() . 'staff')->row();
+
+            if ($data) {
+                $to = $data->email;
+            }
+
+            $requester_name = $period_from = $period_to = '';
+
+            $requester_name = get_staff_full_name($time_sheet_approval_data['staff_id']);
+
+            $period_from = $time_sheet_approval_data['from_date'];
+            $period_to = $time_sheet_approval_data['to_date'];
+
+
+            $subject = "Timesheet Rejected by  ".get_staff_full_name(get_staff_user_id());
+
+            $message = "Hi ".ucwords($requester_name).",
+
+            Your timesheet for the period ".date('d/m/Y', strtotime($period_from))." to ".date('d/m/Y', strtotime($period_to))." has been rejected by your reporting manager. <br>
+            Reason: ".$_POST['comment']."<br>
+            Approval : Level 1 <br>
+            You can view the details by following the link below:<br>
+
+            <a href='".base_url('admin/reports/timesheet_approval_list')."' target='_blank'> Click Here </a><br>";
+
+            if($to != "")
+            {
+                $this->emails_model->send_simple_email($to, $subject, $message);
+            }
+             // End : Request Email 
+
+            // End : Email
+
+
             set_alert('success', _l('updated_successfully'));
             redirect(base_url("admin/reports/timesheet_approval_list"));
         }

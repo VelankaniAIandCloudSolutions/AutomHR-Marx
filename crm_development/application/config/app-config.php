@@ -44,7 +44,7 @@ define('APP_ENC_KEY', '7e8bdb5dc422154675ce075ac715a614');
  */
 // define('APP_DB_HOSTNAME', 'localhost');
 
-if($_SERVER['SERVER_NAME'] === 'localhost')
+if($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SCRIPT_NAME'] === '/crm_development/index.php')
 {
     define('APP_DB_HOSTNAME','192.168.10.200');
     define('APP_DB_USERNAME', 'ubuntu');

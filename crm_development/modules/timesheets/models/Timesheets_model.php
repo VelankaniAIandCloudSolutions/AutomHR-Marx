@@ -8677,7 +8677,7 @@ class timesheets_model extends app_model
 
 			if ($staff_id > 0 && !empty($department_ids)) {
 				$accumulated_leave_data = array();
-
+				
 				foreach ($department_ids as $department_id) {
 					$this->db->select("*");
 					$this->db->from(db_prefix() . "leave_setting_yearly");
@@ -8698,7 +8698,7 @@ class timesheets_model extends app_model
 						}
 					}
 				}	
-
+				
 				if (!empty($accumulated_leave_data)) {
 					foreach ($accumulated_leave_data as $key => $value) {
 						$leave_id = '';
@@ -8723,14 +8723,27 @@ class timesheets_model extends app_model
 							"days_off" => 0,
 							"type_of_leave" => $leave_id
 						);
-
-						$check_exist = $this->db->where("staffid", $staff_id)
-							->where("year", date("Y"))
-							->where("type_of_leave", $leave_id)
-							->get(db_prefix() . "timesheets_day_off")
-							->row_array();
-						if (empty($check_exist)) {
+						$check_exist  = array();
+						$this->db->select('*');
+						$this->db->where("staffid", $staff_id);
+						$this->db->where("year", date("Y"));
+						$this->db->where("type_of_leave", $leave_id);
+						$tmp_qry = $this->db->get(db_prefix() . "timesheets_day_off");
+						$check_exist = $tmp_qry->row_array();
+						if(empty($check_exist)) {
 							$this->db->insert(db_prefix() . "timesheets_day_off", $insert_data);
+						}
+						else{
+							$update_data = array();
+
+							$update_data = array(
+								"staffid" => $staff_id,
+								"year" => date("Y"),
+								"total" => $total_leave,
+								"remain" => ($total_leave - $check_exist['days_off'])
+							);
+							$this->db->where("id", $check_exist['id']);
+							$this->db->update(db_prefix() . "timesheets_day_off", $update_data);
 						}
 					}
 				}

@@ -8732,6 +8732,18 @@ class timesheets_model extends app_model
 						if (empty($check_exist)) {
 							$this->db->insert(db_prefix() . "timesheets_day_off", $insert_data);
 						}
+						else{
+							$update_data = array();
+
+							$update_data = array(
+								"staffid" => $staff_id,
+								"year" => date("Y"),
+								"total" => $total_leave,
+								"remain" => ($total_leave - $check_exist['days_off'])
+							);
+							$this->db->where("id", $check_exist['id']);
+							$this->db->update(db_prefix() . "timesheets_day_off", $update_data);
+						}
 					}
 				}
 

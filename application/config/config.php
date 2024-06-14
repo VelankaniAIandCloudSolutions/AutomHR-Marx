@@ -53,8 +53,6 @@ $config['base_url'] = APP_BASE_URL;
 
 // $config['base_url'] = $root;
 
-echo APP_BASE_URL;
-
 /*
 |--------------------------------------------------------------------------
 | Index File

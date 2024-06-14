@@ -46,12 +46,14 @@ function db_prefix()
 |
 */
 
-//$config['base_url'] = APP_BASE_URL;
+$config['base_url'] = APP_BASE_URL;
 
-$root=(isset($_SERVER['HTTPS']) ? "https://" : "https://").$_SERVER['HTTP_HOST'];
-$root.= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+// $root=(isset($_SERVER['HTTPS']) ? "https://" : "https://").$_SERVER['HTTP_HOST'];
+// $root.= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 
-$config['base_url'] = $root;
+// $config['base_url'] = $root;
+
+echo APP_BASE_URL;
 
 /*
 |--------------------------------------------------------------------------

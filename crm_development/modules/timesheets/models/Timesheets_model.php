@@ -8712,7 +8712,17 @@ class timesheets_model extends app_model
 						} else if ($key === 'sick_leave') {
 							$leave_id = 1;
 						} else {
-							$leave_id = $key;
+							// $leave_id = $key;
+							$leave_type = array();
+
+							$this->db->select("slug");
+							$this->db->from(db_prefix()."timesheets_type_of_leave");
+							$this->db->Where("id", $key);
+							$leave_type = $this->db->get()->row_array();
+							if(!empty($leave_type))
+							{
+								$leave_id = $leave_type['slug'];
+							}
 						}
 
 						$insert_data = array(

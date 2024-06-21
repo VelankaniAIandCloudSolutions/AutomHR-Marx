@@ -76,6 +76,7 @@
             <tr>
                 <td colspan="9">
                     <input type="submit" name="submit_btn" id="submit_btn" class="btn btn-success">
+                    <input type="submit" name="submit_employee_btn" id="submit_employee_btn" value="All Employee Update" class="btn btn-primary">
                 </td>
             </tr>
             </tbody>

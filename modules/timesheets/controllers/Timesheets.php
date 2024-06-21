@@ -7256,8 +7256,10 @@ public function check_in_ts() {
 
 	public function leave_setting_department_wise()
 	{
+		ini_set("memory_limit", "-1");
+        set_time_limit(0);
+
 		$input_data = $this->input->post();
-		
 		$year = $input_data['year'];
 		
 		if(!empty($input_data) && is_array($input_data))
@@ -7299,6 +7301,47 @@ public function check_in_ts() {
 				}
 			}
 			set_alert('success', 'Leave Update Successfully');
+		}
+
+		//  exsting staff update
+
+		if(isset($input_data['submit_employee_btn']) && $input_data['submit_employee_btn'] !="")
+		{
+			$staffs = array();
+			$this->load->model('staff_model');
+			$staffs = $this->staff_model->get('','active = 1');
+			
+			if(sizeof($staffs) > 0)
+			{
+				foreach($staffs as $staffs_id)
+				{
+					$staffid = '';
+					$staffid = $staffs_id['staffid'];
+					
+					$staff_departments = array();
+
+					$this->load->model('departments_model');
+					$staff_departments = $this->departments_model->get_staff_departments($staffid);
+					
+					$departments = array();
+
+					foreach ($staff_departments as $staff_departments_val) {
+						array_push($departments, $staff_departments_val['departmentid']);
+					}
+					if(sizeof($departments) > 0)
+					{
+						// Start	: leave assign for new staff
+							$tmp_data = array();
+							$tmp_data = array(
+								"staff_id" => $staffid,
+								"department_id" =>$departments
+							); 
+							$this->load->model('timesheets/timesheets_model', 'timesheets_model');
+							$this->timesheets_model->staff_leave_assign($tmp_data);
+						// End	: leave assign for new staff`
+					}
+				}
+			}
 		}
 		redirect(admin_url('timesheets/setting?group=leave_setting'));
 	}

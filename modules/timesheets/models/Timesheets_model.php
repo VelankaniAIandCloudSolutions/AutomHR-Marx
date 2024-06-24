@@ -8505,7 +8505,7 @@ class timesheets_model extends app_model
 		}
 
 		$requisition_number_of_day_off = $this->timesheets_model->get_requisition_number_of_day_off($staff_id, $year, $leave_type);
-
+		
 		$timesheets_max_leave_in_year = 0;
 
 		$timesheets_max_leave_in_year = $requisition_number_of_day_off['total_day_off_in_year'];
@@ -8532,7 +8532,8 @@ class timesheets_model extends app_model
 			}
 
 			$count = $this->timesheets_model->get_date_leave_in_month($staff_id, $months_filter);
-			// $test[]  = $this->db->last_query();
+			
+			// $test[]  = $this->db->last_query(); 
 			$timesheets_total_day_off += $count;
 
 			if (date("m") < $i) {
@@ -8540,10 +8541,17 @@ class timesheets_model extends app_model
 			}
 
 			$available_leave = round(($monthly_eligible_leave - $count), 2);
+			$joiningMonth = date("m", strtotime($staff_joining_date));
+			$joiningYear = date("Y", strtotime($staff_joining_date));
+			$currentYear = date("Y");
 
-			if ($i < date("m", strtotime($staff_joining_date))) {
+			if ($i < $joiningMonth && $currentYear == $joiningYear) {
 				$balance = 0;
-			} else {
+			} 
+			elseif ($currentYear < $joiningYear) {
+				$balance = 0;
+			}
+			else {
 				$balance = round(($previous_month_available_leave + $available_leave), 2);
 				$previous_month_available_leave = round(($previous_month_available_leave + $available_leave), 2);
 			}
